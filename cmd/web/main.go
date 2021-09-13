@@ -13,7 +13,7 @@ type application struct {
 }
 
 func main() {
-	addr := flag.String("addr", ":4000", "Сетевой адрес веб-сервера")
+	addr := flag.String("addr", ":4040", "Сетевой адрес веб-сервера")
 	flag.Parse()
 
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)

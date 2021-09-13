@@ -38,7 +38,12 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	}
 	defer f.Close()
 
-	//infoLog := log.New(f, "INFO\t", log.Ldate|log.Ltime)
+	infoLog := log.New(f, "INFO\t", log.Ldate|log.Ltime)
+	infoLog.Output(2, "hi")
+
+	//infoLog.Fatal("111")
+	//f.Sync()
+	//f.Write([]byte("fuck"))
 }
 
 func (app *application) showSnippet(w http.ResponseWriter, r *http.Request) {
