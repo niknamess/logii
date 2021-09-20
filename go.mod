@@ -1,4 +1,4 @@
-module golangs.org/snippetbox
+module gitlab.topaz-atcs.com/tmcs/logi2
 
 go 1.15
 
@@ -12,4 +12,6 @@ require (
 	github.com/oklog/ulid/v2 v2.0.2 // indirect
 	github.com/prometheus/client_golang v1.11.0
 	github.com/sirupsen/logrus v1.8.1
+	
+
 )

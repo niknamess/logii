@@ -12,7 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
-	"gitlab.topaz-atcs.com/tmcs/logi/logenc"
+	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 )
 
 var callSearchCnt = prometheus.NewCounter(

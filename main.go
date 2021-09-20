@@ -11,14 +11,14 @@ import (
 	"sort"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"gitlab.topaz-atcs.com/tmcs/logi/logenc"
+	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 )
 
 var (
 	Logger *log.Logger
 )
 
-func procLine(line string) {
+func procLine(line string) (csvF string) {
 
 	if len(line) == 0 {
 
@@ -34,6 +34,7 @@ func procLine(line string) {
 
 	csvline := logenc.EncodeCSV(val)
 	fmt.Print(csvline)
+	return csvline
 }
 
 func procFile(file string) {
@@ -92,12 +93,12 @@ func procWrite(dir string) {
 
 func procFileWrite(file string) {
 
-	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	filew, err := os.OpenFile("logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	Logger = log.New(file, " ", log.Lshortfile)
+	Logger = log.New(filew, " ", log.Lshortfile)
 
 	ch := make(chan string, 100)
 
