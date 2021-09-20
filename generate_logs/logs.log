@@ -1,0 +1,13 @@
+INFO: 2021/09/16 17:48:43 generator.go:41: Starting the application...
+INFO: 2021/09/16 17:48:47 generator.go:45: Something noteworthy happened
+INFO: 2021/09/20 13:16:02 generator.go:50: Starting the application...
+INFO: 2021/09/20 13:16:06 generator.go:54: Something noteworthy happened
+WARNING: 2021/09/20 13:16:11 generator.go:58: There is something you should know about
+ERROR: 2021/09/20 13:16:21 generator.go:62: Something went wrong
+INFO: 2021/09/20 13:16:26 generator.go:50: Starting the application...
+INFO: 2021/09/20 13:16:30 generator.go:54: Something noteworthy happened
+WARNING: 2021/09/20 13:16:35 generator.go:58: There is something you should know about
+ERROR: 2021/09/20 13:16:45 generator.go:62: Something went wrong
+INFO: 2021/09/20 13:16:50 generator.go:50: Starting the application...
+INFO: 2021/09/20 13:16:54 generator.go:54: Something noteworthy happened
+WARNING: 2021/09/20 13:16:59 generator.go:58: There is something you should know about

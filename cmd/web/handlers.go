@@ -7,7 +7,14 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	//"github.com/kataras/tablewriter"
+	//"github.com/lensesio/tableprinter"
 )
+
+type logs struct {
+	typeLogs string `header:"first name"`
+	Lastname string `header:"last name"`
+}
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
