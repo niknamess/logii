@@ -38,6 +38,7 @@ type Log struct {
 
 const (
 	XOR_KEY = 59
+	//shortForm = "2006.01.02-15.04.05"
 )
 
 //Read lines
@@ -95,18 +96,26 @@ func DecodeXML(line string) (LogList, error) {
 
 func EncodeCSV(val LogList) string {
 
+	// src time format example: 08092021224536920
+	//                 ddMMyyyyhhmmsszzz
+	const shortForm = "02012006150405.000"
+
 	buf := bytes.NewBuffer([]byte{})
 	writer := csv.NewWriter(buf)
-
+	tochka := "."
 	for _, logstr := range val.XML_RECORD_ROOT {
-		// fmt.Println(logstr.XML_APPNAME)
-		err := writer.Write([]string{logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, logstr.XML_TIME.Format(time.RFC822), logstr.XML_ULID, logstr.XML_TYPE, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
+		//TIME
+		count := string(logstr.XML_TIME[0]) + string(logstr.XML_TIME[1]) + string(logstr.XML_TIME[2]) + string(logstr.XML_TIME[3]) + string(logstr.XML_TIME[4]) + string(logstr.XML_TIME[5]) + string(logstr.XML_TIME[6]) + string(logstr.XML_TIME[7]) + string(logstr.XML_TIME[8]) + string(logstr.XML_TIME[9]) + string(logstr.XML_TIME[10]) + string(logstr.XML_TIME[11]) + string(logstr.XML_TIME[12]) + string(logstr.XML_TIME[13]) + tochka + string(logstr.XML_TIME[14]) + string(logstr.XML_TIME[15]) + string(logstr.XML_TIME[16])
+		t, err := time.Parse(shortForm, count)
+		//fmt.Println(logstr.XML_TIME, t, err)
+		//TYPE
+
+		err = writer.Write([]string{logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RFC1123), logstr.XML_ULID, logstr.XML_TYPE, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
 		if err != nil {
 			log.Fatalln("error writing record to csv:", err)
 		}
 	}
 
 	writer.Flush()
-	//fmt.Println(buf.Len())
 	return buf.String()
 }
