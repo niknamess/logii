@@ -37,6 +37,24 @@ func procLine(line string) (csvF string) {
 	return csvline
 }
 
+func procLineq(line string) (csvF string) {
+
+	if len(line) == 0 {
+
+		return
+	}
+
+	xmlline := logenc.DecodeLine(line)
+	val, err := logenc.DecodeXML(xmlline)
+	if err != nil {
+
+		return
+	}
+
+	csvline := logenc.EncodeCSV(val)
+	return csvline
+}
+
 func procFile(file string) {
 	ch := make(chan string, 100)
 
@@ -93,12 +111,12 @@ func procWrite(dir string) {
 
 func procFileWrite(file string) {
 
-	filew, err := os.OpenFile("logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
+	filew, err1 := os.OpenFile("logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err1 != nil {
+		log.Fatal(err1)
 	}
 
-	Logger = log.New(filew, " ", log.Lshortfile)
+	Logger = log.New(filew, "TEST: ", log.Ldate|log.Ltime|log.Lshortfile)
 
 	ch := make(chan string, 100)
 
@@ -108,8 +126,8 @@ func procFileWrite(file string) {
 				select {
 				case line := <-ch:
 
-					procLine(line)
-					Logger.Println(procLine(line))
+					//procLine(line)
+					Logger.Println(procLineq(line))
 				}
 			}
 
