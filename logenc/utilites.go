@@ -94,9 +94,9 @@ func DecodeXML(line string) (LogList, error) {
 	return v, err
 }
 
-const shortForm = "02012006150405.000"
-
 func datestr2time(str string) time.Time {
+	// format example: 08092021224536920  from xml
+	const shortForm = "02012006150405.000"
 
 	count := string(str[0]) + string(str[1]) + string(str[2]) + string(str[3]) + string(str[4]) + string(str[5]) + string(str[6]) + string(str[7]) + string(str[8]) + string(str[9]) + string(str[10]) + string(str[11]) + string(str[12]) + string(str[13]) + "." + string(str[14]) + string(str[15]) + string(str[16])
 	t, _ := time.Parse(shortForm, count)
@@ -104,18 +104,11 @@ func datestr2time(str string) time.Time {
 }
 
 func EncodeCSV(val LogList) string {
-
-	// src time format example: 08092021224536920
-	//                 ddMMyyyyhhmmsszzz
-	const shortForm = "02012006150405.000"
-
 	buf := bytes.NewBuffer([]byte{})
 	writer := csv.NewWriter(buf)
-	tochka := "."
 	for _, logstr := range val.XML_RECORD_ROOT {
 		//TIME
-		count := string(logstr.XML_TIME[0]) + string(logstr.XML_TIME[1]) + string(logstr.XML_TIME[2]) + string(logstr.XML_TIME[3]) + string(logstr.XML_TIME[4]) + string(logstr.XML_TIME[5]) + string(logstr.XML_TIME[6]) + string(logstr.XML_TIME[7]) + string(logstr.XML_TIME[8]) + string(logstr.XML_TIME[9]) + string(logstr.XML_TIME[10]) + string(logstr.XML_TIME[11]) + string(logstr.XML_TIME[12]) + string(logstr.XML_TIME[13]) + tochka + string(logstr.XML_TIME[14]) + string(logstr.XML_TIME[15]) + string(logstr.XML_TIME[16])
-		t, err := time.Parse(shortForm, count)
+		t := datestr2time(logstr.XML_TIME)
 		//fmt.Println(logstr.XML_TIME, t, err)
 		//TYPE
 		typeM := "INFO"
@@ -129,7 +122,7 @@ func EncodeCSV(val LogList) string {
 			typeM = "FATAL"
 		}
 
-		err = writer.Write([]string{typeM, logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RFC1123), logstr.XML_ULID, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
+		err := writer.Write([]string{typeM, logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RFC1123), logstr.XML_ULID, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
 		if err != nil {
 			log.Fatalln("error writing record to csv:", err)
 		}
