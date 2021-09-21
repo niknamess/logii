@@ -94,8 +94,13 @@ func DecodeXML(line string) (LogList, error) {
 	return v, err
 }
 
-func datestr2time(string) time.Time {
-	return time.Time{}
+const shortForm = "02012006150405.000"
+
+func datestr2time(str string) time.Time {
+
+	count := string(str[0]) + string(str[1]) + string(str[2]) + string(str[3]) + string(str[4]) + string(str[5]) + string(str[6]) + string(str[7]) + string(str[8]) + string(str[9]) + string(str[10]) + string(str[11]) + string(str[12]) + string(str[13]) + "." + string(str[14]) + string(str[15]) + string(str[16])
+	t, _ := time.Parse(shortForm, count)
+	return t
 }
 
 func EncodeCSV(val LogList) string {
