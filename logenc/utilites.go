@@ -109,8 +109,18 @@ func EncodeCSV(val LogList) string {
 		t, err := time.Parse(shortForm, count)
 		//fmt.Println(logstr.XML_TIME, t, err)
 		//TYPE
+		typeM := "INFO"
+		if logstr.XML_TYPE == "1" {
+			typeM = "DEBUG"
+		} else if logstr.XML_TYPE == "2" {
+			typeM = "WARNING"
+		} else if logstr.XML_TYPE == "3" {
+			typeM = "ERROR"
+		} else if logstr.XML_TYPE == "4" {
+			typeM = "FATAL"
+		}
 
-		err = writer.Write([]string{logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RFC1123), logstr.XML_ULID, logstr.XML_TYPE, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
+		err = writer.Write([]string{typeM, logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RFC1123), logstr.XML_ULID, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
 		if err != nil {
 			log.Fatalln("error writing record to csv:", err)
 		}

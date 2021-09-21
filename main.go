@@ -116,7 +116,8 @@ func procFileWrite(file string) {
 		log.Fatal(err1)
 	}
 
-	Logger = log.New(filew, "TEST: ", log.Ldate|log.Ltime|log.Lshortfile)
+	//Logger = log.New(filew, "TEST: ", log.Ldate|log.Ltime|log.Lshortfile)
+	Logger = log.New(filew, "TEST: ", log.Ldate|log.Ltime)
 
 	ch := make(chan string, 100)
 
