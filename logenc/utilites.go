@@ -98,8 +98,9 @@ func datestr2time(str string) time.Time {
 	// format example: 08092021224536920  from xml
 	const shortForm = "02012006150405.000"
 
-	count := string(str[0]) + string(str[1]) + string(str[2]) + string(str[3]) + string(str[4]) + string(str[5]) + string(str[6]) + string(str[7]) + string(str[8]) + string(str[9]) + string(str[10]) + string(str[11]) + string(str[12]) + string(str[13]) + "." + string(str[14]) + string(str[15]) + string(str[16])
-	t, _ := time.Parse(shortForm, count)
+	str2 := string(str[0:14]) + "." + string(str[14:17])
+	fmt.Println(str2)
+	t, _ := time.Parse(shortForm, str2)
 	return t
 }
 
