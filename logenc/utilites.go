@@ -94,6 +94,10 @@ func DecodeXML(line string) (LogList, error) {
 	return v, err
 }
 
+func datestr2time(string) time.Time {
+	return time.Time{}
+}
+
 func EncodeCSV(val LogList) string {
 
 	// src time format example: 08092021224536920
