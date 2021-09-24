@@ -1,4 +1,4 @@
-package main
+package generator
 
 import (
 	"log"
@@ -32,7 +32,7 @@ func init() {
 	//FatalLogger = log.New(file, "Fatal: ", log.Ldate|log.Ltime|log.Lshortfile)
 }
 
-func main() {
+func ProcGenN(dir string) {
 
 	file, err := os.OpenFile("/home/nik/projects/logs/r/gen_logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
@@ -52,15 +52,15 @@ func main() {
 		i++
 
 		timer2 := time.NewTimer(5 * time.Second)
-		InfoLogger.Println(i, "Something noteworthy happened")
+		InfoLogger.Println("Something noteworthy happened")
 		<-timer2.C
 		i++
 		timer3 := time.NewTimer(10 * time.Second)
-		WarningLogger.Println(i, "There is something you should know about")
+		WarningLogger.Println("There is something you should know about")
 		<-timer3.C
 		i++
 		timer4 := time.NewTimer(5 * time.Second)
-		ErrorLogger.Println(i, "Something went wrong")
+		ErrorLogger.Println("Something went wrong")
 		<-timer4.C
 		i++
 	}

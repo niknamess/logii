@@ -3,150 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"path/filepath"
-	"runtime"
+
+	//"log"
+	//"net/http"
+	//"os"
+	//"path/filepath"
+	//"runtime"
 	"sort"
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	//"github.com/prometheus/client_golang/prometheus/promhttp"
+	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 )
-
-var (
-	Logger *log.Logger
-)
-
-func procLine(line string) (csvF string) {
-
-	if len(line) == 0 {
-
-		return
-	}
-
-	xmlline := logenc.DecodeLine(line)
-	val, err := logenc.DecodeXML(xmlline)
-	if err != nil {
-
-		return
-	}
-
-	csvline := logenc.EncodeCSV(val)
-	fmt.Print(csvline)
-	return csvline
-}
-
-func procLineq(line string) (csvF string) {
-
-	if len(line) == 0 {
-
-		return
-	}
-
-	xmlline := logenc.DecodeLine(line)
-	val, err := logenc.DecodeXML(xmlline)
-	if err != nil {
-
-		return
-	}
-
-	csvline := logenc.EncodeCSV(val)
-	return csvline
-}
-
-func procFile(file string) {
-	ch := make(chan string, 100)
-
-	for i := runtime.NumCPU() + 1; i > 0; i-- {
-		go func() {
-			for {
-				select {
-				case line := <-ch:
-
-					procLine(line)
-				}
-			}
-
-		}()
-	}
-
-	err := logenc.ReadLines(file, func(line string) {
-		ch <- line
-	})
-	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
-	}
-}
-
-func procDir(dir string) {
-
-	filepath.Walk(dir,
-		func(path string, file os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if !file.IsDir() {
-
-				procFile(path)
-			}
-			return nil
-		})
-}
-
-func procWrite(dir string) {
-
-	filepath.Walk(dir,
-		func(path string, file os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if !file.IsDir() {
-
-				procFileWrite(path)
-			}
-			return nil
-		})
-}
-
-func procFileWrite(file string) {
-
-	filew, err1 := os.OpenFile("/home/nik/projects/logs/r/mainlogs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err1 != nil {
-		log.Fatal(err1)
-	}
-
-	//Logger = log.New(filew, "TEST: ", log.Ldate|log.Ltime|log.Lshortfile)
-	Logger = log.New(filew, "", 0)
-
-	ch := make(chan string, 100)
-
-	for i := runtime.NumCPU() + 1; i > 0; i-- {
-		go func() {
-			for {
-				select {
-				case line := <-ch:
-
-					//procLine(line)
-					Logger.Println(procLineq(line))
-				}
-			}
-
-		}()
-	}
-
-	err := logenc.ReadLines(file, func(line string) {
-		ch <- line
-	})
-	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
-	}
-}
-
-func promrun() {
-	http.Handle("/metrics", promhttp.Handler())
-	log.Fatal(http.ListenAndServe(":8080", nil))
-}
 
 func main() {
 	flagFile := flag.String("f", "", "parse log file")
@@ -154,9 +22,10 @@ func main() {
 	flagSearch := flag.String("s", "", "search")
 	flagServ := flag.String("z", "", "server")
 	flagWrite := flag.String("w", "", "write_logs")
+	flagGen := flag.String("g", "", "generate_logs")
 	flag.Parse()
 
-	go promrun()
+	go logenc.Promrun()
 
 	if len(*flagServ) > 0 {
 		fmt.Println("flagServ:", *flagServ)
@@ -166,19 +35,25 @@ func main() {
 
 	if len(*flagFile) > 0 {
 
-		procFile(*flagFile)
+		logenc.ProcFile(*flagFile)
 		return
 	}
 
 	if len(*flagDir) > 0 {
 
-		procDir(*flagDir)
+		logenc.ProcDir(*flagDir)
 		return
 	}
 
 	if len(*flagWrite) > 0 {
 
-		procWrite(*flagWrite)
+		logenc.ProcWrite(*flagWrite)
+		return
+	}
+
+	if len(*flagGen) > 0 {
+
+		generator.ProcGenN(*flagGen)
 		return
 	}
 
