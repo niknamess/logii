@@ -111,13 +111,13 @@ func procWrite(dir string) {
 
 func procFileWrite(file string) {
 
-	filew, err1 := os.OpenFile("logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	filew, err1 := os.OpenFile("/home/nik/projects/logs/r/mainlogs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err1 != nil {
 		log.Fatal(err1)
 	}
 
 	//Logger = log.New(filew, "TEST: ", log.Ldate|log.Ltime|log.Lshortfile)
-	Logger = log.New(filew, "TEST: ", log.Ldate|log.Ltime)
+	Logger = log.New(filew, "", 0)
 
 	ch := make(chan string, 100)
 

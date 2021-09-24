@@ -35,6 +35,9 @@ type Log struct {
 //	path string
 //	dir  []string
 //}
+var (
+	count = 0
+)
 
 const (
 	XOR_KEY = 59
@@ -99,7 +102,7 @@ func datestr2time(str string) time.Time {
 	const shortForm = "02012006150405.000"
 
 	str2 := string(str[0:14]) + "." + string(str[14:17])
-	fmt.Println(str2)
+	//fmt.Println(str2)
 	t, _ := time.Parse(shortForm, str2)
 	return t
 }
@@ -122,8 +125,9 @@ func EncodeCSV(val LogList) string {
 		} else if logstr.XML_TYPE == "4" {
 			typeM = "FATAL"
 		}
-
-		err := writer.Write([]string{typeM, logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RFC1123), logstr.XML_ULID, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
+		id := fmt.Sprint(count)
+		err := writer.Write([]string{id, typeM, logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RFC1123), logstr.XML_ULID, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
+		count++
 		if err != nil {
 			log.Fatalln("error writing record to csv:", err)
 		}
