@@ -4,16 +4,11 @@ import (
 	"flag"
 	"fmt"
 
-	//"log"
-	//"net/http"
-	//"os"
-	//"path/filepath"
-	//"runtime"
 	"sort"
 
-	//"github.com/prometheus/client_golang/prometheus/promhttp"
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
+	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 )
 
 func main() {
@@ -23,6 +18,7 @@ func main() {
 	flagServ := flag.String("z", "", "server")
 	flagWrite := flag.String("w", "", "write_logs")
 	flagGen := flag.String("g", "", "generate_logs")
+	flagWeb := flag.String("p", "", "web_interface")
 	flag.Parse()
 
 	go logenc.Promrun()
@@ -54,6 +50,12 @@ func main() {
 	if len(*flagGen) > 0 {
 
 		generator.ProcGenN(*flagGen)
+		return
+	}
+
+	if len(*flagWeb) > 0 {
+		//fmt.Println("fuck")
+		web.ProcWeb(*flagWeb)
 		return
 	}
 

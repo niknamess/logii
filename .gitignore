@@ -1,3 +1,6 @@
 logi2
 *.log
 *.json
+*.vscode
+~/.logi2
+

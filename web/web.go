@@ -16,7 +16,7 @@ import (
 
 var (
 	dir      = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./").ExistingFilesOrDirs()
-	port     = kingpin.Flag("port", "Port number to host the server").Short('p').Default("8080").Int()
+	port     = kingpin.Flag("port", "Port number to host the server").Short('p').Default("15000").Int()
 	restrict = kingpin.Flag("restrict", "Enforce PAM authentication (single level)").Short('r').Bool()
 	acl      = kingpin.Flag("acl", "enable Access Control List with users in the provided file").Short('a').ExistingFile()
 	cron     = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
@@ -25,7 +25,7 @@ var (
 	key      = kingpin.Flag("key", "Server Key File").Short('k').Default("server.key").String()
 )
 
-func main() {
+func ProcWeb(dir1 string) {
 	kingpin.Parse()
 	err := util.ParseConfig(*dir, *restrict, *acl, *cron)
 
