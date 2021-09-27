@@ -26,7 +26,7 @@ var (
 // RootHandler - http handler for handling / path
 func RootHandler(w http.ResponseWriter, r *http.Request) {
 	t := template.New("index").Delims("<<", ">>")
-	t, err := t.ParseFiles("templates/index.tmpl")
+	t, err := t.ParseFiles("web/templates/index.tmpl")
 	t = template.Must(t, err)
 	if err != nil {
 		panic(err)

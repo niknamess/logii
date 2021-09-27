@@ -37,7 +37,7 @@ func ProcWeb(dir1 string) {
 
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler, controllers.GetContext)).Methods("GET")
 	router.HandleFunc("/", Use(controllers.RootHandler, controllers.GetContext)).Methods("GET")
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/static/")))
 
 	csrfHandler := csrf.Protect([]byte(util.GenerateSecureKey()),
 		csrf.Secure(false), csrf.CookieName("X-CSRF-Token"))
