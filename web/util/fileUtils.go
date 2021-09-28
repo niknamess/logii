@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
+	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 )
 
 var (
@@ -37,7 +38,7 @@ func TailFile(conn *websocket.Conn, fileName string) {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 	}
 	for line := range t.Lines {
-		conn.WriteMessage(websocket.TextMessage, []byte(line.Text))
+		conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
 	}
 }
 

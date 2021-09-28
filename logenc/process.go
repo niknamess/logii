@@ -16,7 +16,7 @@ var (
 	Logger *log.Logger
 )
 
-func procLine(line string) (csvF string) {
+func ProcLine(line string) (csvF string) {
 
 	if len(line) == 0 {
 
@@ -61,14 +61,14 @@ func procLineq(line string) (csvF string) {
 
 func ProcFile(file string) {
 	ch := make(chan string, 100)
-
+	log.Println("1")
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
 				select {
 				case line := <-ch:
 
-					procLine(line)
+					ProcLine(line)
 				}
 			}
 
