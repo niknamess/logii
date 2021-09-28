@@ -66,6 +66,7 @@ func checkError(message string, err error) {
 }
 
 func DecodeLine(line string) string {
+	print("DecodeLine")
 	data, err := base64.StdEncoding.DecodeString(line)
 
 	if err != nil {
@@ -86,35 +87,37 @@ func DecodeLine(line string) string {
 			break
 		}
 	}
-	print("start1")
-	print(string(data))
-	print("end1")
+	//print("start1")
+	//print(string(data))
+	//print("end1")
 	return string(data)
 }
 
-func EncodeLine(line []byte) string {
-	data := base64.StdEncoding.Strict().EncodeToString(line)
-	result := []byte(data)
-
-	if len(data) <= 0 {
+func EncodeLine(line string) string {
+	//data := base64.StdEncoding.Strict().EncodeToString([]byte(line))
+	//result := []byte(data)
+	print("EncodeLine")
+	if len(line) <= 0 {
 		return ""
 	}
-
+	result := []byte(line)
 	k := 0
 	for {
 		//XOR with lines
 		result[k] ^= XOR_KEY
 		k++
-		if k >= len(data) {
+		if k >= len(result) {
 			break
 		}
 	}
 	//print(line)
-	return string(result)
+	data := base64.StdEncoding.Strict().EncodeToString(result)
+
+	return data
 }
 
 func DecodeXML(line string) (LogList, error) {
-	print("start")
+	print("DecodeXML")
 
 	var v = LogList{}
 
@@ -123,12 +126,6 @@ func DecodeXML(line string) (LogList, error) {
 	return v, err
 }
 
-func EncodeXML(line string) (string, error) {
-
-	empData1, err := xml.Marshal([]byte(line))
-	empData2 := string(empData1)
-	return empData2, err
-}
 func datestr2time(str string) time.Time {
 	// format example: 08092021224536920  from xml
 	const shortForm = "02012006150405.000"
@@ -144,6 +141,7 @@ func EncodeCSV(val LogList) string {
 	writer := csv.NewWriter(buf)
 	for _, logstr := range val.XML_RECORD_ROOT {
 		//TIME
+		print("EncodeCSV")
 		t := datestr2time(logstr.XML_TIME)
 		//fmt.Println(logstr.XML_TIME, t, err)
 		//TYPE

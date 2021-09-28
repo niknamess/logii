@@ -2,7 +2,6 @@ package logenc
 
 import (
 	"reflect"
-	"strings"
 	"testing"
 	"time"
 )
@@ -32,6 +31,8 @@ func Test_datestr2time(t *testing.T) {
 }
 
 func TestDecodeXML(t *testing.T) {
+	lines := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
+
 	type args struct {
 		line string
 	}
@@ -43,9 +44,9 @@ func TestDecodeXML(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 		{
-			name: "TestDecodeXML",
-			//args: '<loglist><log module_name="ProcessLivePanel" app_path="/usr/local/lemz/atcs/bin/processlivepanel" app_pid="2383" thread_id="140042514286464" time="19052021050634395" type="2" message="The &quot;text&quot; attribute is missed for the button with handle {0e5d6759-f878-42dd-9548-0db403f64b19}" ext_message="WARNING"/></loglist>'},
-			//want: "",
+			name: "TestDecodeLine",
+			args: args{line: lines},
+			//want: {{ loglist} [{TMCS Monitor /usr/local/Lemz/tmcs/monitor/tmcs_monitor 4913  29052021000147040 0001GB313BF4HPFYCDY3QTZ6A6 3 Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка' Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686 }]},
 		},
 	}
 	for _, tt := range tests {
@@ -62,39 +63,11 @@ func TestDecodeXML(t *testing.T) {
 	}
 }
 
-func TestEncodeXML(t *testing.T) {
+func TestEncodeLine(t *testing.T) {
+	line := "WARNING,TMCS Monitor,/usr/local/Lemz/tmcs/monitor/tmcs_monitor,4913,,\"Sat, 05 Jun 2021 06:00:12 UTC\",0001GBP4QCPX08XYYVFK1SDK8B,Состояние '[192.168.1.198] ARM-ByPass 1.198/Описание системы' изменилось на 'Проблема',Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:683,"
+
 	type args struct {
 		line string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    string
-		wantErr bool
-	}{
-		{
-			name: "t2",
-			//args: args{in0: "1,INFO,TSS Service,/usr/local/Lemz/tss/tss_service,1787,ntp_cl,Fri, 20 Aug 2021 00:34:59 UTC,0001GHXY5KGAQMHEEYM7MVVNTS,Значение поля стратум в NTP ответе полученном от NTP сервера 192.168.1.252:123 изменилось: 10 -> 1.,,"},
-			//: "",
-		}, // TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := EncodeXML(tt.args.line)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("EncodeXML() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
-				t.Errorf("EncodeXML() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestEncodeLine(t *testing.T) {
-	type args struct {
-		line []byte
 	}
 	tests := []struct {
 		name string
@@ -103,9 +76,14 @@ func TestEncodeLine(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 		{
-			name: "t3",
-			//args: args{in0: "08092021224536920"},
-			//want: "",
+			name: "TestEncodeLine",
+			args: args{line: line},
+			want: "2",
+		},
+		{
+			name: "TestEncodeLine",
+			args: args{line: "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"},
+			want: "2",
 		},
 	}
 	for _, tt := range tests {
@@ -121,8 +99,9 @@ func TestDecodeLine(t *testing.T) {
 	type args struct {
 		line string
 	}
-	line := "B1dUXFdSSE8FB1dUXBtWVF9OV15kVVpWXgYZb2hoG2heSU1SWF4ZG1pLS2RLWk9TBhkUTkhJFFdUWFpXFHdeVkEUT0hIFE9ISGRIXklNUlheGRtaS0tkS1JfBhkKDA8JGRtPU0leWl9kUl8GGVVPS2RYVxkbT1JWXgYZCQ0LDgkLCQoLCwoMCwMICA0ZG05XUl8GGQsLCwp8em0PbA8CeGNoen1zDWoDfWx2en9jGRtPQkteBhkLGRtWXkhIWlxeBhkdSk5UTwDrrOuG64vqvOuO64brg"
-	b64data := line[strings.IndexByte(line, ',')+1:]
+	line1 := "B1dUXFdSSE8FB1dUXBtWVF9OV15kVVpWXgYZb3Z4aBt2VFVST1RJGRtaS0tkS1pPUwYZFE5ISRRXVFhaVxR3XlZBFE9WWEgUVlRVUk9USRRPVlhIZFZUVVJPVEkZG1pLS2RLUl8GGQ8CCggZG09TSV5aX2RSXwYZGRtPUlZeBhkJAgsOCQsJCgsLCwoPDAsPCxkbTldSXwYZCwsLCnx5CAoIeX0Pc2t9Ynh/Yghqb2ENeg0ZG09CS14GGQgZG1ZeSEhaXF4GGeua64Xquuq564XqtOuG64PrjhscYAoCCRUKDQMVChUKCQtmG3jrjuq764nrjuq7G+uh65pkaXdyFOuh65rrqRvrmeuF64Tri+uMHBvrg+uM64frjuuG64PrgOuF6rrqtxvrhuuLGxzrpeqz64PriuuB64scGRteQ09kVl5ISFpcXgYZeFRVT15DTwEbGxYWG01UUl8bT1ZYSAEBellIT0laWE92VFVST1RJAQFUVXhUVktUVV5VT2hPWk9eeFNaVVxeXxNqbk5SXxIAGxUVFBUVFBUVFBUVFEhJWBRXUllIFE9WWEhkS1dOXFJVFEhJWBR6WUhPSVpYT3ZUVVJPVEkVWEtLAQ0DDRkUBQcUV1RcV1JITwU="
+	line2 := "B1dUXFdSSE8FB1dUXBtWVF9OV15kVVpWXgYZb3Z4aBt2VFVST1RJGRtaS0tkS1pPUwYZFE5ISRRXVFhaVxR3XlZBFE9WWEgUVlRVUk9USRRPVlhIZFZUVVJPVEkZG1pLS2RLUl8GGQ8CCggZG09TSV5aX2RSXwYZGRtPUlZeBhkJAgsOCQsJCgsLCwoPDAsPCxkbTldSXwYZCwsLCnx5CAoIeX0Pc2t9Ynh/Yghqb2ENeg0ZG09CS14GGQgZG1ZeSEhaXF4GGeua64Xquuq564XqtOuG64PrjhscYAoCCRUKDQMVChUKCQtmG3jrjuq764nrjuq7G+uh65pkaXdyFOuh65rrqRvrmeuF64Tri+uMHBvrg+uM64frjuuG64PrgOuF6rrqtxvrhuuLGxzrpeqz64PriuuB64scGRteQ09kVl5ISFpcXgYZeFRVT15DTwEbGxYWG01UUl8bT1ZYSAEBellIT0laWE92VFVST1RJAQFUVXhUVktUVV5VT2hPWk9eeFNaVVxeXxNqbk5SXxIAGxUVFBUVFBUVFBUVFEhJWBRXUllIFE9WWEhkS1dOXFJVFEhJWBR6WUhPSVpYT3ZUVVJPVEkVWEtLAQ0DDRkUBQcUV1RcV1JITwU="
+	//b64data := line[strings.IndexByte(line, ',')+1:]
 	tests := []struct {
 		name string
 		args args
@@ -131,8 +110,13 @@ func TestDecodeLine(t *testing.T) {
 		// TODO: Add test cases.
 		{
 			name: "TestDecodeLine",
-			args: args{line: b64data},
-			want: "<loglist><log module_name=\"TSS Service\" app_path=\"/usr/local/Lemz/tss/tss_service\" app_pid=\"1742\" thread_id=\"ntp_cl\" time=\"07072021004244057\" ulid=\"0001GE9Y441W7TF1P9N5EG3HQH\" type=\"0\" message=\"&quot;Значение поля стратум в NTP ответе полученном от NTP сервера 192.168.1.252:123 изменилось: 10 -&gt; 1.&quot;\"/></loglist>",
+			args: args{line: line1},
+			want: "1<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>",
+		},
+		{
+			name: "TestDecodeLine",
+			args: args{line: line2},
+			want: "1<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>",
 		},
 	}
 
@@ -140,6 +124,7 @@ func TestDecodeLine(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := DecodeLine(tt.args.line); got != tt.want {
 				t.Errorf("DecodeLine() = %v, want %v", got, tt.want)
+
 			}
 		})
 	}

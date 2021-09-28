@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -21,8 +22,14 @@ func procLine(line string) (csvF string) {
 
 		return
 	}
-
+	lookFor := "<loglist>"
 	xmlline := DecodeLine(line)
+	contain := strings.Contains(xmlline, lookFor)
+	if contain == false {
+
+		return xmlline
+	}
+
 	val, err := DecodeXML(xmlline)
 	if err != nil {
 

@@ -20,5 +20,5 @@
 - [x] read in storage
 - [ ] write in storage
 - [ ] UI from storage
-- [ ] one file bin
+- [x] one file bin
 

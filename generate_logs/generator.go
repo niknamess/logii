@@ -2,7 +2,6 @@ package generator
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"encoding/xml"
 	"log"
 	"math/rand"
@@ -10,6 +9,8 @@ import (
 
 	//"strings"
 	"time"
+
+	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	//"github.com/kataras/tablewriter"
 	//"github.com/lensesio/tableprinter"
 )
@@ -56,17 +57,8 @@ func EncryptDecrypt(input []byte) (output string) {
 	return string(result)
 }
 
-func DecodeXML(line string) (empData string, err error) {
-
-	//var v = line2
-	empData2, err := json.Marshal([]byte(line))
-	//empData,err = xml.Unmarshal([]byte(line))
-	empData = string(empData2)
-	return empData, err
-}
-
 func init() {
-	file, err := os.OpenFile("/home/nik/projects/logs/test/gen_logs1.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("/home/nik/projects/logs/test/gen_logs1", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -74,26 +66,6 @@ func init() {
 	WarningLogger = log.New(file, "", 0)
 	ErrorLogger = log.New(file, "", 0)
 
-}
-
-func procLine(line string) (csvF string) {
-
-	if len(line) == 0 {
-
-		return
-	}
-
-	xmlline := EncryptDecrypt([]byte(line))
-	val, err := DecodeXML(xmlline)
-	if err != nil {
-
-		return
-	}
-
-	//csvline := EncodeCSV(val)
-	//fmt.Print(csvline)
-	print(val)
-	return val
 }
 
 func ProcGenN(dir string) {
@@ -109,19 +81,20 @@ func ProcGenN(dir string) {
 	XML_DETAILS := "Context:  -- void tmcs::AbstractMonitor::"
 	address := "sajjsaj"
 	line := XML_APPNAME + XML_APPPATH + XML_APPPID + XML_THREAD + time1 + qtype + XML_ULID + XML_MESSAGE + XML_DETAILS + address
+	line1 := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
 
 	//file, err := os.OpenFile("/home/nik/projects/logs/r/gen_logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 	infof := func(info string) {
-		InfoLogger.Output(2, info)
+		InfoLogger.Output(2, logenc.EncodeLine(info))
 	}
 
 	warnof := func(info string) {
-		WarningLogger.Output(2, info)
+		WarningLogger.Output(2, logenc.EncodeLine(info))
 	}
 
 	erorof := func(info string) {
-		ErrorLogger.Output(2, info)
+		ErrorLogger.Output(2, logenc.EncodeLine(info))
 	}
 
 	for true {
@@ -130,22 +103,22 @@ func ProcGenN(dir string) {
 
 		timer1 := time.NewTimer(4 * time.Second)
 		//InfoLogger.Println("Starting the application...")
-		infof(procLine(line))
+		infof(line1)
 
 		<-timer1.C
 		i++
 
-		timer2 := time.NewTimer(5 * time.Second)
-		infof(procLine(line))
+		timer2 := time.NewTimer(2 * time.Second)
+		infof(line1)
 
 		<-timer2.C
 		i++
-		timer3 := time.NewTimer(10 * time.Second)
-		warnof(procLine(line))
+		timer3 := time.NewTimer(2 * time.Second)
+		warnof(line1)
 		<-timer3.C
 		i++
-		timer4 := time.NewTimer(5 * time.Second)
-		erorof(procLine(line))
+		timer4 := time.NewTimer(2 * time.Second)
+		erorof(line)
 		<-timer4.C
 		i++
 	}
