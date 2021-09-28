@@ -66,7 +66,11 @@ func TestEncodeXML(t *testing.T) {
 		want    string
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "t2",
+			args: args{in0: "1,INFO,TSS Service,/usr/local/Lemz/tss/tss_service,1787,ntp_cl,Fri, 20 Aug 2021 00:34:59 UTC,0001GHXY5KGAQMHEEYM7MVVNTS,Значение поля стратум в NTP ответе полученном от NTP сервера 192.168.1.252:123 изменилось: 10 -> 1.,,"},
+			want: "",
+		}, // TODO: Add test cases.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -92,6 +96,11 @@ func TestEncodeLine(t *testing.T) {
 		want string
 	}{
 		// TODO: Add test cases.
+		{
+			name: "t3",
+			args: args{in0: "08092021224536920"},
+			want: "",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
