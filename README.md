@@ -19,6 +19,6 @@
 - [ ] storage xml coded
 - [x] read in storage
 - [ ] write in storage
-- [ ] UI from storage
+- [x] UI from storage
 - [x] one file bin
 
