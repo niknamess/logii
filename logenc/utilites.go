@@ -86,6 +86,8 @@ func DecodeLine(line string) string {
 			break
 		}
 	}
+	print("fuck")
+	print(data)
 	return string(data)
 }
 
