@@ -86,8 +86,9 @@ func DecodeLine(line string) string {
 			break
 		}
 	}
-	print("start")
+	print("start1")
 	print(string(data))
+	print("end1")
 	return string(data)
 }
 
@@ -113,12 +114,11 @@ func EncodeLine(line []byte) string {
 }
 
 func DecodeXML(line string) (LogList, error) {
-	//print("start")
-	//print(line)
+	print("start")
+
 	var v = LogList{}
 
 	err := xml.Unmarshal([]byte(line), &v)
-	//print("end")
 
 	return v, err
 }
