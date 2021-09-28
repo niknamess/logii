@@ -29,3 +29,75 @@ func Test_datestr2time(t *testing.T) {
 		})
 	}
 }
+
+func TestDecodeXML(t *testing.T) {
+	type args struct {
+		line string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    LogList
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := DecodeXML(tt.args.line)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("DecodeXML() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("DecodeXML() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEncodeXML(t *testing.T) {
+	type args struct {
+		line string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := EncodeXML(tt.args.line)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("EncodeXML() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("EncodeXML() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestEncodeLine(t *testing.T) {
+	type args struct {
+		line []byte
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := EncodeLine(tt.args.line); got != tt.want {
+				t.Errorf("EncodeLine() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

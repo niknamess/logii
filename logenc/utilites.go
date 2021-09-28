@@ -86,9 +86,29 @@ func DecodeLine(line string) string {
 			break
 		}
 	}
-	print("fuck")
-	print(data)
+
 	return string(data)
+}
+
+func EncodeLine(line []byte) string {
+	data := base64.StdEncoding.Strict().EncodeToString(line)
+	result := []byte(data)
+
+	if len(data) <= 0 {
+		return ""
+	}
+
+	k := 0
+	for {
+		//XOR with lines
+		result[k] ^= XOR_KEY
+		k++
+		if k >= len(data) {
+			break
+		}
+	}
+
+	return string(result)
 }
 
 func DecodeXML(line string) (LogList, error) {
@@ -99,6 +119,12 @@ func DecodeXML(line string) (LogList, error) {
 	return v, err
 }
 
+func EncodeXML(line string) (string, error) {
+
+	empData1, err := xml.Marshal([]byte(line))
+	empData2 := string(empData1)
+	return empData2, err
+}
 func datestr2time(str string) time.Time {
 	// format example: 08092021224536920  from xml
 	const shortForm = "02012006150405.000"
