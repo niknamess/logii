@@ -41,6 +41,11 @@ func TestDecodeXML(t *testing.T) {
 		wantErr bool
 	}{
 		// TODO: Add test cases.
+		{
+			name: "TestDecodeXML",
+			args: args{in0: '<loglist><log module_name="ProcessLivePanel" app_path="/usr/local/lemz/atcs/bin/processlivepanel" app_pid="2383" thread_id="140042514286464" time="19052021050634395" type="2" message="The &quot;text&quot; attribute is missed for the button with handle {0e5d6759-f878-42dd-9548-0db403f64b19}" ext_message="WARNING"/></loglist>'},
+			want: "",
+		}, 
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
