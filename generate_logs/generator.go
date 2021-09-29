@@ -58,7 +58,7 @@ func EncryptDecrypt(input []byte) (output string) {
 }
 
 func init() {
-	file, err := os.OpenFile("/home/nik/projects/logs/test/gen_logs1", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("./logtest/test/gen_logs1", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -80,7 +80,7 @@ func ProcGenN(dir string) {
 	XML_MESSAGE := "Состояние '[192.168.1.128] Cервер КС_UDP/Пинг'"
 	XML_DETAILS := "Context:  -- void tmcs::AbstractMonitor::"
 	address := "sajjsaj"
-	line := XML_APPNAME + XML_APPPATH + XML_APPPID + XML_THREAD + time1 + qtype + XML_ULID + XML_MESSAGE + XML_DETAILS + address
+	line := XML_APPNAME + XML_APPPATH + XML_APPPID + XML_THREAD + time1 + qtype + XML_ULID + XML_MESSAGE + XML_DETAILS + address + string(log.Ldate)
 	line1 := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
 
 	//file, err := os.OpenFile("/home/nik/projects/logs/r/gen_logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
@@ -103,22 +103,22 @@ func ProcGenN(dir string) {
 
 		timer1 := time.NewTimer(4 * time.Second)
 		//InfoLogger.Println("Starting the application...")
-		infof(line1)
+		infof(line)
 
 		<-timer1.C
 		i++
 
 		timer2 := time.NewTimer(2 * time.Second)
-		infof(line1)
+		infof(line)
 
 		<-timer2.C
 		i++
 		timer3 := time.NewTimer(2 * time.Second)
-		warnof(line1)
+		warnof(line)
 		<-timer3.C
 		i++
 		timer4 := time.NewTimer(2 * time.Second)
-		erorof(line)
+		erorof(line1)
 		<-timer4.C
 		i++
 	}

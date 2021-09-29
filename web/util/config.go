@@ -9,17 +9,15 @@ import (
 
 // Config - struct to hold the config
 type Config struct {
-	Dir       []string
-	ForceAuth bool
-	Whitelist map[string]bool
-	Cron      string
+	Dir  []string
+	Cron string
 }
 
 // Conf global config
 var Conf Config
 
 // ParseConfig - function to manage config
-func ParseConfig(dir []string, forceAuth bool, whitelist, cron string) error {
+func ParseConfig(dir []string, cron string, test string) error {
 	// Parse cron
 	// Rules for cron :
 	// the string should be of type [^0](\d*)(h|d) and the integer should be positive
