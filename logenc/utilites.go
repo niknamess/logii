@@ -66,7 +66,7 @@ func checkError(message string, err error) {
 }
 
 func DecodeLine(line string) string {
-	print("DecodeLine")
+	//print("DecodeLine")
 	data, err := base64.StdEncoding.DecodeString(line)
 
 	if err != nil {
@@ -96,7 +96,7 @@ func DecodeLine(line string) string {
 func EncodeLine(line string) string {
 	//data := base64.StdEncoding.Strict().EncodeToString([]byte(line))
 	//result := []byte(data)
-	print("EncodeLine")
+	//print("EncodeLine")
 	if len(line) <= 0 {
 		return ""
 	}
@@ -117,7 +117,7 @@ func EncodeLine(line string) string {
 }
 
 func DecodeXML(line string) (LogList, error) {
-	print("DecodeXML")
+	//print("DecodeXML")
 
 	var v = LogList{}
 
@@ -141,7 +141,7 @@ func EncodeCSV(val LogList) string {
 	writer := csv.NewWriter(buf)
 	for _, logstr := range val.XML_RECORD_ROOT {
 		//TIME
-		print("EncodeCSV")
+		//print("EncodeCSV")
 		t := datestr2time(logstr.XML_TIME)
 		//fmt.Println(logstr.XML_TIME, t, err)
 		//TYPE

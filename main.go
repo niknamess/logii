@@ -55,14 +55,14 @@ func main() {
 	}
 
 	if len(*flagWeb) > 0 {
-		//fmt.Println("fuck")
+		//	//fmt.Println("fuck")
 		web.ProcWeb(*flagWeb)
-		//generator.ProcGenN("g")
+		//	//generator.ProcGenN("g")
 		return
 	}
 
 	if len(*flagTest) > 0 {
-		//fmt.Println("fuck")
+		fmt.Println("fuck")
 		go web.ProcWeb(*flagTest)
 		generator.ProcGenN()
 
