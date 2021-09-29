@@ -68,7 +68,7 @@ func init() {
 
 }
 
-func ProcGenN(dir string) {
+func ProcGenN() {
 	i := 0
 	XML_APPNAME := "TMCS Monitor,"
 	XML_APPPATH := "/usr/local/Lemz/tmcs/monitor/tmcs_monitor,"

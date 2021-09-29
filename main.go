@@ -50,7 +50,7 @@ func main() {
 
 	if len(*flagGen) > 0 {
 
-		generator.ProcGenN(*flagGen)
+		generator.ProcGenN()
 		return
 	}
 
@@ -63,8 +63,9 @@ func main() {
 
 	if len(*flagTest) > 0 {
 		//fmt.Println("fuck")
-		generator.ProcGenN(*flagTest)
-		web.ProcWeb(*flagTest)
+		go web.ProcWeb(*flagTest)
+		generator.ProcGenN()
+
 		//generator.ProcGenN(*flagTest)
 		return
 	}
