@@ -25,7 +25,7 @@ var (
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
-func TailFile(conn *websocket.Conn, fileName string) {
+func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 
 	t, err := tail.TailFile(fileName,
 		tail.Config{
@@ -37,8 +37,14 @@ func TailFile(conn *websocket.Conn, fileName string) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 	}
+
 	for line := range t.Lines {
-		conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
+		contain := strings.Contains(logenc.ProcLine(line.Text), lookFor)
+		if contain == true {
+
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
+		}
+		//conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
 	}
 }
 

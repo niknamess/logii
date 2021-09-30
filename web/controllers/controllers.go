@@ -66,9 +66,20 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// This should take care of stacking of filenames as it would first
 	// be searched as a string in the index, if not found then rejected.
 	if ok {
-		go util.TailFile(conn, filename)
+		//go util.TailFile(conn, filename, search)
+		go Runw(conn, filename)
 	}
 	w.WriteHeader(http.StatusUnauthorized)
+}
+
+func Runw(conn *websocket.Conn, filename string) {
+	search := "32 "
+	http.HandleFunc("/searchproject", func(w http.ResponseWriter, r *http.Request) {
+		search = r.URL.Query().Get("search_string")
+		//fmt.Fprintf(w, "ПОИСК: %s", search)
+	})
+	util.TailFile(conn, filename, search)
+
 }
 
 // GetContext wraps each request in a function which fills in the context for a given request.
