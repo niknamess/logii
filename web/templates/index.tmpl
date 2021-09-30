@@ -3,11 +3,15 @@
   <head>
     <title>Logi2</title>
     <meta name="viewport" content="width=device-width initial-scale=1 user-scalable=no" >
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{ .csrfField }}">
+    <meta name="csrf_token" content="<<.csrfField>>">
     <meta name="csrf_token" content="<<.token>>">
     <link rel="stylesheet" href="/css/angular-material.min.css">
     <link rel="stylesheet" href="/css/fonts.css">
   </head>
   <body ng-app="logi2">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
     <div ng-controller="mainController as mc" layout="column" ng-cloak>
       <md-toolbar class="md-hue-2 md-whiteframe-z3">
         <div class="md-toolbar-tools">
@@ -41,6 +45,13 @@
             </md-select>
           </md-input-container>
         </md-content>
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <form method="POST" action="searchproject">
+            <<.csrfField>>
+            <label>Поиск</label><br>
+            <input type="text" name="search_string" value = "<<.csrfField>>"/><br><br>
+            <input type="submit" value="Отправить" />
+        </form>
         <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
           <!-- Content will be inserted by websocket connection -->
         </md-content>

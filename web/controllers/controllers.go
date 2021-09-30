@@ -74,10 +74,10 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 func Runw(conn *websocket.Conn, filename string) {
 	search := "32 "
-	http.HandleFunc("/searchproject", func(w http.ResponseWriter, r *http.Request) {
-		search = r.URL.Query().Get("search_string")
-		//fmt.Fprintf(w, "ПОИСК: %s", search)
-	})
+	//http.HandleFunc("/searchproject", func(w http.ResponseWriter, r *http.Request) {
+	//	search = r.URL.Query().Get("search_string")
+	//fmt.Fprintf(w, "ПОИСК: %s", search)
+	//})
 	util.TailFile(conn, filename, search)
 
 }

@@ -34,8 +34,23 @@ func ProcWeb(dir1 string) {
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler, controllers.GetContext)).Methods("GET")
 	router.HandleFunc("/", Use(controllers.RootHandler, controllers.GetContext)).Methods("GET")
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/static/")))
+	search := "32 "
+
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.tmpl")
+	})
+	router.HandleFunc("/searchproject", func(w http.ResponseWriter, r *http.Request) {
+		search = r.FormValue("search_string")
+		fmt.Fprintf(w, "Имя: %s ", search)
+		//fmt.Fprintf(w, "ПОИСК: %s", search)
+	})
+	//print("бляяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяя")
+	print(search)
+	//http.ListenAndServe(":8000", nil)
 
 	csrfHandler := csrf.Protect([]byte(util.GenerateSecureKey()),
+		//csrf.Path("/"),
+		//csrf.Secure(false))
 		csrf.Secure(false), csrf.CookieName("X-CSRF-Token"))
 
 	csrfRouter := Use(csrfHandler(router).ServeHTTP, controllers.CSRFExceptions)
