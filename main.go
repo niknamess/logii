@@ -27,38 +27,38 @@ func main() {
 	if len(*flagServ) > 0 {
 		fmt.Println("flagServ:", *flagServ)
 		RunRPC(*flagServ)
-		return
+		//return
 	}
 
 	if len(*flagFile) > 0 {
 
 		logenc.ProcFile(*flagFile)
-		return
+		//return
 	}
 
 	if len(*flagDir) > 0 {
 
 		logenc.ProcDir(*flagDir)
-		return
+		//return
 	}
 
 	if len(*flagWrite) > 0 {
 
 		logenc.ProcWrite(*flagWrite)
-		return
+		//return
 	}
 
 	if len(*flagGen) > 0 {
 
 		generator.ProcGenN()
-		return
+		//return
 	}
 
 	if len(*flagWeb) > 0 {
 		//	//fmt.Println("fuck")
 		web.ProcWeb(*flagWeb)
 		//	//generator.ProcGenN("g")
-		return
+		//return
 	}
 
 	if len(*flagTest) > 0 {
@@ -67,7 +67,7 @@ func main() {
 		generator.ProcGenN()
 
 		//generator.ProcGenN(*flagTest)
-		return
+		//return
 	}
 
 	if len(*flagSearch) > 0 {

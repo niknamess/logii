@@ -16,9 +16,11 @@
 - [ ] функция забывания. Возможность иметь представление по кол-вам сообщений по срезу времени за долгий период без детализаций
 
 # TODO
-- [ ] storage xml coded
+- [x] storage xml coded
 - [x] read in storage
 - [x] write in storage
 - [x] UI from storage
 - [x] one file bin
+- [ ] serch on web page
+
 
