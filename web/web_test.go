@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -10,12 +11,11 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
 func TestProcWeb(t *testing.T) {
 
-	port := 15000
+	port := 15001
 
 	router := mux.NewRouter()
 
@@ -25,7 +25,7 @@ func TestProcWeb(t *testing.T) {
 		//		http.ServeFile(w, r, "index.tmpl")
 	})
 
-	csrfRouter := Use((router).ServeHTTP, controllers.CSRFExceptions)
+	csrfRouter := Use((router).ServeHTTP)
 
 	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", port), Handler: handlers.CombinedLoggingHandler(os.Stdout, csrfRouter)}
 
@@ -82,9 +82,15 @@ func TestWebPost(t *testing.T) {
 		//		fmt.Println("/")
 		//		http.ServeFile(w, r, "index.tmpl")
 	})
+	router.HandleFunc("/testGet", func(w http.ResponseWriter, r *http.Request) {
+		t, _ := template.ParseFiles("index.html")
+		t.Execute(w, nil)
 
-	csrfRouter := Use((router).ServeHTTP, controllers.CSRFExceptions)
+		//		fmt.Println("/")
+		//		http.ServeFile(w, r, "index.tmpl")
+	})
 
+	csrfRouter := Use((router).ServeHTTP)
 	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", port), Handler: handlers.CombinedLoggingHandler(os.Stdout, csrfRouter)}
 
 	go func() {
@@ -99,7 +105,7 @@ func TestWebPost(t *testing.T) {
 	go func() {
 		<-time.NewTimer(500 * time.Millisecond).C
 
-		for _, s := range []string{"/", "/second"} {
+		for _, s := range []string{"/", "/second", "/testGet"} {
 			resp, err := http.Get(fmt.Sprintf("http://127.0.0.1:%d%s", port, s))
 			if err != nil {
 				t.Error(err.Error())

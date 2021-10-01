@@ -9,16 +9,17 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         $mdSidenav('left').toggle()
     }
 
+
+
     vm.init = function init() {
         console.log("In the main controller")
         $scope.showCard = true;
-        $http.get('user')
+        $http.get('searchproject')
             .then(function(result) {
-                $rootScope.username = result.data["username"]
-                $rootScope.isLoggedIn = result.data["isLoggedIn"]
-                console.log("is logged in :", result.data)
+                $rootScope.search_string = result.data["search_string"]
+                console.log("Search :", result.data)
             }, function(result) {
-                console.log("Failed to get the username")
+                console.log("Failed to get search")
             })
     }
 

@@ -7,9 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
-	ctx "github.com/gorilla/context"
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -73,46 +71,19 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func Runw(conn *websocket.Conn, filename string) {
-	search := "32 "
+	search := "32"
+	//http.HandleFunc("/searchproject",  func(w http.ResponseWriter, r *http.Request))
+	//search = r.URL.Query().Get("search_string")
+	//fs := http.FileServer(http.Dir(self.staticFs))
+	//mux := http.NewServeMux()
+	//mux.HandleFunc("/searchproject/", handleGet)
+	//http.HandleFunc("/searchproject", handleGet)
+
 	//http.HandleFunc("/searchproject", func(w http.ResponseWriter, r *http.Request) {
 	//	search = r.URL.Query().Get("search_string")
-	//fmt.Fprintf(w, "ПОИСК: %s", search)
+	//	fmt.Fprintf(w, "ПОИСК: %s", search)
 	//})
+
 	util.TailFile(conn, filename, search)
 
-}
-
-// GetContext wraps each request in a function which fills in the context for a given request.
-// This includes setting the User and Session keys and values as necessary for use in later functions.
-func GetContext(handler http.Handler) http.HandlerFunc {
-	// Set the context here
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Parse the request form
-		err := r.ParseForm()
-		if err != nil {
-			http.Error(w, "Error parsing request", http.StatusInternalServerError)
-		}
-		w.Header().Set("X-CSRF-Token", csrf.Token(r))
-		handler.ServeHTTP(w, r)
-		// Remove context contents
-		ctx.Clear(r)
-	}
-}
-
-// CSRFExemptPrefixes - list of endpoints that does not require csrf protction
-var CSRFExemptPrefixes = []string{
-	// "/user",
-}
-
-// CSRFExceptions - exempts ajax calls from csrf tokens
-func CSRFExceptions(handler http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		for _, prefix := range CSRFExemptPrefixes {
-			if strings.HasPrefix(r.URL.Path, prefix) {
-				r = csrf.UnsafeSkipCheck(r)
-				break
-			}
-		}
-		handler.ServeHTTP(w, r)
-	}
 }
