@@ -21,6 +21,6 @@
 - [x] write in storage
 - [x] UI from storage
 - [x] one file bin
-- [ ] serch on web page
+- [ ] serch on web page :tada:
 
 
