@@ -2,6 +2,7 @@ package util
 
 import (
 	"crypto/rand"
+	"fmt"
 
 	"io"
 
@@ -24,5 +25,5 @@ func GenerateSecureKey() string {
 	// Inspired from gorilla/securecookie
 	k := make([]byte, 32)
 	io.ReadFull(rand.Reader, k)
-	return "" /////////
+	return fmt.Sprintf("%x", k) /////////
 }

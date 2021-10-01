@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/alecthomas/kingpin"
-	"github.com/gorilla/csrf"
+	//"github.com/gorilla/csrf"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
@@ -20,6 +20,11 @@ var (
 	cron = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
 	cert = kingpin.Flag("Test", "Test").Short('c').Default("").String()
 )
+
+func searchHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("%+v\n", r)
+	fmt.Fprintln(w, "OK")
+}
 
 func ProcWeb(dir1 string) {
 	kingpin.Parse()
@@ -37,23 +42,15 @@ func ProcWeb(dir1 string) {
 	search := "32 "
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("/")
 		http.ServeFile(w, r, "index.tmpl")
 	})
-	router.HandleFunc("/searchproject", func(w http.ResponseWriter, r *http.Request) {
-		search = r.FormValue("search_string")
-		fmt.Fprintf(w, "Имя: %s ", search)
-		//fmt.Fprintf(w, "ПОИСК: %s", search)
-	})
-	//print("бляяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяяя")
+	router.HandleFunc("/searchproject", Use(searchHandler)).Methods("GET")
+
 	print(search)
 	//http.ListenAndServe(":8000", nil)
 
-	csrfHandler := csrf.Protect([]byte(util.GenerateSecureKey()),
-		//csrf.Path("/"),
-		//csrf.Secure(false))
-		csrf.Secure(false), csrf.CookieName("X-CSRF-Token"))
-
-	csrfRouter := Use(csrfHandler(router).ServeHTTP, controllers.CSRFExceptions)
+	csrfRouter := Use((router).ServeHTTP, controllers.CSRFExceptions)
 
 	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", *port), Handler: handlers.CombinedLoggingHandler(os.Stdout, csrfRouter)}
 	panic(server.ListenAndServe())
@@ -61,6 +58,7 @@ func ProcWeb(dir1 string) {
 
 // Use - Stacking middlewares
 func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) http.HandlerFunc {
+	fmt.Println("zzz")
 	for _, m := range mid {
 		handler = m(handler)
 	}

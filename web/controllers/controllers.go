@@ -31,7 +31,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-
+	fmt.Println("root_h")
 	var fileList = make(map[string]interface{})
 
 	fileList["FileList"] = util.Conf.Dir

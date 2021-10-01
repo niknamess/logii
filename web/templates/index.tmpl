@@ -25,12 +25,6 @@
             <div class="md-padding" layout="column">
               <h3 id="username">{{username}}</h3>
             </div>
-						<div ng-hide="!isLoggedIn" class="ng-hide">
-							<form action="/logout" method="POST" ng-hide="true" id="logoutForm">
-                <<.csrfField>>
-							</form>
-              <div class="md-padding" ng-click="logout()">logout</div>
-            </div>
           </section>
         </div>
       </md-toolbar>
@@ -46,10 +40,9 @@
           </md-input-container>
         </md-content>
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <form method="POST" action="searchproject">
-            <<.csrfField>>
+        <form action="searchproject" method="POST">
             <label>Поиск</label><br>
-            <input type="text" name="search_string" value = "<<.csrfField>>"/><br><br>
+            <input type="text" name="search_string" value = "67"/><br><br>
             <input type="submit" value="Отправить" />
         </form>
         <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
