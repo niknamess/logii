@@ -37,12 +37,13 @@
             </md-select>
           </md-input-container>
         </md-content>
-        <meta name="csrf-token" content="{{ csrf_token() }}">
         <iframe name="hiddenFrame" class="hide"></iframe>
         <form action="searchproject" method="GET" target="hiddenFrame">
             <label>Поиск</label><br>
             <input type="text" name="search_string" id="search_string" value = "67"/><br><br>
             <input type="submit" value="Отправить" />
+             <button  (click)="clickEvent()" >
+               Click Me</button>
         </form>
 
         <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">

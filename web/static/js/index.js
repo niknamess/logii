@@ -30,6 +30,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         console.log(file)
         $scope.showCard = false;
         // $scope.$apply()
+
         angular.element(document.querySelector("#filename")).html("File: " + file)
         var container = angular.element(document.querySelector("#container"))
         var ws;
@@ -37,6 +38,11 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("Your browser does not support WebSockets");
             return;
         } else {
+            it('should check ng-click', function() {
+                expect(element(by.binding('count')).getText()).toMatch('0');
+                element(by.css('button')).click();
+                expect(element(by.binding('count')).getText()).toMatch('1');
+            });
             ws = initWS(file);
         }
         vm.toggleSideNav()
