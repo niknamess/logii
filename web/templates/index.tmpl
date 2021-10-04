@@ -42,8 +42,10 @@
             <label>Поиск</label><br>
             <input type="text" name="search_string" id="search_string" value = "67"/><br><br>
             <input type="submit" value="Отправить" />
-             <button  (click)="clickEvent()" >
-               Click Me</button>
+            <button (click)=”handleClick($event)” type=”button”>Button</button> 
+            <button>Click</button>
+
+
         </form>
 
         <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">

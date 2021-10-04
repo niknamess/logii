@@ -1,6 +1,8 @@
 angular.module("logi2").controller("mainController", mainController);
 
 mainController.$inject = ["$rootScope", "$scope", "$mdSidenav", "$http"]
+const button = document.querySelector('button');
+
 
 function mainController($rootScope, $scope, $mdSidenav, $http) {
     var vm = this;
@@ -37,18 +39,24 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         if (window.WebSocket === undefined) {
             container.append("Your browser does not support WebSockets");
             return;
-        } else {
-            it('should check ng-click', function() {
-                expect(element(by.binding('count')).getText()).toMatch('0');
-                element(by.css('button')).click();
-                expect(element(by.binding('count')).getText()).toMatch('1');
-            });
-            ws = initWS(file);
         }
+
+        button.addEventListener('click', event => {
+            ws = initWS(file);
+        });
+        //else {
+
+        //  ws = initWS(file);
+
+        //}
         vm.toggleSideNav()
     }
 
+
+
+
     function initWS(file) {
+
         var ws_proto = "ws:"
         if (window.location.protocol === "https:") {
             ws_proto = "wss:"
