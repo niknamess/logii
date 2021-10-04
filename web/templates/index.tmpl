@@ -38,11 +38,13 @@
           </md-input-container>
         </md-content>
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <form action="searchproject" method="GET">
+        <iframe name="hiddenFrame" class="hide"></iframe>
+        <form action="searchproject" method="GET" target="hiddenFrame">
             <label>Поиск</label><br>
             <input type="text" name="search_string" id="search_string" value = "67"/><br><br>
             <input type="submit" value="Отправить" />
         </form>
+
         <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
           <!-- Content will be inserted by websocket connection -->
         </md-content>
@@ -108,5 +110,9 @@
     position: fixed !important;
     }
   </style>
+  <style>
+  .hide { position:absolute; top:-1px; left:-1px; width:1px; height:1px; }
+</style>
+  
 </html>
 << end >>
