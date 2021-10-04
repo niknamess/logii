@@ -19,6 +19,7 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
+	search = ","
 )
 
 // RootHandler - http handler for handling / path
@@ -40,6 +41,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 
 // WSHandler - Websocket handler
 func WSHandler(w http.ResponseWriter, r *http.Request) {
+	//search = r.URL.Query().Get("search_string")
 	conn, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -63,27 +65,15 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// This is to prevent arbitrary file access. Otherwise send a 403 status
 	// This should take care of stacking of filenames as it would first
 	// be searched as a string in the index, if not found then rejected.
+	//search = "0001GD3TH0Y1V8PBD2Z6DEY7PP"
 	if ok {
 		//go util.TailFile(conn, filename, search)
-		go Runw(conn, filename)
+		util.TailFile(conn, filename, search)
 	}
 	w.WriteHeader(http.StatusUnauthorized)
 }
 
-func Runw(conn *websocket.Conn, filename string) {
-	search := "32"
-	//http.HandleFunc("/searchproject",  func(w http.ResponseWriter, r *http.Request))
-	//search = r.URL.Query().Get("search_string")
-	//fs := http.FileServer(http.Dir(self.staticFs))
-	//mux := http.NewServeMux()
-	//mux.HandleFunc("/searchproject/", handleGet)
-	//http.HandleFunc("/searchproject", handleGet)
-
-	//http.HandleFunc("/searchproject", func(w http.ResponseWriter, r *http.Request) {
-	//	search = r.URL.Query().Get("search_string")
-	//	fmt.Fprintf(w, "ПОИСК: %s", search)
-	//})
-
-	util.TailFile(conn, filename, search)
+func SearchHandler(w http.ResponseWriter, r *http.Request) {
+	search = r.URL.Query().Get("search_string")
 
 }
