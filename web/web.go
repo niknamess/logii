@@ -35,7 +35,8 @@ func ProcWeb(dir1 string) {
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler)).Methods("GET")
 	router.HandleFunc("/", Use(controllers.RootHandler)).Methods("GET")
 	router.HandleFunc("/searchproject", searchHandler)
-	router.HandleFunc("/", Use(controllers.RootHandler)).Methods("GET")
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/static")))
+	//router.HandleFunc("/", Use(controllers.RootHandler)).Methods("GET")
 	//search := "32 "
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
