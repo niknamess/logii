@@ -2,6 +2,8 @@ angular.module("logi2").controller("mainController", mainController);
 
 mainController.$inject = ["$rootScope", "$scope", "$mdSidenav", "$http"]
 const button = document.querySelector('button');
+const input = document.querySelector('input');
+
 
 
 function mainController($rootScope, $scope, $mdSidenav, $http) {
@@ -41,19 +43,29 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             return;
         }
 
-        button.addEventListener('click', event => {
-            ws = initWS(file);
-        });
-        //else {
+        input.addEventListener('click', event => {
+                ws = initWS(file);
+            }),
 
-        //  ws = initWS(file);
 
-        //}
+            input.addEventListener('change', event => {
+                ws = initWS(file);
+            }),
+            //else {
+
+            //  ws = initWS(file);
+
+            //}
+            input.addEventListener('input', event => {
+                ws = initWS(file);
+            });
         vm.toggleSideNav()
     }
 
 
-
+    function updateValue() {
+        ws = initWS(file);
+    }
 
     function initWS(file) {
 
