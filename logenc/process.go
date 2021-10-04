@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/blevesearch/bleve/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -148,4 +149,61 @@ func procFileWrite(file string) {
 func Promrun() {
 	http.Handle("/metrics", promhttp.Handler())
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func ProcBleve(dir string) {
+
+	mapping := bleve.NewIndexMapping()
+	index, err := bleve.New("example.bleve", mapping)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	data := struct {
+		Name string
+	}{
+		Name: "text",
+	}
+
+	// index some data
+	index.Index("id", data)
+
+	// index some data
+	index.Index("id", data)
+
+	// search for some text
+	query := bleve.NewMatchQuery("text")
+	search := bleve.NewSearchRequest(query)
+	searchResults, err := index.Search(search)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(searchResults)
+}
+
+func ProcFileBreve(file string) string {
+	ch := make(chan string, 100)
+	log.Println("1")
+	for i := runtime.NumCPU() + 1; i > 0; i-- {
+		go func() {
+			for {
+				select {
+				case line := <-ch:
+
+					ProcLine(line)
+				}
+			}
+
+		}()
+	}
+	data := "1"
+	err := ReadLines(file, func(line string) {
+		ch <- line
+	})
+	if err != nil {
+		log.Fatalf("ReadLines: %s", err)
+	}
+	return data
 }

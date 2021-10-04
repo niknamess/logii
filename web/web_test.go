@@ -20,7 +20,7 @@ func TestProcWeb(t *testing.T) {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("fuck!"))
+		w.Write([]byte("Yeah!"))
 		//		fmt.Println("/")
 		//		http.ServeFile(w, r, "index.tmpl")
 	})
@@ -72,13 +72,13 @@ func TestWebPost(t *testing.T) {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("fuck!"))
+		w.Write([]byte("Yeah!"))
 		//		fmt.Println("/")
 		//		http.ServeFile(w, r, "index.tmpl")
 	})
 
 	router.HandleFunc("/second", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("second fuck!"))
+		w.Write([]byte("second yhu!"))
 		//		fmt.Println("/")
 		//		http.ServeFile(w, r, "index.tmpl")
 	})

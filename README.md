@@ -21,6 +21,9 @@
 - [x] write in storage
 - [x] UI from storage
 - [x] one file bin
-- [ ] serch on web page :tada:
+- [x] serch on web page :tada:
+- [ ] serch on web page one button :tada:
+- [ ] add indexing on bleve :tada:
+
 
 
