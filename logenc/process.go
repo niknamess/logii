@@ -203,14 +203,14 @@ func ProcFileBreve(file string) {
 		log.Fatalf("ReadLines: %s", err)
 	}
 	// search for some text
-	query := bleve.NewMatchQuery("Service")
-	search := bleve.NewSearchRequest(query)
-	searchResults, err := index.Search(search)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(searchResults)
+	//query := bleve.NewMatchQuery("Service")
+	//search := bleve.NewSearchRequest(query)
+	//searchResults, err := index.Search(search)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//fmt.Println(searchResults)
 }
 
 func ProcBleveSearch(dir string) {
