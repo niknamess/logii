@@ -151,32 +151,6 @@ func Promrun() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func ProcBleve(dir string) {
-
-	//mapping := bleve.NewIndexMapping()
-	index, err := bleve.Open("example.bleve")
-	//index, err := bleve.New("example.bleve", mapping)
-	//index, _ = bleve.Open("example.bleve")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	data := ProcFileBreve(dir)
-
-	// index some data
-	index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
-
-	// search for some text
-	query := bleve.NewMatchQuery("Service")
-	search := bleve.NewSearchRequest(query)
-	searchResults, err := index.Search(search)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(searchResults)
-}
-
 func ProcLineBleve(line string) (val LogList) {
 
 	if len(line) == 0 {
@@ -193,29 +167,50 @@ func ProcLineBleve(line string) (val LogList) {
 	return val
 }
 
-func ProcFileBreve(file string) (data LogList) {
+func ProcFileBreve(file string) {
+
+	//mapping := bleve.NewIndexMapping()
+	index, err := bleve.Open("example.bleve")
+	//index, err := bleve.New("example.bleve", mapping)
+	//index, _ = bleve.Open("example.bleve")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	//data := ProcFileBreve(dir)
+
+	// index some dat
+	//index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+	// search for some text
 	ch := make(chan string, 100)
-	log.Println("1")
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
 				select {
 				case line := <-ch:
-
-					data = ProcLineBleve(line)
+					data := ProcLineBleve(line)
+					index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
 				}
 			}
 
 		}()
 	}
 
-	err := ReadLines(file, func(line string) {
+	err = ReadLines(file, func(line string) {
 		ch <- line
 	})
 	if err != nil {
 		log.Fatalf("ReadLines: %s", err)
 	}
-	return data
+	// search for some text
+	query := bleve.NewMatchQuery("Service")
+	search := bleve.NewSearchRequest(query)
+	searchResults, err := index.Search(search)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(searchResults)
 }
 
 func ProcBleveSearch(dir string) {

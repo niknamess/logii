@@ -75,7 +75,7 @@ func main() {
 	//return
 	if len(*flagBleve) > 0 {
 
-		logenc.ProcBleve(*flagBleve)
+		logenc.ProcFileBreve(*flagBleve)
 
 	}
 	if len(*flagBleveSearch) > 0 {
