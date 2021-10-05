@@ -99,7 +99,7 @@ func ProcGenN() {
 
 	for true {
 		rand.Seed(time.Now().UnixNano())
-		print("it's work ea")
+		//print("it's work ea")
 
 		timer1 := time.NewTimer(4 * time.Second)
 		//InfoLogger.Println("Starting the application...")

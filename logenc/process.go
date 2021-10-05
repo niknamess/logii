@@ -2,6 +2,7 @@ package logenc
 
 import (
 	"fmt"
+	//"go/printer"
 	"log"
 	"net/http"
 	"os"
@@ -153,8 +154,10 @@ func Promrun() {
 
 func ProcBleve(dir string) {
 
-	mapping := bleve.NewIndexMapping()
-	index, err := bleve.New("example.bleve", mapping)
+	//mapping := bleve.NewIndexMapping()
+	index, err := bleve.Open("example.bleve")
+	//index, err := bleve.New("example.bleve", mapping)
+	//index, _ = bleve.Open("example.bleve")
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -162,13 +165,12 @@ func ProcBleve(dir string) {
 	data := ProcFileBreve(dir)
 
 	// index some data
-	index.Index("id", data)
-
-	// index some data
-	index.Index("id", data)
-
+	for _, i := range data.XML_RECORD_ROOT {
+		index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+		println(i)
+	}
 	// search for some text
-	query := bleve.NewMatchQuery("text")
+	query := bleve.NewMatchQuery("Service")
 	search := bleve.NewSearchRequest(query)
 	searchResults, err := index.Search(search)
 	if err != nil {
@@ -194,27 +196,38 @@ func ProcLineBleve(line string) (val LogList) {
 	return val
 }
 
-func ProcFileBreve(file string) (data LogList) {
+func ProcFileBreve(file string) (data1 LogList) {
+	var data LogList
 	ch := make(chan string, 100)
-	log.Println("1")
+
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
 				select {
 				case line := <-ch:
-
 					data = ProcLineBleve(line)
+
 				}
 			}
 
 		}()
 	}
 
-	err := ReadLines(file, func(line string) {
-		ch <- line
-	})
-	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
-	}
 	return data
+}
+
+func ProcBleveSearch(dir string) {
+	index, err := bleve.Open("example.bleve")
+	//index, err := bleve.New("example.bleve", mapping)
+	//index, _ = bleve.Open("example.bleve")
+
+	// search for some text
+	query := bleve.NewMatchQuery("0001GD41BQJ9HBFXMA2QT47H04")
+	search := bleve.NewSearchRequest(query)
+	searchResults, err := index.Search(search)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(searchResults)
 }

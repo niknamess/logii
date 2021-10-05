@@ -11,6 +11,17 @@ import (
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 )
 
+//var flagFile = flag.String("f", "./logtest/test/22-06-2021", "parse log file")
+//var flagDir = flag.String("d", "./logtest/test/", "parse dir")
+//var flagSearch = flag.String("s", "", "search")
+//var flagServ = flag.String("z", "", "server")
+//var flagWrite = flag.String("w", "./logtest/test/22-06-2021", "write_logs")
+//var flagGen = flag.String("g", "", "generate_logs")
+//var flagWeb = flag.String("p", "15000", "web_interface")
+//var flagTest = flag.String("c", "15000", "web_interface and generate log")
+//var flagBleve = flag.String("b", "./logtest/test/22-06-2021", "Bleve on bleve file")
+//var flagBleveSearch = flag.String("bs", "", "Bleve")
+
 func main() {
 	flagFile := flag.String("f", "", "parse log file")
 	flagDir := flag.String("d", "", "parse dir")
@@ -18,9 +29,10 @@ func main() {
 	flagServ := flag.String("z", "", "server")
 	flagWrite := flag.String("w", "", "write_logs")
 	flagGen := flag.String("g", "", "generate_logs")
-	flagWeb := flag.String("p", "", "web_interface")
-	flagTest := flag.String("c", "", "web_interface and generate log")
-	flagBleve := flag.String("b", "", "Bleve")
+	flagWeb := flag.String("p", "15000", "web_interface")
+	flagTest := flag.String("c", "15000", "web_interface and generate log")
+	flagBleve := flag.String("b", "", "Bleve on bleve file")
+	flagBleveSearch := flag.String("k", "", "Bleve search")
 	flag.Parse()
 
 	go logenc.Promrun()
@@ -34,6 +46,7 @@ func main() {
 	if len(*flagFile) > 0 {
 
 		logenc.ProcFile(*flagFile)
+		//logenc.ProcBleveSearch(*flagBleveSearch)
 		//return
 	}
 
@@ -46,6 +59,7 @@ func main() {
 	if len(*flagWrite) > 0 {
 
 		logenc.ProcWrite(*flagWrite)
+
 		//return
 	}
 
@@ -55,20 +69,23 @@ func main() {
 		//return
 	}
 
-	if len(*flagWeb) > 0 {
+	if len(*flagGen) > 0 {
 		web.ProcWeb(*flagWeb)
-		//return
 	}
-
-	if len(*flagTest) > 0 {
-		go web.ProcWeb(*flagTest)
-		generator.ProcGenN()
-	}
-
+	//return
 	if len(*flagBleve) > 0 {
 
 		logenc.ProcBleve(*flagBleve)
 
+	}
+	if len(*flagBleveSearch) > 0 {
+
+		logenc.ProcBleveSearch(*flagBleveSearch)
+
+	}
+	if len(*flagTest) > 0 {
+		//go web.ProcWeb(*flagTest)
+		generator.ProcGenN()
 	}
 
 	if len(*flagSearch) > 0 {
