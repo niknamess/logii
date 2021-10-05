@@ -2,7 +2,6 @@ package logenc
 
 import (
 	"fmt"
-	//"go/printer"
 	"log"
 	"net/http"
 	"os"
@@ -165,10 +164,8 @@ func ProcBleve(dir string) {
 	data := ProcFileBreve(dir)
 
 	// index some data
-	for _, i := range data.XML_RECORD_ROOT {
-		index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
-		println(i)
-	}
+	index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+
 	// search for some text
 	query := bleve.NewMatchQuery("Service")
 	search := bleve.NewSearchRequest(query)
@@ -196,23 +193,28 @@ func ProcLineBleve(line string) (val LogList) {
 	return val
 }
 
-func ProcFileBreve(file string) (data1 LogList) {
-	var data LogList
+func ProcFileBreve(file string) (data LogList) {
 	ch := make(chan string, 100)
-
+	log.Println("1")
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
 				select {
 				case line := <-ch:
-					data = ProcLineBleve(line)
 
+					data = ProcLineBleve(line)
 				}
 			}
 
 		}()
 	}
 
+	err := ReadLines(file, func(line string) {
+		ch <- line
+	})
+	if err != nil {
+		log.Fatalf("ReadLines: %s", err)
+	}
 	return data
 }
 
