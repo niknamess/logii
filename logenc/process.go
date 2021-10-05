@@ -168,7 +168,7 @@ func ProcLineBleve(line string) (val LogList) {
 }
 
 func ProcFileBreve(file string) {
-
+	var data LogList
 	metaname := "example.bleve"
 	index, err := bleve.Open(metaname)
 	if err != nil {
@@ -180,10 +180,7 @@ func ProcFileBreve(file string) {
 		fmt.Println(err)
 		return
 	}
-	//data := ProcFileBreve(dir)
 
-	// index some dat
-	//index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
 	// search for some text
 	ch := make(chan string, 100)
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
@@ -191,8 +188,9 @@ func ProcFileBreve(file string) {
 			for {
 				select {
 				case line := <-ch:
-					data := ProcLineBleve(line)
-					//fmt.Println(len(data.XML_RECORD_ROOT))
+					data = ProcLineBleve(line)
+					fmt.Println((data.XML_RECORD_ROOT))
+					fmt.Println(len(data.XML_RECORD_ROOT))
 					if len(data.XML_RECORD_ROOT) > 0 {
 						index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
 					}
@@ -208,24 +206,17 @@ func ProcFileBreve(file string) {
 	if err != nil {
 		log.Fatalf("ReadLines: %s", err)
 	}
-	// search for some text
-	//query := bleve.NewMatchQuery("Service")
-	//search := bleve.NewSearchRequest(query)
-	//searchResults, err := index.Search(search)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//fmt.Println(searchResults)
+	//println("done000000000000000000000000000000000000000000000000")
+
 }
 
-func ProcBleveSearch(dir string) {
+func ProcBleveSearch(key string) {
 	index, err := bleve.Open("example.bleve")
 	//index, err := bleve.New("example.bleve", mapping)
 	//index, _ = bleve.Open("example.bleve")
 
 	// search for some text
-	query := bleve.NewMatchQuery("0001GD41BQJ9HBFXMA2QT47H04")
+	query := bleve.NewMatchQuery("key")
 	search := bleve.NewSearchRequest(query)
 	searchResults, err := index.Search(search)
 	if err != nil {

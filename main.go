@@ -41,6 +41,7 @@ func main() {
 		fmt.Println("flagServ:", *flagServ)
 		RunRPC(*flagServ)
 		//return
+		return
 	}
 
 	if len(*flagFile) > 0 {
@@ -48,18 +49,20 @@ func main() {
 		logenc.ProcFile(*flagFile)
 		//logenc.ProcBleveSearch(*flagBleveSearch)
 		//return
+		return
 	}
 
 	if len(*flagDir) > 0 {
 
 		logenc.ProcDir(*flagDir)
 		//return
+		return
 	}
 
 	if len(*flagWrite) > 0 {
 
 		logenc.ProcWrite(*flagWrite)
-
+		return
 		//return
 	}
 
@@ -67,25 +70,28 @@ func main() {
 
 		generator.ProcGenN()
 		//return
+		return
 	}
 
-	if len(*flagGen) > 0 {
+	if len(*flagWeb) > 0 {
 		web.ProcWeb(*flagWeb)
+		return
 	}
-	//return
+
 	if len(*flagBleve) > 0 {
 
 		logenc.ProcFileBreve(*flagBleve)
-
+		return
 	}
 	if len(*flagBleveSearch) > 0 {
 
 		logenc.ProcBleveSearch(*flagBleveSearch)
-
+		return
 	}
 	if len(*flagTest) > 0 {
 		//go web.ProcWeb(*flagTest)
 		generator.ProcGenN()
+		return
 	}
 
 	if len(*flagSearch) > 0 {
