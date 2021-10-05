@@ -29,8 +29,8 @@ func main() {
 	flagServ := flag.String("z", "", "server")
 	flagWrite := flag.String("w", "", "write_logs")
 	flagGen := flag.String("g", "", "generate_logs")
-	flagWeb := flag.String("p", "15000", "web_interface")
-	flagTest := flag.String("c", "15000", "web_interface and generate log")
+	flagWeb := flag.String("p", "", "web_interface")
+	flagTest := flag.String("c", "", "web_interface and generate log")
 	flagBleve := flag.String("b", "", "Bleve on bleve file")
 	flagBleveSearch := flag.String("k", "", "Bleve search")
 	flag.Parse()
@@ -40,58 +40,48 @@ func main() {
 	if len(*flagServ) > 0 {
 		fmt.Println("flagServ:", *flagServ)
 		RunRPC(*flagServ)
-		//return
-		return
+
 	}
 
 	if len(*flagFile) > 0 {
 
 		logenc.ProcFile(*flagFile)
 		//logenc.ProcBleveSearch(*flagBleveSearch)
-		//return
-		return
 	}
 
 	if len(*flagDir) > 0 {
 
 		logenc.ProcDir(*flagDir)
-		//return
-		return
 	}
 
 	if len(*flagWrite) > 0 {
 
 		logenc.ProcWrite(*flagWrite)
-		return
-		//return
 	}
 
 	if len(*flagGen) > 0 {
 
 		generator.ProcGenN()
-		//return
-		return
 	}
 
 	if len(*flagWeb) > 0 {
 		web.ProcWeb(*flagWeb)
-		return
 	}
 
 	if len(*flagBleve) > 0 {
 
 		logenc.ProcFileBreve(*flagBleve)
-		return
+
 	}
 	if len(*flagBleveSearch) > 0 {
 
 		logenc.ProcBleveSearch(*flagBleveSearch)
-		return
+
 	}
 	if len(*flagTest) > 0 {
-		//go web.ProcWeb(*flagTest)
+
 		generator.ProcGenN()
-		return
+
 	}
 
 	if len(*flagSearch) > 0 {

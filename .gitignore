@@ -4,5 +4,6 @@ logi2
 *.vscode
 ~/.logi2
 *.bleve
+logtest/
 
 

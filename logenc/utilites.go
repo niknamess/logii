@@ -52,8 +52,14 @@ func ReadLines(path string, fn func(line string)) error {
 	}
 	defer file.Close()
 
+	fmt.Println("path:" + path)
+
 	scanner := bufio.NewScanner(file)
+
+	//c := 0
 	for scanner.Scan() {
+		//c++
+		//println(c)
 		fn(scanner.Text())
 	}
 	return scanner.Err()
