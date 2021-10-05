@@ -159,12 +159,7 @@ func ProcBleve(dir string) {
 		fmt.Println(err)
 		return
 	}
-
-	data := struct {
-		Name string
-	}{
-		Name: "text",
-	}
+	data := ProcFileBreve(dir)
 
 	// index some data
 	index.Index("id", data)
@@ -183,7 +178,23 @@ func ProcBleve(dir string) {
 	fmt.Println(searchResults)
 }
 
-func ProcFileBreve(file string) string {
+func ProcLineBleve(line string) (val LogList) {
+
+	if len(line) == 0 {
+
+		return
+	}
+	xmlline := DecodeLine(line)
+	val, err := DecodeXML(xmlline)
+	if err != nil {
+
+		return
+	}
+
+	return val
+}
+
+func ProcFileBreve(file string) (data LogList) {
 	ch := make(chan string, 100)
 	log.Println("1")
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
@@ -192,13 +203,13 @@ func ProcFileBreve(file string) string {
 				select {
 				case line := <-ch:
 
-					ProcLine(line)
+					data = ProcLineBleve(line)
 				}
 			}
 
 		}()
 	}
-	data := "1"
+
 	err := ReadLines(file, func(line string) {
 		ch <- line
 	})

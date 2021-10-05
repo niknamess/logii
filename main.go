@@ -19,7 +19,8 @@ func main() {
 	flagWrite := flag.String("w", "", "write_logs")
 	flagGen := flag.String("g", "", "generate_logs")
 	flagWeb := flag.String("p", "", "web_interface")
-	flagTest := flag.String("c", "", "web_interface")
+	flagTest := flag.String("c", "", "web_interface and generate log")
+	flagBleve := flag.String("b", "", "Bleve")
 	flag.Parse()
 
 	go logenc.Promrun()
@@ -55,19 +56,19 @@ func main() {
 	}
 
 	if len(*flagWeb) > 0 {
-		//	//fmt.Println("fuck")
 		web.ProcWeb(*flagWeb)
-		//	//generator.ProcGenN("g")
 		//return
 	}
 
 	if len(*flagTest) > 0 {
-		fmt.Println("fuck")
 		go web.ProcWeb(*flagTest)
 		generator.ProcGenN()
+	}
 
-		//generator.ProcGenN(*flagTest)
-		//return
+	if len(*flagBleve) > 0 {
+
+		logenc.ProcBleve(*flagBleve)
+
 	}
 
 	if len(*flagSearch) > 0 {
