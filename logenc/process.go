@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -145,6 +146,7 @@ func procFileWrite(file string) {
 	if err != nil {
 		log.Fatalf("ReadLines: %s", err)
 	}
+	close(ch)
 }
 
 func Promrun() {
@@ -170,7 +172,7 @@ func ProcLineBleve(line string) (val LogList) {
 
 func ProcFileBreve(file string) {
 	var wg sync.WaitGroup
-	//var c = 0
+	var counter int32 = 0
 	var data LogList
 	metaname := "example.bleve"
 	index, err := bleve.Open(metaname)
@@ -186,18 +188,24 @@ func ProcFileBreve(file string) {
 
 	// search for some text
 	ch := make(chan string, 100)
-	wg.Add(1)
+
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
+			wg.Add(1)
+			defer wg.Done()
 
+		brloop:
 			for {
 				select {
-				case line := <-ch:
+				case line, ok := <-ch:
+					if !ok {
+						break brloop
+					}
 					data = ProcLineBleve(line)
 					//fmt.Println((data.XML_RECORD_ROOT))
 					//fmt.Println(len(data.XML_RECORD_ROOT))
-					//c++
-					//println(c)
+					atomic.AddInt32(&counter, 1)
+					println(counter)
 					if len(data.XML_RECORD_ROOT) > 0 {
 						index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
 					}
@@ -207,28 +215,22 @@ func ProcFileBreve(file string) {
 		}()
 
 	}
-	wg.Add(1)
 
 	err = ReadLines(file, func(line string) {
 		ch <- line
 	})
-	//wg.Done()
 	if err != nil {
 		log.Fatalf("ReadLines: %s", err)
 	}
+	close(ch)
 	wg.Wait()
-	//wg.Done()
-
 }
 
 func ProcBleveSearch(dir string) {
 	index, err := bleve.Open("example.bleve")
-	//index, err := bleve.New("example.bleve", mapping)
-	//index, _ = bleve.Open("example.bleve")
-
-	// search for some text
 	//query := bleve.NewMatchQuery("0001GD2DVH34EV686NP4W3BHX7")
-	query := bleve.NewMatchQuery(dir)
+	query := bleve.NewTermQuery(dir)
+
 	search := bleve.NewSearchRequest(query)
 	searchResults, err := index.Search(search)
 	if err != nil {
