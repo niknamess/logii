@@ -3,5 +3,6 @@ logi2
 *.json
 *.vscode
 ~/.logi2
+*.bleve
 
 
