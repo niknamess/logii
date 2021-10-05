@@ -169,10 +169,13 @@ func ProcLineBleve(line string) (val LogList) {
 
 func ProcFileBreve(file string) {
 
-	//mapping := bleve.NewIndexMapping()
-	index, err := bleve.Open("example.bleve")
-	//index, err := bleve.New("example.bleve", mapping)
-	//index, _ = bleve.Open("example.bleve")
+	metaname := "example.bleve"
+	index, err := bleve.Open(metaname)
+	if err != nil {
+		mapping := bleve.NewIndexMapping()
+		index, err = bleve.New(metaname, mapping)
+	}
+
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -189,7 +192,10 @@ func ProcFileBreve(file string) {
 				select {
 				case line := <-ch:
 					data := ProcLineBleve(line)
-					index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+					//fmt.Println(len(data.XML_RECORD_ROOT))
+					if len(data.XML_RECORD_ROOT) > 0 {
+						index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+					}
 				}
 			}
 
