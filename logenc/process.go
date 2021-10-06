@@ -248,7 +248,7 @@ func ProcBleveSearch(dir string) []string {
 		id := val.ID
 		docs = append(docs, id)
 	}
-	fmt.Println(docs[0])
+	//fmt.Println(docs[0])
 	//fmt.Println(docs)
 	//result := strings.Join(docs, " ")
 	//fmt.Println(result)

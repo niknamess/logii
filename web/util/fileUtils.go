@@ -19,16 +19,19 @@ var (
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap = make(map[string]bool)
+	indexMap     = make(map[string]bool)
+	i        int = 0
+	lookFor  string
 )
 
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
 func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
-	var UlidC []string
-	Teststr := "NTP"
-	t, err := tail.TailFile(fileName,
+	//UlidC []string
+	UlidC := logenc.ProcBleveSearch(lookFor)
+
+	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
 			Location: &tail.SeekInfo{
@@ -37,19 +40,35 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 		})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
+		return
 	}
-	UlidC = logenc.ProcBleveSearch(Teststr)
-	for line := range t.Lines {
+	//Teststr = lookFor
+	//UlidC = logenc.ProcBleveSearch(lookFor)
+	//Teststr = lookFor
+	if len(UlidC) == 0 {
+		print("Break")
+		return
+	}
+	for line := range taillog.Lines {
 
-		contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[0])
-		if contain == true {
+		for i := 0; i < len(UlidC); i++ {
 
-			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
+			contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
+			//fmt.Println(UlidC[i])
+
+			if contain == true {
+
+				conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
+				//fmt.Println(logenc.ProcLine(line.Text))
+				//fmt.Println(UlidC[i])
+			}
 		}
+
 	}
+
 	//conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcBleveSearch(line.Text)))
 
-	Teststr = lookFor
+	//Teststr = lookFor
 	//UlidC = logenc.ProcBleveSearch(Teststr)
 	fmt.Println(UlidC)
 }
