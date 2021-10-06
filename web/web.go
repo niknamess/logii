@@ -42,7 +42,7 @@ func ProcWeb(dir1 string) {
 	//search := "32 "
 
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("/")
+		//fmt.Println("/")
 		http.ServeFile(w, r, "index.tmpl")
 	})
 
@@ -53,7 +53,7 @@ func ProcWeb(dir1 string) {
 
 // Use - Stacking middlewares
 func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) http.HandlerFunc {
-	fmt.Println("zzz")
+	//fmt.Println("zzz")
 	for _, m := range mid {
 		handler = m(handler)
 	}

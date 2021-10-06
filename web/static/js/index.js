@@ -31,7 +31,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     $scope.currSize = vm.fontSize[2];
 
     $scope.open_connection = function(file) {
-        console.log(file)
+        // console.log(file)
         $scope.showCard = false;
         // $scope.$apply()
 

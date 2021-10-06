@@ -26,7 +26,8 @@ var (
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
 func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
-
+	var UlidC []string
+	Teststr := "NTP"
 	t, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
@@ -37,15 +38,20 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 	}
-
+	UlidC = logenc.ProcBleveSearch(Teststr)
 	for line := range t.Lines {
-		contain := strings.Contains(logenc.ProcLine(line.Text), lookFor)
+
+		contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
 		if contain == true {
 
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
 		}
-		//conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
 	}
+	//conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcBleveSearch(line.Text)))
+
+	Teststr = lookFor
+	//UlidC = logenc.ProcBleveSearch(Teststr)
+	fmt.Println(UlidC)
 }
 
 // IndexFiles - takes argument as a list of files and directories and returns
@@ -72,7 +78,7 @@ func IndexFiles(fileList []string) error {
 			delete(indexMap, k)
 			continue
 		}
-		fmt.Fprintln(os.Stderr, k)
+		//fmt.Fprintln(os.Stderr, k)
 		FileList = append(FileList, k)
 	}
 	Conf.Dir = FileList

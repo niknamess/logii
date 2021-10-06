@@ -11,7 +11,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/blevesearch/bleve/v2"
+	"github.com/blevesearch/bleve"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -226,28 +226,33 @@ func ProcFileBreve(file string) {
 	wg.Wait()
 }
 
-//func ProcBleveSearch(dir string) {
-func ProcBleveSearch(dir string) (searchRes string) {
+func ProcBleveSearch(dir string) []string {
 
 	index, _ := bleve.Open("example.bleve")
 	//query := bleve.NewFuzzyQuery(dir)
 	query := bleve.NewMatchQuery(dir)
 	query.Fuzziness = 1
-	searchRequest := bleve.NewSearchRequest(query)
+	mq := bleve.NewMatchPhraseQuery(dir)
+	rq := bleve.NewRegexpQuery(dir)
+	q := bleve.NewDisjunctionQuery(query, mq, rq)
+
+	searchRequest := bleve.NewSearchRequest(q)
+	searchRequest.Size = 1000000000000000000
+
 	searchResult, _ := index.Search(searchRequest)
+	searchRequest.Fields = []string{"XML_RECORD_ROOT"}
 
-	//query := bleve.NewMatchQuery("0001GD2DVH34EV686NP4W3BHX7")
-	//query := bleve.NewTermQuery(dir)
+	docs := make([]string, 0)
 
-	//search := bleve.NewSearchRequest(query)
-	//searchResults, err := index.Search(search)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	fmt.Println(searchResult)
-	//for i := 0; i < 125; i++ {
-	searchResult.Hits[0].ID = searchRes
-	//}
-	return searchRes
+	for _, val := range searchResult.Hits {
+		id := val.ID
+		docs = append(docs, id)
+	}
+	fmt.Println(docs[0])
+	fmt.Println(docs)
+	result := strings.Join(docs, " ")
+	fmt.Println(result)
+
+	return docs
+
 }

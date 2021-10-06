@@ -2,10 +2,8 @@ package controllers
 
 import (
 	"encoding/base64"
-	"fmt"
 	"html/template"
 	"net/http"
-	"os"
 	"path/filepath"
 
 	"github.com/gorilla/csrf"
@@ -30,7 +28,7 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("root_h")
+	//fmt.Println("root_h")
 	var fileList = make(map[string]interface{})
 
 	fileList["FileList"] = util.Conf.Dir
@@ -44,13 +42,16 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	//search = r.URL.Query().Get("search_string")
 	conn, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
+		//fmt.Fprintln(os.Stderr, err)
 		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
 		return
 	}
 
 	filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
+	//ProcFileBreve(filename)
+
 	filename := string(filenameB)
+	//logenc.ProcFileBreve(filename)
 	// sanitize the file if it is present in the index or not.
 	filename = filepath.Clean(filename)
 	ok := false
