@@ -226,16 +226,28 @@ func ProcFileBreve(file string) {
 	wg.Wait()
 }
 
-func ProcBleveSearch(dir string) {
-	index, err := bleve.Open("example.bleve")
-	//query := bleve.NewMatchQuery("0001GD2DVH34EV686NP4W3BHX7")
-	query := bleve.NewTermQuery(dir)
+//func ProcBleveSearch(dir string) {
+func ProcBleveSearch(dir string) (searchRes string) {
 
-	search := bleve.NewSearchRequest(query)
-	searchResults, err := index.Search(search)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(searchResults)
+	index, _ := bleve.Open("example.bleve")
+	//query := bleve.NewFuzzyQuery(dir)
+	query := bleve.NewMatchQuery(dir)
+	query.Fuzziness = 1
+	searchRequest := bleve.NewSearchRequest(query)
+	searchResult, _ := index.Search(searchRequest)
+
+	//query := bleve.NewMatchQuery("0001GD2DVH34EV686NP4W3BHX7")
+	//query := bleve.NewTermQuery(dir)
+
+	//search := bleve.NewSearchRequest(query)
+	//searchResults, err := index.Search(search)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	fmt.Println(searchResult)
+	//for i := 0; i < 125; i++ {
+	searchResult.Hits[0].ID = searchRes
+	//}
+	return searchRes
 }
