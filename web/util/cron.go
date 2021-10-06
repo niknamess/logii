@@ -13,7 +13,7 @@ func MakeAndStartCron(repeat time.Duration, run func(...interface{}) error, v ..
 	ticker := time.Tick(repeat)
 	for _ = range ticker {
 		fmt.Fprintf(os.Stderr, "Running cron job @%v\n", time.Now())
-		fmt.Println("length of arg :", len(v))
+		//fmt.Println("length of arg :", len(v))
 		err := run(v...)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Cron job failed: %s\n", err)

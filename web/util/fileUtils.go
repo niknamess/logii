@@ -41,7 +41,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 	UlidC = logenc.ProcBleveSearch(Teststr)
 	for line := range t.Lines {
 
-		contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
+		contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[0])
 		if contain == true {
 
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))

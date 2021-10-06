@@ -40,7 +40,7 @@ func ProcLine(line string) (csvF string) {
 	}
 
 	csvline := EncodeCSV(val)
-	fmt.Print(csvline)
+	//fmt.Print(csvline)
 	return csvline
 }
 
@@ -249,9 +249,9 @@ func ProcBleveSearch(dir string) []string {
 		docs = append(docs, id)
 	}
 	fmt.Println(docs[0])
-	fmt.Println(docs)
-	result := strings.Join(docs, " ")
-	fmt.Println(result)
+	//fmt.Println(docs)
+	//result := strings.Join(docs, " ")
+	//fmt.Println(result)
 
 	return docs
 
