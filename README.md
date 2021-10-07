@@ -21,9 +21,12 @@
 - [x] write in storage
 - [x] UI from storage
 - [x] one file bin
-- [x] serch on web page :tada:
+- [x] serch on web page (O(n) algorithm complexity) :tada:
 - [ ] serch on web page one button :tada:
-- [ ] add indexing on bleve :tada:
+- [x] add indexing on bleve :tada:
+- [x] search on web form use bleve Ulid (O(1) algorithm complexity)
+- [ ] create bleve storage for other file 
+
 
 
 

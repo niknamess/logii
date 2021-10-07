@@ -48,7 +48,6 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
-	//ProcFileBreve(filename)
 
 	filename := string(filenameB)
 	//logenc.ProcFileBreve(filename)

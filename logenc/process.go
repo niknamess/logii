@@ -169,11 +169,15 @@ func ProcLineBleve(line string) (val LogList) {
 
 	return val
 }
-
 func ProcFileBreve(file string) {
+	//func ProcFileBreve(file string) {
 	var wg sync.WaitGroup
 	var counter int32 = 0
 	var data LogList
+	//dir := "./blevestorage/"
+	//extension := ".bleve"
+	//filename = file
+	//metaname:= dir + filename + extension
 	metaname := "example.bleve"
 	index, err := bleve.Open(metaname)
 	if err != nil {
@@ -228,12 +232,18 @@ func ProcFileBreve(file string) {
 }
 
 func ProcBleveSearch(dir string) []string {
+	//func ProcBleveSearch(fileN string, dir string) []string {
+	//dir := "./blevestorage/"
+	//extension :=".bleve"
+	//filename = filen
+	//metaname := dir + filename + extension
+	metaname := "example.bleve"
 
 	if dir == "" {
-		dir = "NTP"
+		dir = " "
 	}
 
-	index, _ := bleve.Open("example.bleve")
+	index, _ := bleve.Open(metaname)
 	//query := bleve.NewFuzzyQuery(dir)
 	query := bleve.NewMatchQuery(dir)
 	query.Fuzziness = 1
