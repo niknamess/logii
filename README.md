@@ -25,7 +25,7 @@
 - [ ] serch on web page one button :tada:
 - [x] add indexing on bleve :tada:
 - [x] search on web form use bleve Ulid (O(1) algorithm complexity)
-- [ ] create bleve storage for other file 
+- [x] create bleve storage for other file 
 
 
 

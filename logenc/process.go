@@ -169,16 +169,16 @@ func ProcLineBleve(line string) (val LogList) {
 
 	return val
 }
-func ProcFileBreve(file string) {
+func ProcFileBreve(fileN string, file string) {
 	//func ProcFileBreve(file string) {
 	var wg sync.WaitGroup
 	var counter int32 = 0
 	var data LogList
-	//dir := "./blevestorage/"
-	//extension := ".bleve"
-	//filename = file
-	//metaname:= dir + filename + extension
-	metaname := "example.bleve"
+	dir := "./blevestorage/"
+	extension := ".bleve"
+	filename := fileN
+	metaname := dir + filename + extension
+	//metaname := "example.bleve"
 	index, err := bleve.Open(metaname)
 	if err != nil {
 		mapping := bleve.NewIndexMapping()
@@ -189,7 +189,6 @@ func ProcFileBreve(file string) {
 		fmt.Println(err)
 		return
 	}
-
 	// search for some text
 	ch := make(chan string, 100)
 
@@ -231,24 +230,24 @@ func ProcFileBreve(file string) {
 	index.Close()
 }
 
-func ProcBleveSearch(dir string) []string {
-	//func ProcBleveSearch(fileN string, dir string) []string {
-	//dir := "./blevestorage/"
-	//extension :=".bleve"
-	//filename = filen
-	//metaname := dir + filename + extension
-	metaname := "example.bleve"
+//func ProcBleveSearch(dir string) []string {
+func ProcBleveSearch(fileN string, word string) []string {
+	dir := "./blevestorage/"
+	extension := ".bleve"
+	filename := fileN
+	metaname := dir + filename + extension
+	//metaname := "example.bleve"
 
-	if dir == "" {
-		dir = " "
+	if word == "" {
+		word = " "
 	}
 
 	index, _ := bleve.Open(metaname)
 	//query := bleve.NewFuzzyQuery(dir)
-	query := bleve.NewMatchQuery(dir)
+	query := bleve.NewMatchQuery(word)
 	query.Fuzziness = 1
-	mq := bleve.NewMatchPhraseQuery(dir)
-	rq := bleve.NewRegexpQuery(dir)
+	mq := bleve.NewMatchPhraseQuery(word)
+	rq := bleve.NewRegexpQuery(word)
 	q := bleve.NewDisjunctionQuery(query, mq, rq)
 
 	searchRequest := bleve.NewSearchRequest(q)

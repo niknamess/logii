@@ -47,26 +47,9 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
         }
 
-        input.addEventListener('click', event => {
-                ws = initWS(file);
-            }),
-
-
-            input.addEventListener('change', event => {
-                ws = initWS(file);
-            }),
-            //else {
-
-            //  ws = initWS(file);
-
-            //}
-            input.addEventListener('input', event => {
-                ws = initWS(file);
-            }),
-
-            button.addEventListener('click', event => {
-                setTimeout(initWS(file), 6000);
-            });
+        button.addEventListener('click', event => {
+            setTimeout(initWS(file), 6000);
+        });
         vm.toggleSideNav()
     }
 

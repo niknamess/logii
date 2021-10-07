@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/base64"
+	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -9,6 +10,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/util"
 )
 
@@ -50,7 +52,10 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
 
 	filename := string(filenameB)
-	//logenc.ProcFileBreve(filename)
+	fileN := filepath.Base(filename)
+	fmt.Println(fileN)
+	fmt.Println(filename)
+	logenc.ProcFileBreve(fileN, filename)
 	// sanitize the file if it is present in the index or not.
 	filename = filepath.Clean(filename)
 	ok := false
@@ -65,8 +70,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// This is to prevent arbitrary file access. Otherwise send a 403 status
 	// This should take care of stacking of filenames as it would first
 	// be searched as a string in the index, if not found then rejected.
-	//search = "0001GD3TH0Y1V8PBD2Z6DEY7PP"
-	//search = "NTP"
+
 	if ok {
 		//go util.TailFile(conn, filename, search)
 		util.TailFile(conn, filename, search)

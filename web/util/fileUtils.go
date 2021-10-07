@@ -29,11 +29,14 @@ var (
 // a thread as this is blocking in nature
 func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 	//UlidC []string
-	fmt.Println(lookFor)
-	fmt.Println("Start")
-	UlidC := logenc.ProcBleveSearch(lookFor)
-	//UlidC := logenc.ProcBleveSearch(fileNAme,lookFor)
-	//print(len(UlidC))
+	//fmt.Println(lookFor)
+	//fmt.Println("Start")
+	//UlidC := logenc.ProcBleveSearch(lookFor)
+	//fmt.Println(fileName)
+	fileN := filepath.Base(fileName)
+	//fmt.Println(file1)
+	UlidC := logenc.ProcBleveSearch(fileN, lookFor)
+
 	fmt.Println("Stop")
 	fmt.Println(len(UlidC))
 	taillog, err := tail.TailFile(fileName,
@@ -44,15 +47,11 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 
 			},
 		})
-	//UlidC = logenc.ProcBleveSearch(lookFor)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 		return
 	}
-	//Teststr = lookFor
-	//UlidC = logenc.ProcBleveSearch(lookFor)
-	//Teststr = lookFor
-	//UlidC = logenc.ProcBleveSearch(lookFor)
+
 	if len(UlidC) == 0 {
 		print("Break")
 		return
@@ -73,12 +72,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 		}
 
 	}
-	//taillog.Cleanup()
-	//conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcBleveSearch(line.Text)))
 
-	//Teststr = lookFor
-	//UlidC = logenc.ProcBleveSearch(Teststr)
-	fmt.Println(UlidC)
 }
 
 // IndexFiles - takes argument as a list of files and directories and returns
