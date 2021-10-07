@@ -55,6 +55,7 @@ func ParseConfig(dir []string, cron string, test string) error {
 			repeat = repeat * 24
 		}
 		//fmt.Println(repeat)
+		//	go MakeAndStartCron(repeat, func(v ...interface{}) error { !!!
 		go MakeAndStartCron(repeat, func(v ...interface{}) error {
 			tmp := make([]string, len(v))
 			for idx, val := range v {

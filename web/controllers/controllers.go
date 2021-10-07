@@ -19,7 +19,7 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	search = ","
+	search = " "
 )
 
 // RootHandler - http handler for handling / path

@@ -32,7 +32,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 	//fmt.Println(lookFor)
 	//fmt.Println("Start")
 	//UlidC := logenc.ProcBleveSearch(lookFor)
-	//fmt.Println(fileName)
+	fmt.Println(fileName)
 	fileN := filepath.Base(fileName)
 	//fmt.Println(file1)
 	UlidC := logenc.ProcBleveSearch(fileN, lookFor)

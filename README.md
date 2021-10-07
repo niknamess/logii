@@ -7,7 +7,7 @@
 - [ ] автоматическая репликация(зеркалирование) без обслуживания.
 - [ ] стойкость хранилища к повреждениям/изменениям.
 - [ ] удаление сообщений по лимиту времени(ротация)
-- [ ] многопользовательский поиск по фразам и параметрам сообщения в том числе нечеткий поиск
+- [x] многопользовательский поиск по фразам и параметрам сообщения в том числе нечеткий поиск
 - [x] веб интерфейс
 - [x] метрики основных процессов(кол-ва сообщений, скорость поиска, входящий поток)
 
@@ -25,8 +25,8 @@
 - [x] serch on web page one button :tada:
 - [x] add indexing on bleve :tada:
 - [x] search on web form use bleve Ulid (O(1) algorithm complexity)
-- [x] create bleve storage for other file 
-
+- [x] create bleve storage for other file :fire:
+- [ ] js how many clicked so many added files and result fix :cookie:
 
 
 

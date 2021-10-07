@@ -41,22 +41,42 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         if (window.WebSocket === undefined) {
             container.append("Your browser does not support WebSockets");
             return;
-        } else {
-
-            ws = initWS(file);
-
         }
+        //else {
+
+        //  ws = initWS(file);
+
+        //        }
+
+        //input.addEventListener('click', event => {
+        //      ws = initWS(file);
+        //}),
+
+
+        //input.addEventListener('change', event => {
+        //  ws = initWS(file);
+        //}),
+        //else {
+
+        //  ws = initWS(file);
+
+        //}
+        //input.addEventListener('input', event => {
+        //  ws = initWS(file);
+        //}),
 
         button.addEventListener('click', event => {
-            setTimeout(initWS(file), 6000);
+            //container.empty()
+            // socket.remove()
+            //input.removeAttr()
+            ws = initWS(file);
+            // socket.remove();
+            // socket.empty();
         });
         vm.toggleSideNav()
     }
 
 
-    function updateValue() {
-        ws = initWS(file);
-    }
 
     function initWS(file) {
 
@@ -66,11 +86,13 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         }
         var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
         var container = angular.element(document.querySelector("#container"));
-
-        // clear the contents
+        //socket.empty()
+        //container.empty()
+        //clear the contents
         container.html("")
         socket.onopen = function() {
             container.append("<p><b>Tailing file: " + file + "</b></p>");
+
         };
         socket.onmessage = function(e) {
             container.append(e.data.trim() + "<br>");
@@ -79,19 +101,23 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("<p>Connection Closed to WebSocket, tail stopped</p>");
         }
         socket.onerror = function(e) {
-            container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
-        }
+                container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
+            }
+            //container.empty()
+
         return socket;
+
+
     }
 
-    $scope.logout = function() {
-        for (i = 0; i < document.forms.length; i++) {
-            if (document.forms[i].id == "logoutForm") {
-                document.forms[i].submit()
-                return;
-            }
-        }
-    }
+    // $scope.logout = function() {
+    //   for (i = 0; i < document.forms.length; i++) {
+    //     if (document.forms[i].id == "logoutForm") {
+    //       document.forms[i].submit()
+    //     return;
+    //}
+    //}
+    //}
 
     vm.init();
 }
