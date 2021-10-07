@@ -1,0 +1,15 @@
+image: golang:1.17
+
+stages:
+  - lin64
+
+lin64:
+  stage: lin64
+  script:
+    - go test ./...
+    - GOOS=linux    GOARCH=amd64 go build -o logi2.lin64.bin
+  artifacts:
+    expire_in: 2 week
+    paths:
+    - logi2.lin64.bin
+
