@@ -5,5 +5,4 @@ logi2
 ~/.logi2
 *.bleve
 logtest/
-
-
+__debug_bin

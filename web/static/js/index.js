@@ -41,6 +41,10 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         if (window.WebSocket === undefined) {
             container.append("Your browser does not support WebSockets");
             return;
+        } else {
+
+            ws = initWS(file);
+
         }
 
         input.addEventListener('click', event => {

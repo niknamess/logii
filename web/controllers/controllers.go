@@ -67,6 +67,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// This should take care of stacking of filenames as it would first
 	// be searched as a string in the index, if not found then rejected.
 	//search = "0001GD3TH0Y1V8PBD2Z6DEY7PP"
+	//search = "NTP"
 	if ok {
 		//go util.TailFile(conn, filename, search)
 		util.TailFile(conn, filename, search)

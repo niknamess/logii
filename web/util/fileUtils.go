@@ -19,9 +19,9 @@ var (
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap     = make(map[string]bool)
-	i        int = 0
-	lookFor  string
+	indexMap = make(map[string]bool)
+	//i        int = 0
+	//UlidC []string
 )
 
 // TailFile - Accepts a websocket connection and a filename and tails the
@@ -29,15 +29,21 @@ var (
 // a thread as this is blocking in nature
 func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 	//UlidC []string
+	fmt.Println(lookFor)
+	fmt.Println("Start")
 	UlidC := logenc.ProcBleveSearch(lookFor)
-
+	//print(len(UlidC))
+	fmt.Println("Stop")
+	fmt.Println(len(UlidC))
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
 			Location: &tail.SeekInfo{
 				Whence: os.SEEK_CUR, //!!!
+
 			},
 		})
+	//UlidC = logenc.ProcBleveSearch(lookFor)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 		return
@@ -45,6 +51,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 	//Teststr = lookFor
 	//UlidC = logenc.ProcBleveSearch(lookFor)
 	//Teststr = lookFor
+	//UlidC = logenc.ProcBleveSearch(lookFor)
 	if len(UlidC) == 0 {
 		print("Break")
 		return
@@ -65,7 +72,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 		}
 
 	}
-
+	//taillog.Cleanup()
 	//conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcBleveSearch(line.Text)))
 
 	//Teststr = lookFor

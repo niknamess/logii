@@ -224,9 +224,14 @@ func ProcFileBreve(file string) {
 	}
 	close(ch)
 	wg.Wait()
+	index.Close()
 }
 
 func ProcBleveSearch(dir string) []string {
+
+	if dir == "" {
+		dir = "NTP"
+	}
 
 	index, _ := bleve.Open("example.bleve")
 	//query := bleve.NewFuzzyQuery(dir)
@@ -248,11 +253,8 @@ func ProcBleveSearch(dir string) []string {
 		id := val.ID
 		docs = append(docs, id)
 	}
-	//fmt.Println(docs[0])
-	//fmt.Println(docs)
-	//result := strings.Join(docs, " ")
-	//fmt.Println(result)
 
+	index.Close()
 	return docs
 
 }
