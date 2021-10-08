@@ -32,7 +32,6 @@
 # FLAGS 
     to run use 
     go build && ./logi2 -(flag) something
-    Flags
 - "f" parse log file and view in terminal decoded strings from coded XOR logfile ( -f /home/nik/projects/Course/logi2/logtest/test/gen_logs1 )
 - "d" parse dir and view in terminal decoded strings from coded XOR logfiles ( -d /home/nik/projects/Course/logi2/logtest/test/ )
 - "s" search in coded log files and view in terminal strings ( -s /home/nik/projects/Course/logi2/logtest/test/gen_logs1 )
@@ -41,6 +40,9 @@
 - "g" generate coded logs and write in file ( -g blabla )
 - "p" web interface enter port (-p 15000)
 - "c" run web_interface and generate log (-c 15000)
+
+
+- несколько файлов в 
 
 
 

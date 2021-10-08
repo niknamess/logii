@@ -2,12 +2,10 @@ package controllers
 
 import (
 	"encoding/base64"
-	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
 
-	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
@@ -34,8 +32,8 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	var fileList = make(map[string]interface{})
 
 	fileList["FileList"] = util.Conf.Dir
-	fileList[csrf.TemplateTag] = csrf.Token(r)
-	fileList["token"] = csrf.Token(r)
+	//fileList[csrf.TemplateTag] = csrf.Token(r)
+	//fileList["token"] = csrf.Token(r)
 	t.Execute(w, fileList)
 }
 
@@ -53,8 +51,8 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	filename := string(filenameB)
 	fileN := filepath.Base(filename)
-	fmt.Println(fileN)
-	fmt.Println(filename)
+	//fmt.Println(fileN)
+	//fmt.Println(filename)
 	logenc.ProcFileBreve(fileN, filename)
 	// sanitize the file if it is present in the index or not.
 	filename = filepath.Clean(filename)
