@@ -33,9 +33,16 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     vm.fontSize = ["10px", "11px", "12px", "14px", "16px", "18px", "20px", "22px", "24px"]
     $scope.currSize = vm.fontSize[2];
 
+    button.addEventListener('click', event => {
+
+
+        container.html("")
+        ws = initWS(lastItem);
+
+    }, { once: true });
 
     $scope.open_connection = function(file) {
-
+        lastItem = 0
         lastItem = file;
 
 
@@ -58,11 +65,15 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
         }
 
-        button.addEventListener('click', event => {
+        document.querySelector('button').addEventListener('click', event => {
+
+
             container.html("")
             ws = initWS(lastItem);
-            return nill
-        }, { once: true });
+
+        }, { once: false });
+
+        // document.querySelector('button').removeEventListener(initWS());
 
 
 
@@ -72,6 +83,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
 
     function initWS(file) {
+        // document.querySelector('button').removeEventListener(initWS(file));
         window.alert("InitWs Files" + file);
         var ws_proto = "ws:"
         if (window.location.protocol === "https:") {
@@ -98,6 +110,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
 
         window.alert("Socket " + socket);
+        // once = false
 
         return socket;
 
