@@ -26,7 +26,7 @@
 - [x] search on web form use bleve Ulid (O(1) algorithm complexity)
 - [x] create bleve storage for other file :fire:
 - [x] js how many clicked so many added files and result fix :cookie:
-- [ ] split search and indexing string (too long indexing when search file)
+- [x] split search and indexing string (too long indexing when search file)
 - [ ] indexing file when file changes occur
 
 # FLAGS 
@@ -41,8 +41,6 @@
 - "p" web interface enter port (-p 15000)
 - "c" run web_interface and generate log (-c 15000)
 
-
-- несколько файлов в 
 
 
 

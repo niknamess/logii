@@ -17,7 +17,8 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	search = " "
+	search    = " "
+	savefiles []string
 )
 
 // RootHandler - http handler for handling / path
@@ -50,10 +51,13 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
 
 	filename := string(filenameB)
-	fileN := filepath.Base(filename)
-	//fmt.Println(fileN)
-	//fmt.Println(filename)
-	logenc.ProcFileBreve(fileN, filename)
+	for i := 0; i < len(savefiles); i++ {
+		if filename != savefiles[i] {
+			Indexing(filename)
+			savefiles = append(savefiles, filename)
+		}
+	}
+	///logenc.ProcFileBreve(fileN, filename)
 	// sanitize the file if it is present in the index or not.
 	filename = filepath.Clean(filename)
 	ok := false
@@ -78,5 +82,12 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	search = r.URL.Query().Get("search_string")
+
+}
+
+func Indexing(filename string) {
+	//filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
+	fileN := filepath.Base(filename)
+	logenc.ProcFileBreve(fileN, filename)
 
 }
