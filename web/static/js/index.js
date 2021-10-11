@@ -42,7 +42,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     }, { once: true });
 
     $scope.open_connection = function(file) {
-        lastItem = 0
+        lastItem = null
         lastItem = file;
 
 
@@ -69,7 +69,14 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
 
             container.html("")
-            ws = initWS(lastItem);
+            if (lastItem == null) {
+                return
+            } else {
+                ws = initWS(lastItem);
+                lastItem = null
+            }
+            //ws = initWS(lastItem);
+            //lastItem = null
 
         }, { once: false });
 
