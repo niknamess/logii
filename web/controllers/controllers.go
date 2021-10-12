@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -100,8 +101,9 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 func Indexing(filename string) {
 	//filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
 	fileN := filepath.Base(filename)
+	fmt.Println(filename)
 	bleveSI.ProcFileBreve(fileN, filename)
 	//SearchMap = logenc.ProcMapFile(filename)
-	//b, _ := json.MarshalIndent(SearchMap, "", "  ")
-	//fmt.Print(string(b))
+	b, _ := json.MarshalIndent(SearchMap, "", "  ")
+	fmt.Print(string(b))
 }

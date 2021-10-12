@@ -72,7 +72,7 @@ func checkError(message string, err error) {
 }
 
 func DecodeLine(line string) string {
-	//print("DecodeLine")
+	//fmt.Println(line)
 	data, err := base64.StdEncoding.DecodeString(line)
 
 	if err != nil {

@@ -64,11 +64,11 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 			for i := 0; i < len(UlidC); i++ {
 
-				//contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
-				_, found := SearchMap[UlidC[i]]
-				fmt.Println(found)
-				//if contain == true {
-				if found == true {
+				contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
+				//v, found := SearchMap[UlidC[i]]
+				//fmt.Println(found)
+				if contain == true {
+					//if found == true {
 
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
 					//fmt.Println(logenc.ProcLine(line.Text))
