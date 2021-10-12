@@ -2,7 +2,6 @@ package web
 
 import (
 	"fmt"
-	"html/template"
 	"io"
 	"net/http"
 	"os"
@@ -64,8 +63,7 @@ func TestProcWeb(t *testing.T) {
 	}
 
 } // else {
-
-func TestWebPost(t *testing.T) {
+/*func TestWebPost(t *testing.T) {
 
 	port := 15000
 
@@ -133,3 +131,4 @@ func TestWebPost(t *testing.T) {
 	}
 
 } // else {
+*/
