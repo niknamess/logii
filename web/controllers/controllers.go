@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/base64"
+	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -17,8 +18,9 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	search    = " "
+	search    string
 	savefiles []string
+	stringF   bool
 )
 
 // RootHandler - http handler for handling / path
@@ -29,21 +31,17 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	//fmt.Println("root_h")
 	var fileList = make(map[string]interface{})
-
 	fileList["FileList"] = util.Conf.Dir
-	//fileList[csrf.TemplateTag] = csrf.Token(r)
-	//fileList["token"] = csrf.Token(r)
+
 	t.Execute(w, fileList)
 }
 
 // WSHandler - Websocket handler
 func WSHandler(w http.ResponseWriter, r *http.Request) {
-	//search = r.URL.Query().Get("search_string")
+
 	conn, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
-		//fmt.Fprintln(os.Stderr, err)
 		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
 		return
 	}
@@ -51,11 +49,23 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
 
 	filename := string(filenameB)
-	for i := 0; i < len(savefiles); i++ {
-		if filename != savefiles[i] {
-			Indexing(filename)
-			savefiles = append(savefiles, filename)
+	if savefiles == nil {
+		Indexing(filename)
+		savefiles = append(savefiles, filename)
+	} else {
+		for i := 0; i < len(savefiles); i++ {
+			if filename != savefiles[i] {
+				stringF = true
+			} else {
+				stringF = false
+			}
 		}
+
+	}
+	if stringF == true {
+		Indexing(filename)
+		savefiles = append(savefiles, filename)
+
 	}
 	///logenc.ProcFileBreve(fileN, filename)
 	// sanitize the file if it is present in the index or not.
@@ -75,6 +85,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	if ok {
 		//go util.TailFile(conn, filename, search)
+		fmt.Println(search)
 		util.TailFile(conn, filename, search)
 	}
 	w.WriteHeader(http.StatusUnauthorized)

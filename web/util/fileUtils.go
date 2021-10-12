@@ -28,11 +28,7 @@ var (
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
 func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
-	//UlidC []string
-	//fmt.Println(lookFor)
-	//fmt.Println("Start")
-	//UlidC := logenc.ProcBleveSearch(lookFor)
-	//fmt.Println(fileName)
+
 	fileN := filepath.Base(fileName)
 	//fmt.Println(file1)
 	UlidC := logenc.ProcBleveSearch(fileN, lookFor)
@@ -52,27 +48,35 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 		return
 	}
 
-	if len(UlidC) == 0 {
-		print("Break")
-		return
-	}
-	for line := range taillog.Lines {
-
-		for i := 0; i < len(UlidC); i++ {
-
-			contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
+	if lookFor == "" || lookFor == " " || lookFor == "Search" {
+		for line := range taillog.Lines {
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
+			//fmt.Println(logenc.ProcLine(line.Text))
 			//fmt.Println(UlidC[i])
+		}
+	} else if len(UlidC) == 0 {
+		println("Break")
+		return
+	} else {
 
-			if contain == true {
+		for line := range taillog.Lines {
 
-				conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
-				//fmt.Println(logenc.ProcLine(line.Text))
+			for i := 0; i < len(UlidC); i++ {
+
+				contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
 				//fmt.Println(UlidC[i])
+
+				if contain == true {
+
+					conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
+					//fmt.Println(logenc.ProcLine(line.Text))
+					//fmt.Println(UlidC[i])
+				}
 			}
+
 		}
 
 	}
-
 }
 
 // IndexFiles - takes argument as a list of files and directories and returns
