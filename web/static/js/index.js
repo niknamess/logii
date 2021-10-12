@@ -7,7 +7,12 @@ var lastItem;
 
 
 button.addEventListener('click', event => {
-    initWS(lastItem);
+    setTimeout(
+        () => {
+            initWS(lastItem)
+        },
+        1 * 100
+    );
 });
 
 function mainController($rootScope, $scope, $mdSidenav, $http) {
