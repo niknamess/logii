@@ -176,32 +176,32 @@ func ProcLineDX(line string) (val LogList) {
 func ProcMapFile(file string) map[string]string {
 	ch := make(chan string, 100)
 	//log.Println("1")
-	Volumes := make(map[string]string)
+	SearchMap := make(map[string]string)
 	var wg sync.WaitGroup
 	var counter int32 = 0
 	var data LogList
 	var datas string
 
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
-		go func() {
-			wg.Add(1)
-			defer wg.Done()
 
-		brloop:
-			for {
-				select {
-				case line, ok := <-ch:
-					if !ok {
-						break brloop
-					}
-					datas = ProcLine(line)
-					atomic.AddInt32(&counter, 1)
-					if len(data.XML_RECORD_ROOT) > 0 {
-						Volumes[data.XML_RECORD_ROOT[0].XML_ULID] = datas
-					}
+		wg.Add(1)
+		defer wg.Done()
+
+	brloop:
+		for {
+			select {
+			case line, ok := <-ch:
+				if !ok {
+					break brloop
+				}
+				data = ProcLineDX(line)
+				datas = ProcLine(line)
+				atomic.AddInt32(&counter, 1)
+				if len(data.XML_RECORD_ROOT) > 0 {
+					SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
 				}
 			}
-		}()
+		}
 
 	}
 
@@ -213,5 +213,5 @@ func ProcMapFile(file string) map[string]string {
 	}
 	close(ch)
 	wg.Wait()
-	return Volumes
+	return SearchMap
 }
