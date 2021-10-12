@@ -9,7 +9,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
-	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
+	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/util"
 )
 
@@ -99,6 +99,6 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 func Indexing(filename string) {
 	//filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
 	fileN := filepath.Base(filename)
-	logenc.ProcFileBreve(fileN, filename)
+	bleveSI.ProcFileBreve(fileN, filename)
 
 }

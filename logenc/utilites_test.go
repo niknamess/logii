@@ -1,9 +1,13 @@
 package logenc
 
 import (
+	//"fmt"
+	//"math/rand"
 	"reflect"
+	//"sync"
 	"testing"
 	"time"
+	//"github.com/oklog/ulid"
 )
 
 func Test_datestr2time(t *testing.T) {
@@ -124,3 +128,30 @@ func TestDecodeLine(t *testing.T) {
 		})
 	}
 }
+
+/*
+func TestParseUlid(t *testing.T) {
+	line1:="0001GHXYQ6EM4972TMPV0E0W6Q"
+	type args struct {
+		line string
+	}
+	tests := []struct {
+		name string
+		args args
+		want time.Time
+	}{
+		{
+			name: "t1",
+			args: 	 args{line: line1},
+			want: 	" ",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := datestr2time(tt.args.line); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("datestr2time() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+*/

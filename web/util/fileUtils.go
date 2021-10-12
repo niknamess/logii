@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
+	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 )
 
@@ -31,7 +32,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string) {
 
 	fileN := filepath.Base(fileName)
 	//fmt.Println(file1)
-	UlidC := logenc.ProcBleveSearch(fileN, lookFor)
+	UlidC := bleveSI.ProcBleveSearch(fileN, lookFor)
 
 	//fmt.Println("Stop")
 	fmt.Println(len(UlidC))

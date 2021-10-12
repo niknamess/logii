@@ -1,7 +1,7 @@
 package logenc
 
 import (
-	"fmt"
+	//	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +11,10 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/blevesearch/bleve"
+	//	"sync"
+	//	"sync/atomic"
+
+	//"github.com/blevesearch/bleve"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -64,7 +67,7 @@ func procLineq(line string) (csvF string) {
 
 func ProcFile(file string) {
 	ch := make(chan string, 100)
-	log.Println("1")
+	//log.Println("1")
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
@@ -154,7 +157,7 @@ func Promrun() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func ProcLineBleve(line string) (val LogList) {
+func ProcLineDX(line string) (val LogList) {
 
 	if len(line) == 0 {
 
@@ -169,28 +172,15 @@ func ProcLineBleve(line string) (val LogList) {
 
 	return val
 }
-func ProcFileBreve(fileN string, file string) {
-	//func ProcFileBreve(file string) {
+
+func ProcMapFile(file string) map[string]string {
+	ch := make(chan string, 100)
+	//log.Println("1")
+	Volumes := make(map[string]string)
 	var wg sync.WaitGroup
 	var counter int32 = 0
 	var data LogList
-	dir := "./blevestorage/"
-	extension := ".bleve"
-	filename := fileN
-	metaname := dir + filename + extension
-	//metaname := "example.bleve"
-	index, err := bleve.Open(metaname)
-	if err != nil {
-		mapping := bleve.NewIndexMapping()
-		index, err = bleve.New(metaname, mapping)
-	}
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	// search for some text
-	ch := make(chan string, 100)
+	var datas string
 
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
@@ -204,22 +194,18 @@ func ProcFileBreve(fileN string, file string) {
 					if !ok {
 						break brloop
 					}
-					data = ProcLineBleve(line)
-					//fmt.Println((data.XML_RECORD_ROOT))
-					//fmt.Println(len(data.XML_RECORD_ROOT))
+					datas = ProcLine(line)
 					atomic.AddInt32(&counter, 1)
-					println(counter)
 					if len(data.XML_RECORD_ROOT) > 0 {
-						index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+						Volumes[data.XML_RECORD_ROOT[0].XML_ULID] = datas
 					}
 				}
 			}
-
 		}()
 
 	}
 
-	err = ReadLines(file, func(line string) {
+	err := ReadLines(file, func(line string) {
 		ch <- line
 	})
 	if err != nil {
@@ -227,43 +213,5 @@ func ProcFileBreve(fileN string, file string) {
 	}
 	close(ch)
 	wg.Wait()
-	index.Close()
-}
-
-//func ProcBleveSearch(dir string) []string {
-func ProcBleveSearch(fileN string, word string) []string {
-	dir := "./blevestorage/"
-	extension := ".bleve"
-	filename := fileN
-	metaname := dir + filename + extension
-	//metaname := "example.bleve"
-
-	if word == "" {
-		word = " "
-	}
-
-	index, _ := bleve.Open(metaname)
-	//query := bleve.NewFuzzyQuery(dir)
-	query := bleve.NewMatchQuery(word)
-	query.Fuzziness = 1
-	mq := bleve.NewMatchPhraseQuery(word)
-	rq := bleve.NewRegexpQuery(word)
-	q := bleve.NewDisjunctionQuery(query, mq, rq)
-
-	searchRequest := bleve.NewSearchRequest(q)
-	searchRequest.Size = 1000000000000000000
-
-	searchResult, _ := index.Search(searchRequest)
-	searchRequest.Fields = []string{"XML_RECORD_ROOT"}
-
-	docs := make([]string, 0)
-
-	for _, val := range searchResult.Hits {
-		id := val.ID
-		docs = append(docs, id)
-	}
-
-	index.Close()
-	return docs
-
+	return Volumes
 }
