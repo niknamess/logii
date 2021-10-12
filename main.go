@@ -54,6 +54,7 @@ func main() {
 	flagTest := flag.String("c", "", "web_interface and generate log")
 	//flagBleve := flag.String("b", "", "Bleve on bleve file")
 	//flagBleveSearch := flag.String("k", "", "Bleve search")
+	//flagMap := flag.String("m", "", "Map creating")
 	flag.Parse()
 
 	go logenc.Promrun()
@@ -88,7 +89,9 @@ func main() {
 	if len(*flagWeb) > 0 {
 		web.ProcWeb(*flagWeb)
 	}
-
+	//if len(*flagMap) > 0 {
+	//		logenc.ProcMapFile(*flagMap)
+	//W}
 	//if len(*flagBleve) > 0 {
 
 	//logenc.ProcFileBreve(*flagBleve)

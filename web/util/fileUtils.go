@@ -35,7 +35,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	UlidC := bleveSI.ProcBleveSearch(fileN, lookFor)
 
 	//fmt.Println("Stop")
-	fmt.Println(len(UlidC))
+	//fmt.Println(len(UlidC))
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
@@ -67,7 +67,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 				//contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
 				_, found := SearchMap[UlidC[i]]
 				fmt.Println(found)
-
+				//if contain == true {
 				if found == true {
 
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))

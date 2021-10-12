@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -11,7 +10,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
-	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/util"
 )
 
@@ -103,7 +101,7 @@ func Indexing(filename string) {
 	//filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
 	fileN := filepath.Base(filename)
 	bleveSI.ProcFileBreve(fileN, filename)
-	SearchMap = logenc.ProcMapFile(filename)
-	b, _ := json.MarshalIndent(SearchMap, "", "  ")
-	fmt.Print(string(b))
+	//SearchMap = logenc.ProcMapFile(filename)
+	//b, _ := json.MarshalIndent(SearchMap, "", "  ")
+	//fmt.Print(string(b))
 }
