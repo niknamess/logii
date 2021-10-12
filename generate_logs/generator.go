@@ -80,7 +80,7 @@ func ProcGenN() {
 	XML_MESSAGE := "Состояние '[192.168.1.128] Cервер КС_UDP/Пинг'"
 	XML_DETAILS := "Context:  -- void tmcs::AbstractMonitor::"
 	address := "sajjsaj"
-	line := XML_APPNAME + XML_APPPATH + XML_APPPID + XML_THREAD + time1 + qtype + XML_ULID + XML_MESSAGE + XML_DETAILS + address + string(log.Ldate)
+	line := XML_APPNAME + XML_APPPATH + XML_APPPID + XML_THREAD + time1 + qtype + XML_ULID + XML_MESSAGE + XML_DETAILS + address
 	line1 := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
 
 	//file, err := os.OpenFile("/home/nik/projects/logs/r/gen_logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
