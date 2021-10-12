@@ -11,7 +11,7 @@ button.addEventListener('click', event => {
         () => {
             initWS(lastItem)
         },
-        1 * 100
+        1 * 200
     );
 });
 
