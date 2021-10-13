@@ -171,6 +171,9 @@ func ProcLineDX(line string) (val LogList) {
 
 func ProcMapFile(file string) map[string]string {
 	//func ProcMapFile(file string) {
+	if len(file) <= 0 {
+		return nil
+	}
 	ch := make(chan string, 100)
 	SearchMap := make(map[string]string)
 	var wg sync.WaitGroup
@@ -210,6 +213,9 @@ func ProcMapFile(file string) map[string]string {
 
 //slowely
 func ProcMapFileREZERV(file string) {
+	if len(file) <= 0 {
+		return
+	}
 	ch := make(chan string, 1000000)
 	SearchMap := make(map[string]string)
 	var data LogList

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -51,8 +52,12 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
 
 	filename := string(filenameB)
+	if filenameB == nil {
+		return
+	}
+
 	if savefiles == nil {
-		Indexing(filename)
+		Indexing(conn, filename)
 		savefiles = append(savefiles, filename)
 	} else {
 		for i := 0; i < len(savefiles); i++ {
@@ -65,7 +70,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 	if stringF == true {
-		Indexing(filename)
+		Indexing(conn, filename)
 		savefiles = append(savefiles, filename)
 
 	}
@@ -98,16 +103,34 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Indexing(filename string) {
+func Indexing(conn *websocket.Conn, filename string) {
 	//filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
-	fileN := filepath.Base(filename)
-	fmt.Println(filename)
-	fmt.Println("Start Index Bleve")
-	bleveSI.ProcFileBreveSPEED(fileN, filename)
-	fmt.Println("Stop Index Bleve")
-	fmt.Println("Start Map")
-	SearchMap = logenc.ProcMapFile(filename)
-	fmt.Println("Stop Map")
-	//b, _ := json.MarshalIndent(SearchMap, "", "  ")
-	//fmt.Print(string(b))
+	//conn.WriteMessage(websocket.TextMessage, []byte("filename:"))
+	//conn.WriteMessage(websocket.TextMessage, []byte(filename))
+	var fileList = make(map[string]interface{})
+	if filename == "undefined" {
+		fileList["FileList"] = util.Conf.Dir
+		b, _ := json.MarshalIndent(fileList, "", "")
+
+		conn.WriteMessage(websocket.TextMessage, b)
+		fmt.Print(string(b))
+
+	} else {
+		fileN := filepath.Base(filename)
+		fmt.Println(filename)
+		//fmt.Println("Start Index Bleve")
+
+		conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
+
+		bleveSI.ProcFileBreveSPEED(fileN, filename)
+		//fmt.Println("Stop Index Bleve")
+		conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
+		//fmt.Println("Start Map")
+		SearchMap = logenc.ProcMapFile(filename)
+		//b, _ := json.MarshalIndent(SearchMap, "", "  ")
+		//fmt.Print(string(b))
+		//DirN(conn)
+	}
 }
+
+//return name files

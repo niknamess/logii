@@ -79,6 +79,10 @@ func ProcFileBreve(fileN string, file string) {
 
 func ProcFileBreveSPEED(fileN string, file string) {
 	var data logenc.LogList
+	if len(file) <= 0 {
+		return
+	}
+
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension

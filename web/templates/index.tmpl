@@ -35,9 +35,9 @@
         </md-content>
         <iframe name="hiddenFrame" class="hide"></iframe>
         <form action="searchproject" method="GET" target="hiddenFrame">
-            <label>Поиск</label><br>
-            <input type="text" name="search_string" id="search_string" value = "Search"/><br><br>
-            <button  id="btn" (click)=”handleClick($event)” type=”button” >Обновить</button> 
+            <label>Search</label><br>
+            <input type="text" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs"/><br><br>
+            <button  id="btn" (click)=”handleClick($event)” type=”button” >Find</button> 
         </form>
         <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
           <!-- Content will be inserted by websocket connection -->
