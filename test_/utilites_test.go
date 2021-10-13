@@ -1,15 +1,17 @@
-package logenc
+package test
 
 import (
 	//"fmt"
 	//"math/rand"
-	"reflect"
+
 	//"sync"
 	"testing"
-	"time"
+
 	//"github.com/oklog/ulid"
+	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 )
 
+/*
 func Test_datestr2time(t *testing.T) {
 	type args struct {
 		in0 string
@@ -27,13 +29,13 @@ func Test_datestr2time(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := datestr2time(tt.args.in0); !reflect.DeepEqual(got, tt.want) {
+			if got := logenc.datestr2time(tt.args.in0); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("datestr2time() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
-
+*/
 /*func TestDecodeXML(t *testing.T) {
 	lines := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
 
@@ -87,7 +89,7 @@ func TestEncodeLine(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := EncodeLine(tt.args.line); got != tt.want {
+			if got := logenc.EncodeLine(tt.args.line); got != tt.want {
 				t.Errorf("EncodeLine() = %v, want %v", got, tt.want)
 			}
 		})
@@ -121,7 +123,7 @@ func TestDecodeLine(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := DecodeLine(tt.args.line); got != tt.want {
+			if got := logenc.DecodeLine(tt.args.line); got != tt.want {
 				t.Errorf("DecodeLine() = %v, want %v", got, tt.want)
 
 			}

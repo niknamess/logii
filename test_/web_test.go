@@ -1,4 +1,4 @@
-package web
+package test
 
 import (
 	"fmt"
@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 )
 
 func TestProcWeb(t *testing.T) {
@@ -24,7 +25,7 @@ func TestProcWeb(t *testing.T) {
 		//		http.ServeFile(w, r, "index.tmpl")
 	})
 
-	csrfRouter := Use((router).ServeHTTP)
+	csrfRouter := web.Use((router).ServeHTTP)
 
 	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", port), Handler: handlers.CombinedLoggingHandler(os.Stdout, csrfRouter)}
 
