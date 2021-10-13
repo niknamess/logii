@@ -19,7 +19,7 @@ func BenchmarkProcMapFilePP(b *testing.B) {
 	//for i := 0; i < b.N; i++ {
 	//for i := 0; i < 6; i++ {
 
-	ProcMapFilePP("/home/nik/projects/Course/tmcs-log-agent-storage/26-05-2021")
+	ProcMapFileREZERV("/home/nik/projects/Course/tmcs-log-agent-storage/26-05-2021")
 
 	//}
 	//t.StartTimer()

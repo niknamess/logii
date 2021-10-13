@@ -1,8 +1,6 @@
 package logenc
 
 import (
-	//	"fmt"
-
 	"fmt"
 	"log"
 	"net/http"
@@ -11,11 +9,6 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-
-	//	"sync"
-	//	"sync/atomic"
-
-	//"github.com/blevesearch/bleve"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -176,21 +169,14 @@ func ProcLineDX(line string) (val LogList) {
 	return val
 }
 
-//func ProcMapFile(file string) map[string]string {
-func ProcMapFile(file string) {
+func ProcMapFile(file string) map[string]string {
+	//func ProcMapFile(file string) {
 	ch := make(chan string, 100)
-	//log.Println("1")
 	SearchMap := make(map[string]string)
 	var wg sync.WaitGroup
-	//var counter int32 = 0
 	var data LogList
 	var datas string
-
-	//fmt.Println("run 1")
-
 	go func() {
-		//wg.Add(1)
-		//defer wg.Done()
 		for {
 			select {
 			case line, ok := <-ch:
@@ -200,49 +186,34 @@ func ProcMapFile(file string) {
 				go func(line string) {
 					wg.Add(1)
 					defer wg.Done()
-
-					//fmt.Println("run3")
 					data = ProcLineDX(line)
 					datas = ProcLine(line)
-					//fmt.Println("stop")
-					//atomic.AddInt32(&counter, 1)
-
 					if len(data.XML_RECORD_ROOT) > 0 {
 						mu.Lock()
 						SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
 						mu.Unlock()
 					}
 				}(line)
-				//close(ch)
 			}
 		}
 	}()
-	//close(ch)
-
 	err := ReadLines(file, func(line string) {
 		ch <- line
 	})
 	if err != nil {
 		log.Fatalf("ReadLines: %s", err)
 	}
-
-	//close(ch)
 	wg.Wait()
 	close(ch)
-
+	return SearchMap
 }
 
-func ProcMapFilePP(file string) {
+//slowely
+func ProcMapFileREZERV(file string) {
 	ch := make(chan string, 1000000)
-	//log.Println("1")
 	SearchMap := make(map[string]string)
-	//var wg sync.WaitGroup
-	//var counter int32 = 0
 	var data LogList
 	var datas string
-
-	//fmt.Println("run 1")
-
 	err := ReadLines(file, func(line string) {
 		ch <- line
 	})
@@ -256,30 +227,15 @@ func ProcMapFilePP(file string) {
 			if !ok {
 				break
 			}
-
-			//fmt.Println("run3")
 			data = ProcLineDX(line)
 			datas = ProcLine(line)
-			//fmt.Println("stop")
-			//atomic.AddInt32(&counter, 1)
-
 			if len(data.XML_RECORD_ROOT) > 0 {
-				//mu.Lock()
 				SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
-				//mu.Unlock()
 			}
-
-			//close(ch)
 		}
 		if len(ch) == 0 {
 			break
 		}
 
 	}
-	//b, _ := json.MarshalIndent(SearchMap, "", "  ")
-	//fmt.Print(string(b))
-	//close(ch)
-
-	//close(ch)
-
 }
