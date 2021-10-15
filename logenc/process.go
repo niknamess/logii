@@ -1,7 +1,10 @@
 package logenc
 
 import (
+	"bufio"
+	"crypto/md5"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -153,7 +156,7 @@ func Promrun() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func ProcLineDX(line string) (val LogList) {
+func ProcLineDecodeXML(line string) (val LogList) {
 
 	if len(line) == 0 {
 
@@ -189,7 +192,7 @@ func ProcMapFile(file string) map[string]string {
 				go func(line string) {
 					wg.Add(1)
 					defer wg.Done()
-					data = ProcLineDX(line)
+					data = ProcLineDecodeXML(line)
 					datas = ProcLine(line)
 					if len(data.XML_RECORD_ROOT) > 0 {
 						mu.Lock()
@@ -233,7 +236,7 @@ func ProcMapFileREZERV(file string) {
 			if !ok {
 				break
 			}
-			data = ProcLineDX(line)
+			data = ProcLineDecodeXML(line)
 			datas = ProcLine(line)
 			if len(data.XML_RECORD_ROOT) > 0 {
 				SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
@@ -244,4 +247,65 @@ func ProcMapFileREZERV(file string) {
 		}
 
 	}
+}
+
+func WriteFileSum(file string) bool {
+
+	//checksum := MD5(file)
+	checksum2 := FileMD5(file)
+	fileN := filepath.Base(file)
+	metaname := "hashmd5"
+	ind := false
+	//fmt.Printf("Checksum 1: %s\n", checksum)
+	fmt.Printf("current Checksum: %s\n", checksum2)
+	f, _ := os.OpenFile(metaname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	defer f.Close()
+	//f.Write([]byte(fileN + " " + checksum2 + "\n"))
+	scanner := bufio.NewScanner(f)
+	_, ok := os.Stat(metaname)
+	//fmt.Println(info)
+	fmt.Println(ok)
+	if ok != nil {
+		f.Write([]byte(checksum2 + " " + fileN + "\n"))
+	}
+	line := 1
+
+	for scanner.Scan() {
+		//lineStr := scanner.Text()
+		if strings.Contains(scanner.Text(), (checksum2 + " " + fileN)) {
+			ind = false
+			fmt.Println(ind)
+			return ind
+		} else {
+			f.Write([]byte(checksum2 + " " + fileN + "\n"))
+			ind = true
+			fmt.Println(ind)
+		}
+
+		line++
+
+		//mu.Unlock()
+
+	}
+	return ind
+}
+func checke(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
+// FileMD5 создает md5-хеш из содержимого нашего файла.
+func FileMD5(path string) string {
+	h := md5.New()
+	f, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	_, err = io.Copy(h, f)
+	if err != nil {
+		panic(err)
+	}
+	return fmt.Sprintf("%x", h.Sum(nil))
 }

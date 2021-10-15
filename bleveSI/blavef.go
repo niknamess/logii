@@ -1,8 +1,10 @@
 package bleveSI
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
 	"runtime"
 	"sync"
 
@@ -11,8 +13,10 @@ import (
 )
 
 var (
-	Logger *log.Logger
-	mu     sync.Mutex
+	Logger       *log.Logger
+	mu           sync.Mutex
+	sliceLoglist []logenc.LogList
+	//lines []string
 )
 
 //slowly
@@ -51,7 +55,7 @@ func ProcFileBreve(fileN string, file string) {
 					if !ok {
 						break brloop
 					}
-					data = logenc.ProcLineDX(line)
+					data = logenc.ProcLineDecodeXML(line)
 					//fmt.Println((data.XML_RECORD_ROOT))
 					//fmt.Println(len(data.XML_RECORD_ROOT))
 					//atomic.AddInt32(&counter, 1)
@@ -79,6 +83,7 @@ func ProcFileBreve(fileN string, file string) {
 
 func ProcFileBreveSPEED(fileN string, file string) {
 	var data logenc.LogList
+
 	if len(file) <= 0 {
 		return
 	}
@@ -97,35 +102,54 @@ func ProcFileBreveSPEED(fileN string, file string) {
 		return
 	}
 	ch := make(chan string, 100)
-	//for i := runtime.NumCPU() + 1; i > 0; i-- {
-	//brloop:
-	go func() {
-		//wg.Add(1)
-		//println("Start") //wg.Done()
-
+	for i := 5; i > 0; i-- {
 		//brloop:
-		for {
-			select {
-			case line, ok := <-ch:
-				if !ok {
-					break //brloop
-				}
-				go func(line string) {
-					//wg.Add(1)
-					//defer wg.Done()
-					data = logenc.ProcLineDX(line)
-					//	atomic.AddInt32(&counter, 1)
-					//	defer println(counter)
-					if len(data.XML_RECORD_ROOT) > 0 {
-						index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+		go func() {
+			//wg.Add(1)
+			//println("Start") //wg.Done()
+
+			//brloop:
+			for {
+				select {
+				case line, ok := <-ch:
+					if !ok {
+						break //brloop
 					}
-					//defer printlm
-				}(line)
+					//for i := 5; i > 0; i-- {
+					go func(line string) {
+						//wg.Add(1)
+						//defer wg.Done()
+						//BUFFER
+						data = logenc.ProcLineDecodeXML(line)
+						sliceLoglist = append(sliceLoglist, data)
+						if len(sliceLoglist) == 100 {
+							for i := 0; i < len(sliceLoglist); i++ {
+								if len(data.XML_RECORD_ROOT) > 0 {
+									index.Index(data.XML_RECORD_ROOT[0].XML_ULID, sliceLoglist[i])
+									//sliceLoglist = nil
+								}
+							}
+							sliceLoglist = nil
+						}
+						//buf := buffer.NewSpill(1024, data)
+						//	b, _ := json.Marshal(data)
+						//	buf := buffer.NewSpill(1024, b)
+
+						//BUFFER
+
+						//	atomic.AddInt32(&counter, 1)
+						//	defer println(counter)
+						if len(data.XML_RECORD_ROOT) > 0 {
+							index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+						}
+						//defer printlm
+					}(line)
+					//}
+				}
 			}
-		}
-		//println("Stop") //wg.Done()
-	}()
-	//}
+			//println("Stop") //wg.Done()
+		}()
+	}
 	err = logenc.ReadLines(file, func(line string) {
 		ch <- line
 	})
@@ -167,5 +191,86 @@ func ProcBleveSearch(fileN string, word string) []string {
 
 	index.Close()
 	return docs
+
+}
+
+func ProcFileBreveSLOWLY(fileName string, file string) {
+	const pieces int = 10
+
+	//func ProcFileBreve(file string) {
+	var wg sync.WaitGroup
+	//var counter int32 = 0
+	var lines []string
+	//var data logenc.LogList
+	dir := "./blevestorage/"
+	extension := ".bleve"
+
+	metaname := dir + fileName + extension
+	//metaname := "example.bleve"
+	index, err := bleve.Open(metaname)
+
+	if err != nil {
+		mapping := bleve.NewIndexMapping()
+		index, err = bleve.New(metaname, mapping)
+	}
+
+	defer index.Close()
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fileF, _ := os.Open(file)
+	scanner := bufio.NewScanner(fileF)
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 4*1024*1024)
+	for scanner.Scan() {
+
+		lines = append(lines, scanner.Text())
+	}
+
+	if len(lines) == 0 {
+		return
+	}
+
+	if err != nil {
+		log.Fatalf("ReadLines: %s", err)
+	}
+
+	var datas [pieces][]logenc.LogList
+
+	curNum := 0
+
+	fmt.Println("lines", len(lines))
+
+	for _, line := range lines {
+
+		datas[curNum] = append(datas[curNum], logenc.ProcLineDecodeXML(line))
+
+		curNum++
+		if curNum == pieces {
+			curNum = 0
+		}
+
+	}
+
+	for _, data := range datas {
+
+		fmt.Println("data len=", len(data))
+		wg.Add(1)
+		go func(dataPiece []logenc.LogList) {
+
+			for _, data := range dataPiece {
+				if len(data.XML_RECORD_ROOT) > 0 {
+					index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+				}
+			}
+			wg.Done()
+		}(data)
+
+	}
+
+	wg.Wait()
 
 }

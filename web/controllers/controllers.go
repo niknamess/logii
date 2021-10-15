@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"encoding/base64"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 	"path/filepath"
 
@@ -25,6 +26,11 @@ var (
 	stringF   bool
 	SearchMap map[string]string
 )
+
+type MyStruct struct {
+	DirN string
+	File string
+}
 
 // RootHandler - http handler for handling / path
 func RootHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +60,10 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	filename := string(filenameB)
 	if filenameB == nil {
 		return
+	}
+
+	if filename == "undefined" {
+		ViewDir(conn, search)
 	}
 
 	if savefiles == nil {
@@ -92,7 +102,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	if ok {
 		//go util.TailFile(conn, filename, search)
-		fmt.Println(search)
+		//fmt.Println(search)
 		util.TailFile(conn, filename, search, SearchMap)
 	}
 	w.WriteHeader(http.StatusUnauthorized)
@@ -103,34 +113,54 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+//Bleve indexing and create map
 func Indexing(conn *websocket.Conn, filename string) {
-	//filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
-	//conn.WriteMessage(websocket.TextMessage, []byte("filename:"))
-	//conn.WriteMessage(websocket.TextMessage, []byte(filename))
-	var fileList = make(map[string]interface{})
+
 	if filename == "undefined" {
-		fileList["FileList"] = util.Conf.Dir
-		b, _ := json.MarshalIndent(fileList, "", "")
-
-		conn.WriteMessage(websocket.TextMessage, b)
-		fmt.Print(string(b))
-
+		return
 	} else {
 		fileN := filepath.Base(filename)
 		fmt.Println(filename)
-		//fmt.Println("Start Index Bleve")
-
 		conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-
 		bleveSI.ProcFileBreveSPEED(fileN, filename)
-		//fmt.Println("Stop Index Bleve")
 		conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
-		//fmt.Println("Start Map")
 		SearchMap = logenc.ProcMapFile(filename)
-		//b, _ := json.MarshalIndent(SearchMap, "", "  ")
-		//fmt.Print(string(b))
-		//DirN(conn)
 	}
 }
 
-//return name files
+//View List of Dir
+func ViewDir(conn *websocket.Conn, search string) {
+	var fileList = make(map[string][]string)
+	//var result MyStruct
+	files, _ := ioutil.ReadDir("/home/nik/projects/Course/tmcs-log-agent-storage/")
+	countFiles := (len(files))
+	conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
+	if len(search) == 0 {
+
+		fileList["FileList"] = util.Conf.Dir
+		//String[] values = fileList.get("FileList");
+		fmt.Println("start")
+		for i := 0; i < countFiles; i++ {
+			fileaddr := fileList["FileList"][i]
+			fileN := filepath.Base(fileaddr)
+			bleveSI.ProcFileBreveSPEED(fileN, fileaddr)
+			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
+			fmt.Println(fileaddr)
+
+		}
+		conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
+		//b, _ := json.Marshal(fileList)
+		//fmt.Println(string(b))
+
+		//mapstructure.Decode(fileList, &result)
+		//err := mapstructure.Decode(fileList, &result)
+		//if err == nil {
+		//	panic("should have an error")
+		//	}
+
+		//fmt.Println(err.Error())
+
+		//conn.WriteMessage(websocket.TextMessage, b)
+	}
+
+}

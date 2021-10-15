@@ -29,6 +29,8 @@
 - [x] split search and indexing string (too long indexing when search file)
 - [ ] add search in dir 
 - [ ] indexing file when file changes occur
+- [ ] add func for compare control sum file
+
 
 # FLAGS 
     to run use 

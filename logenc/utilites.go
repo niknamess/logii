@@ -55,6 +55,8 @@ func ReadLines(path string, fn func(line string)) error {
 	fmt.Println("path:" + path)
 
 	scanner := bufio.NewScanner(file)
+	buf := make([]byte, 0, 64*1024)
+	scanner.Buffer(buf, 4*1024*1024)
 
 	//c := 0
 	for scanner.Scan() {
