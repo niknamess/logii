@@ -28,8 +28,8 @@
 - [x] js how many clicked so many added files and result fix :cookie:
 - [x] split search and indexing string (too long indexing when search file)
 - [ ] add search in dir 
-- [ ] indexing file when file changes occur
-- [ ] add func for compare control sum file
+- [x] indexing file when file changes occur
+- [x] add func for compare control sum file
 
 
 # FLAGS 

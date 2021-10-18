@@ -2,7 +2,6 @@ package logenc
 
 import (
 	"bufio"
-	"bytes"
 	"crypto/md5"
 	"fmt"
 	"io"
@@ -18,9 +17,10 @@ import (
 )
 
 var (
-	Logger *log.Logger
-	mu     sync.Mutex
-	ind    bool
+	Logger   *log.Logger
+	mu       sync.Mutex
+	ind      bool
+	fileSize int64
 )
 
 func ProcLine(line string) (csvF string) {
@@ -255,8 +255,8 @@ func WriteFileSum(file string) bool {
 
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
-	hashFileName := "./hashsum/md5"
-
+	hashFileName := "md5"
+	//os.Mkdir("hashsum", 0644)
 	fmt.Println(os.Getwd())
 
 	fmt.Printf("current Checksum: %s\n", checksum2)
@@ -272,6 +272,7 @@ func WriteFileSum(file string) bool {
 	line := 0
 
 	for scanner.Scan() {
+
 		if strings.Contains(scanner.Text(), (checksum2 + " " + fileN)) {
 			ind = false
 
@@ -287,10 +288,9 @@ func WriteFileSum(file string) bool {
 
 		f.Write([]byte(checksum2 + " " + fileN + "\n"))
 	}
+	fi, _ := f.Stat()
 
-	buf := &bytes.Buffer{}
-	fileSize, _ := buf.ReadFrom(f)
-	if fileSize == 0 {
+	if fi.Size() == 0 {
 		f.Write([]byte(checksum2 + " " + fileN + "\n"))
 	}
 

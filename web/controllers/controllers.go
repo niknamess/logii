@@ -101,8 +101,8 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// be searched as a string in the index, if not found then rejected.
 
 	if ok {
-		//go util.TailFile(conn, filename, search)
-		//fmt.Println(search)
+
+		//util.TailFile(conn, filename, search, SearchMap, false)
 		util.TailFile(conn, filename, search, SearchMap)
 	}
 	w.WriteHeader(http.StatusUnauthorized)
@@ -148,19 +148,21 @@ func ViewDir(conn *websocket.Conn, search string) {
 			fmt.Println(fileaddr)
 
 		}
-		conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
-		//b, _ := json.Marshal(fileList)
-		//fmt.Println(string(b))
 
-		//mapstructure.Decode(fileList, &result)
-		//err := mapstructure.Decode(fileList, &result)
-		//if err == nil {
-		//	panic("should have an error")
-		//	}
-
-		//fmt.Println(err.Error())
-
-		//conn.WriteMessage(websocket.TextMessage, b)
+	} else {
+		fileList["FileList"] = util.Conf.Dir
+		//String[] values = fileList.get("FileList");
+		fmt.Println("start")
+		for i := 0; i < countFiles; i++ {
+			fileaddr := fileList["FileList"][i]
+			fileN := filepath.Base(fileaddr)
+			bleveSI.ProcFileBleveSPEED(fileN, fileaddr)
+			if util.TailDir(conn, fileN, search, SearchMap) == true {
+				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
+			}
+			fmt.Println(fileaddr)
+		}
 	}
+	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 
 }

@@ -21,8 +21,6 @@ var (
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
 	indexMap = make(map[string]bool)
-	//i        int = 0
-	//UlidC []string
 )
 
 // TailFile - Accepts a websocket connection and a filename and tails the
@@ -31,11 +29,8 @@ var (
 func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]string) {
 
 	fileN := filepath.Base(fileName)
-	//fmt.Println(file1)
 	UlidC := bleveSI.ProcBleveSearch(fileN, lookFor)
 
-	//fmt.Println("Stop")
-	//fmt.Println(len(UlidC))
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
@@ -51,35 +46,30 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		for line := range taillog.Lines {
+			//if dir == false {
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
-			//fmt.Println(logenc.ProcLine(line.Text))
-			//fmt.Println(UlidC[i])
+			//} else {
+			//	return true
+			//}
+
 		}
 	} else if len(UlidC) == 0 {
 		println("Break")
 		return
 	} else {
 
-		//for line := range taillog.Lines {
-
 		for i := 0; i < len(UlidC); i++ {
 
-			//contain := strings.Contains(logenc.ProcLine(line.Text), UlidC[i])
 			v, found := SearchMap[UlidC[i]]
-			//fmt.Println(found)
-			//if contain == true {
 			if found == true {
 
-				//conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
 				conn.WriteMessage(websocket.TextMessage, []byte(v))
-				//fmt.Println(logenc.ProcLine(line.Text))
-				//fmt.Println(UlidC[i])
+
 			}
 		}
 
-		//}
-
 	}
+	//return true
 }
 
 // IndexFiles - takes argument as a list of files and directories and returns
@@ -166,4 +156,28 @@ func dfs(file string) {
 		// Insert the absPath into the Map, avoids duplicates in successive cron runs
 		indexMap[absPath] = true
 	}
+}
+
+func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]string) bool {
+
+	fileN := filepath.Base(fileName)
+	UlidC := bleveSI.ProcBleveSearch(fileN, lookFor)
+
+	if len(UlidC) == 0 {
+		println("Break")
+		return false
+	} else {
+
+		for i := 0; i < len(UlidC); i++ {
+
+			_, found := SearchMap[UlidC[i]]
+			if found == true {
+				return true
+
+			}
+		}
+
+	}
+	return false
+
 }
