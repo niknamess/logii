@@ -12,7 +12,7 @@ func BenchmarkProcFileBreveTESTSPEED(b *testing.B) {
 		file  string
 	}
 
-	bleveSI.ProcFileBreveSPEED("12-09-20211", "/home/nik/projects/Course/tmcs-log-agent-storage/13-09-2021")
+	bleveSI.ProcFileBleveSPEED("12-09-20211", "/home/nik/projects/Course/tmcs-log-agent-storage/13-09-2021")
 
 }
 

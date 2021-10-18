@@ -30,6 +30,7 @@ func ProcFileBreve(fileN string, file string) {
 	filename := fileN
 	metaname := dir + filename + extension
 	//metaname := "example.bleve"
+
 	index, err := bleve.Open(metaname)
 	if err != nil {
 		mapping := bleve.NewIndexMapping()
@@ -81,7 +82,7 @@ func ProcFileBreve(fileN string, file string) {
 	index.Close()
 }
 
-func ProcFileBreveSPEED(fileN string, file string) {
+func ProcFileBleveSPEED(fileN string, file string) {
 	var data logenc.LogList
 
 	if len(file) <= 0 {
@@ -91,6 +92,9 @@ func ProcFileBreveSPEED(fileN string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension
+	if logenc.WriteFileSum(file) == false {
+		return
+	}
 	index, err := bleve.Open(metaname)
 	if err != nil {
 		mapping := bleve.NewIndexMapping()

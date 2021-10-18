@@ -122,7 +122,7 @@ func Indexing(conn *websocket.Conn, filename string) {
 		fileN := filepath.Base(filename)
 		fmt.Println(filename)
 		conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-		bleveSI.ProcFileBreveSPEED(fileN, filename)
+		bleveSI.ProcFileBleveSPEED(fileN, filename)
 		conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 		SearchMap = logenc.ProcMapFile(filename)
 	}
@@ -143,7 +143,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 		for i := 0; i < countFiles; i++ {
 			fileaddr := fileList["FileList"][i]
 			fileN := filepath.Base(fileaddr)
-			bleveSI.ProcFileBreveSPEED(fileN, fileaddr)
+			bleveSI.ProcFileBleveSPEED(fileN, fileaddr)
 			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 			fmt.Println(fileaddr)
 

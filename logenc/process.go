@@ -2,6 +2,7 @@ package logenc
 
 import (
 	"bufio"
+	"bytes"
 	"crypto/md5"
 	"fmt"
 	"io"
@@ -19,6 +20,7 @@ import (
 var (
 	Logger *log.Logger
 	mu     sync.Mutex
+	ind    bool
 )
 
 func ProcLine(line string) (csvF string) {
@@ -251,42 +253,47 @@ func ProcMapFileREZERV(file string) {
 
 func WriteFileSum(file string) bool {
 
-	//checksum := MD5(file)
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
-	metaname := "hashmd5"
-	ind := false
-	//fmt.Printf("Checksum 1: %s\n", checksum)
+	hashFileName := "./hashsum/md5"
+
+	fmt.Println(os.Getwd())
+
 	fmt.Printf("current Checksum: %s\n", checksum2)
-	f, _ := os.OpenFile(metaname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	checke(err)
 	defer f.Close()
-	//f.Write([]byte(fileN + " " + checksum2 + "\n"))
+
 	scanner := bufio.NewScanner(f)
-	_, ok := os.Stat(metaname)
-	//fmt.Println(info)
+	_, ok := os.Stat(hashFileName)
+
 	fmt.Println(ok)
-	if ok != nil {
-		f.Write([]byte(checksum2 + " " + fileN + "\n"))
-	}
-	line := 1
+
+	line := 0
 
 	for scanner.Scan() {
-		//lineStr := scanner.Text()
 		if strings.Contains(scanner.Text(), (checksum2 + " " + fileN)) {
 			ind = false
-			fmt.Println(ind)
+
 			return ind
 		} else {
-			f.Write([]byte(checksum2 + " " + fileN + "\n"))
 			ind = true
-			fmt.Println(ind)
 		}
 
 		line++
-
-		//mu.Unlock()
-
 	}
+	scanner = nil
+	if ind == true {
+
+		f.Write([]byte(checksum2 + " " + fileN + "\n"))
+	}
+
+	buf := &bytes.Buffer{}
+	fileSize, _ := buf.ReadFrom(f)
+	if fileSize == 0 {
+		f.Write([]byte(checksum2 + " " + fileN + "\n"))
+	}
+
 	return ind
 }
 func checke(e error) {
