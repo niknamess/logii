@@ -258,17 +258,17 @@ func CheckFileSum(file string) bool {
 	fileN := filepath.Base(file)
 	hashFileName := "md5"
 	//os.Mkdir("hashsum", 0644)
-	fmt.Println(os.Getwd())
+	//fmt.Println(os.Getwd())
 
-	fmt.Printf("current Checksum: %s\n", checksum2)
+	//fmt.Printf("current Checksum: %s\n", checksum2)
 	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
-	_, ok := os.Stat(hashFileName)
+	//_, ok := os.Stat(hashFileName)
 
-	fmt.Println(ok)
+	//fmt.Println(ok)
 
 	line := 0
 
@@ -305,15 +305,15 @@ func WriteFileSum(file string) {
 	hashFileName := "md5"
 	fmt.Println(os.Getwd())
 
-	fmt.Printf("current Checksum: %s\n", checksum2)
+	//fmt.Printf("current Checksum: %s\n", checksum2)
 	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
-	_, ok := os.Stat(hashFileName)
+	//_, ok := os.Stat(hashFileName)
 
-	fmt.Println(ok)
+	//fmt.Println(ok)
 
 	line := 0
 

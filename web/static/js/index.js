@@ -102,11 +102,33 @@ function initWS(file) {
         container.append("<p><b>Tailing file: " + file + "</b></p>");
 
     }
+
     socket.onmessage = function(e) {
-        container.append(e.data.trim() + "<br>");
+        //  let msg = e.data.trim();
+        str = e.data.trim();
+        if (str.indexOf("INFO") == 0) {
+            //str.css("background-color", 'red');
+            container.append("<p style='background-color: white; color:black'>" + str + "</p>" + "<hr>");
+
+        } else if (str.indexOf("ERROR") == 0) {
+            //str.css("background-color", 'orange');
+            container.append("<p style='background-color: maroon; color:orange'>" + str + "</p>" + "<hr>");
+            //}
+
+
+        } else if (str.indexOf("WARNING") == 0) {
+            //str.css("background-color", 'yellow');
+            container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
+        } else {
+            container.append(str + "<hr>");
+
+        }
+
+        //container.append(str + "<br>" + "<hr>");
+
     }
     socket.onclose = function() {
-        container.append("<p>Connection Closed to WebSocket, tail stopped</p>");
+        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
     }
     socket.onerror = function(e) {
         container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
