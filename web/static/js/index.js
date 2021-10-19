@@ -2,6 +2,8 @@ angular.module("logi2").controller("mainController", mainController);
 
 mainController.$inject = ["$rootScope", "$scope", "$mdSidenav", "$http"]
 const button = document.getElementById('btn');
+const buttonR = document.getElementById('res');
+
 var lastItem;
 //const input = document.querySelector('input');
 
@@ -10,6 +12,15 @@ button.addEventListener('click', event => {
     setTimeout(
         () => {
             initWS(lastItem)
+        },
+        1 * 200
+    );
+});
+
+buttonR.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            window.location.reload();
         },
         1 * 200
     );

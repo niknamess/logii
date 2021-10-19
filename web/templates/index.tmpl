@@ -38,11 +38,9 @@
             <label>Search</label><br>
             <input type="text" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs"/><br><br>
             <button  id="btn" (click)=”handleClick($event)” type=”button” >Find</button> 
-        </form>
-        <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
-          <!-- Content will be inserted by websocket connection -->
-        </md-content>
-        <md-content class="md-padding">
+            <button  id="res" (click)=”handleClick($event)” type=”button” >On start page</button> 
+
+            <md-content class="md-padding">
           <div layout="row" ng-hide="!showCard" class="ng-hide">
             <md-content flex></md-content>
             <md-card flex layout-align="center center">
@@ -63,6 +61,12 @@
             <md-content flex></md-content>
           </div>
         </md-content>
+
+
+        </form>
+        <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
+          <!-- Content will be inserted by websocket connection -->
+       
       </md-content>
       <div>
         <section layout="row">

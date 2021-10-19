@@ -21,6 +21,7 @@ var (
 	mu       sync.Mutex
 	ind      bool
 	fileSize int64
+	//true untyped bool = true
 )
 
 func ProcLine(line string) (csvF string) {
@@ -251,7 +252,7 @@ func ProcMapFileREZERV(file string) {
 	}
 }
 
-func WriteFileSum(file string) bool {
+func CheckFileSum(file string) bool {
 
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
@@ -284,6 +285,51 @@ func WriteFileSum(file string) bool {
 		line++
 	}
 	scanner = nil
+	//if ind == true {
+
+	//	f.Write([]byte(checksum2 + " " + fileN + "\n"))
+	//}
+	//fi, _ := f.Stat()
+
+	//if fi.Size() == 0 {
+	//	f.Write([]byte(checksum2 + " " + fileN + "\n"))
+	//}
+
+	return ind
+}
+
+func WriteFileSum(file string) {
+
+	checksum2 := FileMD5(file)
+	fileN := filepath.Base(file)
+	hashFileName := "md5"
+	fmt.Println(os.Getwd())
+
+	fmt.Printf("current Checksum: %s\n", checksum2)
+	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	checke(err)
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	_, ok := os.Stat(hashFileName)
+
+	fmt.Println(ok)
+
+	line := 0
+
+	for scanner.Scan() {
+
+		if strings.Contains(scanner.Text(), (checksum2 + " " + fileN)) {
+			ind = false
+
+			return
+		} else {
+			ind = true
+		}
+
+		line++
+	}
+	scanner = nil
 	if ind == true {
 
 		f.Write([]byte(checksum2 + " " + fileN + "\n"))
@@ -294,8 +340,8 @@ func WriteFileSum(file string) bool {
 		f.Write([]byte(checksum2 + " " + fileN + "\n"))
 	}
 
-	return ind
 }
+
 func checke(e error) {
 	if e != nil {
 		panic(e)

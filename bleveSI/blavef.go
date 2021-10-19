@@ -92,7 +92,7 @@ func ProcFileBleveSPEED(fileN string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension
-	if logenc.WriteFileSum(file) == false {
+	if logenc.CheckFileSum(file) == false {
 		return
 	}
 	index, err := bleve.Open(metaname)
@@ -164,6 +164,7 @@ func ProcFileBleveSPEED(fileN string, file string) {
 	close(ch)
 	//wg.Wait()
 	index.Close()
+	logenc.WriteFileSum(file)
 }
 
 //func ProcBleveSearch(dir string) []string {
