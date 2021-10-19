@@ -100,13 +100,27 @@ function initWS(file) {
     container.html("")
     socket.onopen = function() {
         container.append("<p><b>Tailing file: " + file + "</b></p>");
-
+        strf = file
+        if (strf.indexOf("undefined") != 0) {
+            container.append("<table border=\"1\"> <tr > <td>" +
+                "TYPE MESSAGE" + "</td> <td >" +
+                "APPNAME" + "</td> <td >" +
+                "APPPATH" + "</td> <td>" +
+                "APPPID" + "</td><td>" +
+                "THREAD" + "</td><td>" +
+                "TIME" + "</td><td>" +
+                "ULID" + "</td><td>" +
+                "MESSAGE" + "</td><td>" +
+                "DETAILS" + "</td></tr > </table >");
+        }
     }
 
     socket.onmessage = function(e) {
         //  let msg = e.data.trim();
         str = e.data.trim();
         if (str.indexOf("INFO") == 0) {
+
+
             //str.css("background-color", 'red');
             container.append("<p style='background-color: white; color:black'>" + str + "</p>" + "<hr>");
 
@@ -140,3 +154,19 @@ function initWS(file) {
 
 
 }
+
+d3.text(str, function(data) {
+    var parsedCSV = d3.csv.parseRows(data);
+
+    var container = d3.select("container")
+        .append("table")
+
+    .selectAll("tr")
+        .data(parsedCSV).enter()
+        .append("tr")
+
+    .selectAll("td")
+        .data(function(d) { return d; }).enter()
+        .append("td")
+        .text(function(d) { return d; });
+});
