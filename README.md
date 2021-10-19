@@ -27,9 +27,13 @@
 - [x] create bleve storage for other file :fire:
 - [x] js how many clicked so many added files and result fix :cookie:
 - [x] split search and indexing string (too long indexing when search file)
-- [ ] add search in dir 
+- [x] add search in dir 
 - [x] indexing file when file changes occur
 - [x] add func for compare control sum file
+- [ ] add disign in web interface (table)
+- [ ] add disign in web interface (colors for type message) 
+
+
 
 
 # FLAGS 
