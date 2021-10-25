@@ -84,7 +84,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		savefiles = append(savefiles, filename)
 
 	}
-	///logenc.ProcFileBreve(fileN, filename)
+	///logenc.ProcFileBreveSLOWLY(fileN, filename)
 	// sanitize the file if it is present in the index or not.
 	filename = filepath.Clean(filename)
 	ok := false
@@ -122,7 +122,7 @@ func Indexing(conn *websocket.Conn, filename string) {
 		fileN := filepath.Base(filename)
 		fmt.Println(filename)
 		conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-		bleveSI.ProcFileBleveSPEED(fileN, filename)
+		bleveSI.ProcFileBreveSLOWLY(fileN, filename)
 		conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 		SearchMap = logenc.ProcMapFile(filename)
 	}
@@ -132,7 +132,7 @@ func Indexing(conn *websocket.Conn, filename string) {
 func ViewDir(conn *websocket.Conn, search string) {
 	var fileList = make(map[string][]string)
 	//var result MyStruct
-	files, _ := ioutil.ReadDir("/home/nik/projects/Course/tmcs-log-agent-storage/")
+	files, _ := ioutil.ReadDir("./view")
 	countFiles := (len(files))
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
 	if len(search) == 0 {
@@ -143,7 +143,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 		for i := 0; i < countFiles; i++ {
 			fileaddr := fileList["FileList"][i]
 			fileN := filepath.Base(fileaddr)
-			bleveSI.ProcFileBleveSPEED(fileN, fileaddr)
+			bleveSI.ProcFileBreveSLOWLY(fileN, fileaddr)
 			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 			fmt.Println(fileaddr)
 
@@ -156,7 +156,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 		for i := 0; i < countFiles; i++ {
 			fileaddr := fileList["FileList"][i]
 			fileN := filepath.Base(fileaddr)
-			bleveSI.ProcFileBleveSPEED(fileN, fileaddr)
+			bleveSI.ProcFileBreveSLOWLY(fileN, fileaddr)
 			if util.TailDir(conn, fileN, search, SearchMap) == true {
 				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 			}

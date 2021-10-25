@@ -11,7 +11,7 @@ func BenchmarkProcMapFile(b *testing.B) {
 		file string
 	}
 
-	logenc.ProcMapFile("/home/nik/projects/Course/tmcs-log-agent-storage/26-05-2021")
+	logenc.ProcMapFile("./view/22-06-2021")
 	//t.StartTimer()
 }
 
@@ -23,7 +23,7 @@ func BenchmarkProcMapFilePP(b *testing.B) {
 	//for i := 0; i < b.N; i++ {
 	//for i := 0; i < 6; i++ {
 
-	logenc.ProcMapFileREZERV("/home/nik/projects/Course/tmcs-log-agent-storage/26-05-2021")
+	logenc.ProcMapFileREZERV("./view/22-06-2021")
 
 	//}
 	//t.StartTimer()

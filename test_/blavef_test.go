@@ -22,7 +22,7 @@ func BenchmarkProcFileBreve(b *testing.B) {
 		file  string
 	}
 
-	bleveSI.ProcFileBreve("12-09-20211", "/home/nik/projects/Course/tmcs-log-agent-storage/13-09-2021")
+	bleveSI.ProcFileBreve("22-06-20211", "./view/22-06-2021")
 
 }
 
@@ -32,6 +32,6 @@ func BenchmarkProcFileBreveS(b *testing.B) {
 		file  string
 	}
 
-	bleveSI.ProcFileBreveSLOWLY("12-09-20211", "/home/nik/projects/Course/tmcs-log-agent-storage/13-09-2021")
+	bleveSI.ProcFileBreveSLOWLY("22-06-20211", "./view/22-06-2021")
 
 }

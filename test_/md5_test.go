@@ -11,7 +11,7 @@ func BenchmarkCheckFileSum(b *testing.B) {
 		file string
 	}
 
-	logenc.CheckFileSum("/home/nik/projects/Course/logi2/logtest/gen_logs")
-	logenc.CheckFileSum("/home/nik/projects/Course/logi2/logtest/gen_logs1")
+	logenc.CheckFileSum("./view/22-06-2021")
+	//logenc.CheckFileSum("/home/nik/projects/Course/logi2/logtest/gen_logs1")
 
 }
