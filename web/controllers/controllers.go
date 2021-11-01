@@ -132,7 +132,9 @@ func Indexing(conn *websocket.Conn, filename string) {
 func ViewDir(conn *websocket.Conn, search string) {
 	var fileList = make(map[string][]string)
 	//var result MyStruct
-	files, _ := ioutil.ReadDir("./view")
+	files, _ := ioutil.ReadDir("/home/nik/projects/Course/tmcs-log-agent-storage/")
+	//"/home/nik/projects/Course/tmcs-log-agent-storage/"
+	//"./view"
 	countFiles := (len(files))
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
 	if len(search) == 0 {

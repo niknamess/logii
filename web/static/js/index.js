@@ -96,22 +96,26 @@ function initWS(file) {
 
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
+    //var output = [],
+    //  i;
+
+
 
     container.html("")
     socket.onopen = function() {
         container.append("<p><b>Tailing file: " + file + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table border=\"1\"> <tr > <td>" +
-                "TYPE MESSAGE" + "</td> <td >" +
-                "APPNAME" + "</td> <td >" +
-                "APPPATH" + "</td> <td>" +
-                "APPPID" + "</td><td>" +
-                "THREAD" + "</td><td>" +
-                "TIME" + "</td><td>" +
-                "ULID" + "</td><td>" +
-                "MESSAGE" + "</td><td>" +
-                "DETAILS" + "</td></tr > </table >");
+            container.append("<table border=\"1\"> <tr > <td width=\"550\" height=\"100\" >" +
+                "TYPE MESSAGE" + "</td> <td width=\"550\" height=\"100\" >" +
+                "APPNAME" + "</td> <td width=\"550\" height=\"100\" >" +
+                "APPPATH" + "</td> <td width=\"550\" height=\"100\" >" +
+                "APPPID" + "</td><td width=\"550\" height=\"100\" >" +
+                "THREAD" + "</td><td width=\"550\" height=\"100\" >" +
+                "TIME" + "</td><td width=\"550\" height=\"100\" >" +
+                "ULID" + "</td><td width=\"550\" height=\"100\" >" +
+                "MESSAGE" + "</td><td width=\"550\" height=\"100\" >" +
+                "DETAILS" + "</td></tr > </table width=\"550\" height=\"100\" >");
         }
     }
 
@@ -119,20 +123,43 @@ function initWS(file) {
         //  let msg = e.data.trim();
         str = e.data.trim();
         if (str.indexOf("INFO") == 0) {
-
-
+            //for (i = 0; i < str.length; i++)
+            //  output.push("<tr><td>" + str[i].slice(0, -1).split(",").join("</td><td>") + "</td></tr>");
+            //output = "<table>" + output.join("") + "</table>";
+            //container.append(output);
+            str = str.replace("INFO", "");
+            str = "<table border=\"1\" solid grey style='font-family:\"Courier New\", Courier, monospace; font-size:100%' ><tr >" +
+                str.replace(/,\n/g, "<tr  >")
+                .replace(/,/g, "<td width=\"550\" height=\"100\">")
+                .replace(/<tr>$/, "") +
+                "</table>";
+            container.append(str);
             //str.css("background-color", 'red');
-            container.append("<p style='background-color: white; color:black'>" + str + "</p>" + "<hr>");
+            //container.append("<p style='background-color: white; color:black'>" + str + "</p>" + "<hr>");
 
         } else if (str.indexOf("ERROR") == 0) {
             //str.css("background-color", 'orange');
-            container.append("<p style='background-color: maroon; color:orange'>" + str + "</p>" + "<hr>");
+            str = str.replace("ERROR", "");
+            str = "<table border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#dc143c\"  ><tr>" +
+                str.replace(/,\n/g, "<tr >")
+                .replace(/,/g, "<td width=\"550\" height=\"100\">")
+                .replace(/<tr>$/, "") +
+                "</table>";
+            container.append(str);
+            //container.append("<p style='background-color: maroon; color:orange'>" + str + "</p>" + "<hr>");
             //}
 
 
         } else if (str.indexOf("WARNING") == 0) {
             //str.css("background-color", 'yellow');
-            container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
+            str = str.replace("WARNING", "");
+            str = "<table border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" ><tr>" +
+                str.replace(/,\n/g, "<tr >")
+                .replace(/,/g, "<td width=\"550\" height=\"100\">")
+                .replace(/<tr>$/, "") +
+                "</table>";
+            container.append(str);
+            // container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
         } else {
             container.append(str + "<hr>");
 
