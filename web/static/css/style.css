@@ -1,3 +1,7 @@
 .crimson-text {
     color: crimson;
 }
+
+td {
+    overflow: hidden;
+}

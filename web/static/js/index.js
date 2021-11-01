@@ -106,16 +106,16 @@ function initWS(file) {
         container.append("<p><b>Tailing file: " + file + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table border=\"1\"> <tr > <td width=\"550\" height=\"100\" >" +
+            container.append("<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\"> <tr > <td width=\"550\" height=\"100\" >" +
                 "TYPE MESSAGE" + "</td> <td width=\"550\" height=\"100\" >" +
-                "APPNAME" + "</td> <td width=\"550\" height=\"100\" >" +
-                "APPPATH" + "</td> <td width=\"550\" height=\"100\" >" +
-                "APPPID" + "</td><td width=\"550\" height=\"100\" >" +
-                "THREAD" + "</td><td width=\"550\" height=\"100\" >" +
-                "TIME" + "</td><td width=\"550\" height=\"100\" >" +
-                "ULID" + "</td><td width=\"550\" height=\"100\" >" +
-                "MESSAGE" + "</td><td width=\"550\" height=\"100\" >" +
-                "DETAILS" + "</td></tr > </table width=\"550\" height=\"100\" >");
+                "APPNAME" + "</td> <td width=\"550px\" height=\"100px\" >" +
+                "APPPATH" + "</td> <td width=\"550px\" height=\"100px\" >" +
+                "APPPID" + "</td><td width=\"550px\" height=\"100px\" >" +
+                "THREAD" + "</td><td width=\"550px\" height=\"100px\" >" +
+                "TIME" + "</td><td width=\"550px\" height=\"100px\" >" +
+                "ULID" + "</td><td width=\"550px\" height=\"100px\" >" +
+                "MESSAGE" + "</td><td width=\"550px\" height=\"100px\" >" +
+                "DETAILS" + "</td></tr > </table >");
         }
     }
 
@@ -128,7 +128,7 @@ function initWS(file) {
             //output = "<table>" + output.join("") + "</table>";
             //container.append(output);
             str = str.replace("INFO", "");
-            str = "<table border=\"1\" solid grey style='font-family:\"Courier New\", Courier, monospace; font-size:100%' ><tr >" +
+            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' ><tr >" +
                 str.replace(/,\n/g, "<tr  >")
                 .replace(/,/g, "<td width=\"550\" height=\"100\">")
                 .replace(/<tr>$/, "") +
@@ -140,7 +140,7 @@ function initWS(file) {
         } else if (str.indexOf("ERROR") == 0) {
             //str.css("background-color", 'orange');
             str = str.replace("ERROR", "");
-            str = "<table border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#dc143c\"  ><tr>" +
+            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#dc143c\" ><tr >" +
                 str.replace(/,\n/g, "<tr >")
                 .replace(/,/g, "<td width=\"550\" height=\"100\">")
                 .replace(/<tr>$/, "") +
@@ -153,7 +153,9 @@ function initWS(file) {
         } else if (str.indexOf("WARNING") == 0) {
             //str.css("background-color", 'yellow');
             str = str.replace("WARNING", "");
-            str = "<table border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" ><tr>" +
+            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" ><tr >" +
+
+                //   str = "<table border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" ><tr>" +
                 str.replace(/,\n/g, "<tr >")
                 .replace(/,/g, "<td width=\"550\" height=\"100\">")
                 .replace(/<tr>$/, "") +
@@ -161,7 +163,7 @@ function initWS(file) {
             container.append(str);
             // container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
         } else {
-            container.append(str + "<hr>");
+            container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
 
         }
 
