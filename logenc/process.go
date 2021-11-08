@@ -372,7 +372,7 @@ func CopyLogs(path string) {
 	defer original.Close()
 
 	if CheckFileSum(path) == true {
-		new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+"old", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 		if err != nil {
 			log.Fatal(err)
@@ -401,6 +401,10 @@ func CopyLogs(path string) {
 		if err != nil {
 			log.Fatal(err)
 		}
+		err = os.Remove("./repdata/" + fileN + "/" + fileN + "old")
+		if err != nil {
+			log.Fatal(err)
+		}
 
 	}
 
@@ -410,7 +414,10 @@ func Comparefiles(path1 string, path2 string) {
 	//mapFile1 := ProcMapFile(path1)
 	//mapFile2 := ProcMapFile(path2)
 	//res := reflect.DeepEqual(mapFile1, mapFile2)
-
+	new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
 	ch := make(chan string, 100)
 	//log.Println("1")
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
@@ -418,12 +425,25 @@ func Comparefiles(path1 string, path2 string) {
 			for {
 				select {
 				case line1 := <-ch:
-					ProcLine(line1)
+					data1:=ProcLine(line1)
 
 				case line2 := <-ch:
-					ProcLine(line2)
+					data2:=ProcLine(line2)
+
+				if 	data1.XML_RECORD_ROOT[0].XML_ULID>data2.XML_RECORD_ROOT[0].XML_ULID{
+					new.Write([]byte(line2))
+
+				}else if data1.XML_RECORD_ROOT[0].XML_ULID<data2.XML_RECORD_ROOT[0].XML_ULID{
+					new.Write([]byte(line1))
+		
+				}else if data1.XML_RECORD_ROOT[0].XML_ULID = data2.XML_RECORD_ROOT[0].XML_ULID{
+					new.Write([]byte(line2))
+							
 				}
 
+				}
+				
+			
 			}
 
 		}()
