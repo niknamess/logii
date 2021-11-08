@@ -167,14 +167,11 @@ func ProcFileBleveSPEED(fileN string, file string) {
 	if err != nil {
 		log.Fatalf("ReadLines: %s", err)
 	}
-	//wg.Wait()
 	close(ch)
-	//wg.Wait()
 	index.Close()
 	logenc.WriteFileSum(file)
 }
 
-//func ProcBleveSearch(dir string) []string {
 func ProcBleveSearch(fileN string, word string) []string {
 	dir := "./blevestorage/"
 	extension := ".bleve"

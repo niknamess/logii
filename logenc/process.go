@@ -217,7 +217,7 @@ func ProcMapFile(file string) map[string]string {
 	return SearchMap
 }
 
-//slowely
+//slowely not used
 func ProcMapFileREZERV(file string) {
 	if len(file) <= 0 {
 		return
@@ -285,15 +285,6 @@ func CheckFileSum(file string) bool {
 		line++
 	}
 	scanner = nil
-	//if ind == true {
-
-	//	f.Write([]byte(checksum2 + " " + fileN + "\n"))
-	//}
-	//fi, _ := f.Stat()
-
-	//if fi.Size() == 0 {
-	//	f.Write([]byte(checksum2 + " " + fileN + "\n"))
-	//}
 
 	return ind
 }
@@ -361,4 +352,93 @@ func FileMD5(path string) string {
 		panic(err)
 	}
 	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
+func Createdir(path string) {
+	fileN := filepath.Base(path)
+	//Create a folder/directory at a full qualified path
+	err := os.Mkdir("./repdata/"+fileN, 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func CopyLogs(path string) {
+	fileN := filepath.Base(path)
+	Createdir(path)
+	original, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer original.Close()
+
+	if CheckFileSum(path) == true {
+		new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer new.Close()
+
+		bytesWritten, err := io.Copy(new, original)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Bytes Written: %d\n", bytesWritten)
+	} else {
+		new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+"new", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer new.Close()
+
+		bytesWritten, err := io.Copy(new, original)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Bytes Written in new file: %d\n", bytesWritten)
+
+		err = os.Remove("./repdata/" + fileN + "/" + fileN + "new")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+	}
+
+}
+
+func Comparefiles(path1 string, path2 string) {
+	//mapFile1 := ProcMapFile(path1)
+	//mapFile2 := ProcMapFile(path2)
+	//res := reflect.DeepEqual(mapFile1, mapFile2)
+
+	ch := make(chan string, 100)
+	//log.Println("1")
+	for i := runtime.NumCPU() + 1; i > 0; i-- {
+		go func() {
+			for {
+				select {
+				case line1 := <-ch:
+					ProcLine(line1)
+
+				case line2 := <-ch:
+					ProcLine(line2)
+				}
+
+			}
+
+		}()
+	}
+
+	err1 := ReadLines(path1, func(line1 string) {
+		ch <- line1
+	})
+	err2 := ReadLines(path1, func(line2 string) {
+		ch <- line2
+	})
+	if err1 != nil {
+		log.Fatalf("ReadLines: %s", err1)
+	}
+	if err2 != nil {
+		log.Fatalf("ReadLines: %s", err2)
+	}
 }

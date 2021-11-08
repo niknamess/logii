@@ -30,7 +30,7 @@
 - [x] add search in dir 
 - [x] indexing file when file changes occur
 - [x] add func for compare control sum file
-- [ ] add disign in web interface (table)
+- [x] add disign in web interface (table)
 - [x] add disign in web interface (colors for type message) 
 
 
