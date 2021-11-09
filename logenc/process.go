@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/oklog/ulid/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -21,7 +22,11 @@ var (
 	mu       sync.Mutex
 	ind      bool
 	fileSize int64
+
 	//true untyped bool = true
+)
+var (
+	sliceLoglist []LogList
 )
 
 func ProcLine(line string) (csvF string) {
@@ -171,7 +176,6 @@ func ProcLineDecodeXML(line string) (val LogList) {
 
 		return
 	}
-
 	return val
 }
 
@@ -257,35 +261,21 @@ func CheckFileSum(file string) bool {
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
 	hashFileName := "md5"
-	//os.Mkdir("hashsum", 0644)
-	//fmt.Println(os.Getwd())
-
-	//fmt.Printf("current Checksum: %s\n", checksum2)
 	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
 	defer f.Close()
-
 	scanner := bufio.NewScanner(f)
-	//_, ok := os.Stat(hashFileName)
-
-	//fmt.Println(ok)
-
 	line := 0
-
 	for scanner.Scan() {
-
 		if strings.Contains(scanner.Text(), (checksum2 + " " + fileN)) {
 			ind = false
-
 			return ind
 		} else {
 			ind = true
 		}
-
 		line++
 	}
 	scanner = nil
-
 	return ind
 }
 
@@ -295,19 +285,11 @@ func WriteFileSum(file string) {
 	fileN := filepath.Base(file)
 	hashFileName := "md5"
 	fmt.Println(os.Getwd())
-
-	//fmt.Printf("current Checksum: %s\n", checksum2)
 	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
 	defer f.Close()
-
 	scanner := bufio.NewScanner(f)
-	//_, ok := os.Stat(hashFileName)
-
-	//fmt.Println(ok)
-
 	line := 0
-
 	for scanner.Scan() {
 
 		if strings.Contains(scanner.Text(), (checksum2 + " " + fileN)) {
@@ -385,13 +367,13 @@ func CopyLogs(path string) {
 		}
 		fmt.Printf("Bytes Written: %d\n", bytesWritten)
 	} else {
-		new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+"new", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		old, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+"new", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer new.Close()
+		defer old.Close()
 
-		bytesWritten, err := io.Copy(new, original)
+		bytesWritten, err := io.Copy(old, original)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -410,55 +392,146 @@ func CopyLogs(path string) {
 
 }
 
-func Comparefiles(path1 string, path2 string) {
-	//mapFile1 := ProcMapFile(path1)
-	//mapFile2 := ProcMapFile(path2)
-	//res := reflect.DeepEqual(mapFile1, mapFile2)
-	new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		if err != nil {
-			log.Fatal(err)
-		}
-	ch := make(chan string, 100)
-	//log.Println("1")
-	for i := runtime.NumCPU() + 1; i > 0; i-- {
-		go func() {
-			for {
-				select {
-				case line1 := <-ch:
-					data1:=ProcLine(line1)
+/*
+func Comparefiles(path1 string, path2 string, path string) {
 
-				case line2 := <-ch:
-					data2:=ProcLine(line2)
+	var data1 LogList
+	var data2 LogList
+	//var wg sync.WaitGroup
+	var str1 string
+	var str2 string
 
-				if 	data1.XML_RECORD_ROOT[0].XML_ULID>data2.XML_RECORD_ROOT[0].XML_ULID{
-					new.Write([]byte(line2))
+	fileN := path
+	var wait int32 = 0
+	new, err := os.OpenFile("/home/nik/projects/Course/logi2/repdata/Test/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//	ch := make(chan string, 100)
 
-				}else if data1.XML_RECORD_ROOT[0].XML_ULID<data2.XML_RECORD_ROOT[0].XML_ULID{
-					new.Write([]byte(line1))
-		
-				}else if data1.XML_RECORD_ROOT[0].XML_ULID = data2.XML_RECORD_ROOT[0].XML_ULID{
-					new.Write([]byte(line2))
-							
-				}
+		for i := runtime.NumCPU() + 1; i > 0; i-- {
+			go func() {
+				wg.Add(1)
+				defer wg.Done()
+				for {
+					if wait == 0 || wait == -1 {
+						line1 = <-ch
+					}
 
-				}
-				
-			
+					if wait == 0 || wait == 1 {
+						line2 = <-ch
+					}
+
+	for {
+		err1 := ReadLines(path1, func(line1 string) {
+			if wait == 0 || wait == -1 {
+				str1 = line1
 			}
+		})
+		if err1 != nil {
+			log.Fatalf("ReadLines: %s", err1)
+		}
 
-		}()
+		err2 := ReadLines(path2, func(line2 string) {
+			if wait == 0 || wait == 1 {
+				str2 = line2
+			}
+		})
+		if err2 != nil {
+			log.Fatalf("ReadLines: %s", err2)
+		}
+
+		data1 = ProcLineDecodeXML(str1)
+		ulid1, _ := ulid.ParseStrict(data1.XML_RECORD_ROOT[0].XML_ULID)
+		data2 = ProcLineDecodeXML(str2)
+		ulid2, _ := ulid.ParseStrict(data2.XML_RECORD_ROOT[0].XML_ULID)
+
+		if ulid1.Compare(ulid2) == 1 {
+			new.Write([]byte(str2))
+			//atomic.AddInt32(&counter, 1)
+			atomic.StoreInt32(&wait, 1)
+
+		} else if ulid1.Compare(ulid2) == -1 {
+			new.Write([]byte(str1))
+			atomic.StoreInt32(&wait, -1)
+
+		} else {
+			new.Write([]byte(str1))
+		}
+
 	}
 
-	err1 := ReadLines(path1, func(line1 string) {
-		ch <- line1
-	})
-	err2 := ReadLines(path1, func(line2 string) {
-		ch <- line2
-	})
-	if err1 != nil {
-		log.Fatalf("ReadLines: %s", err1)
+	//}()
+	//	}
+	/*
+		err1 := ReadLines(path1, func(line1 string) {
+			ch <- line1
+		})
+		err2 := ReadLines(path2, func(line2 string) {
+			ch <- line2
+		})
+		if err1 != nil {
+			log.Fatalf("ReadLines: %s", err1)
+		}
+		if err2 != nil {
+			log.Fatalf("ReadLines: %s", err2)
+		}
+		close(ch)
+		wg.Wait()
+
+*/
+func Comparefiles2(path1 string, path2 string, path string) {
+
+	var str1 LogList
+	var str2 LogList
+	//var wg sync.WaitGroup
+	//var str1 string
+	//var str2 string
+	//var wait int32 = 0
+	fileN := path
+	//var wait int32 = 0
+	new, err := os.OpenFile("/home/nik/projects/Course/logi2/repdata/Test/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
 	}
-	if err2 != nil {
-		log.Fatalf("ReadLines: %s", err2)
+	file1, err := os.OpenFile(path1, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file1.Close()
+
+	file2, err := os.OpenFile(path2, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file2.Close()
+
+	scanner1 := bufio.NewScanner(file1)
+
+	scanner2 := bufio.NewScanner(file2)
+	for scanner1.Scan() && scanner2.Scan() {
+		//if wait == 0 || wait == -1 {
+		str1 = ProcLineDecodeXML(scanner1.Text())
+		//}
+		//if wait == 0 || wait == -1 {
+		str2 = ProcLineDecodeXML(scanner2.Text())
+		//}
+
+		ulid1, _ := ulid.ParseStrict(str1.XML_RECORD_ROOT[0].XML_ULID)
+		ulid2, _ := ulid.ParseStrict(str2.XML_RECORD_ROOT[0].XML_ULID)
+
+		if ulid1.Compare(ulid2) == 1 {
+			new.Write([]byte(scanner2.Text()))
+
+			//atomic.StoreInt32(&wait, 1)
+
+		} else if ulid1.Compare(ulid2) == -1 {
+			new.Write([]byte(scanner1.Text()))
+			//atomic.StoreInt32(&wait, -1)
+
+		} else {
+			new.Write([]byte(scanner2.Text()))
+		}
+
 	}
 }
