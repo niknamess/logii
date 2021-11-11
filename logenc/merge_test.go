@@ -7,8 +7,8 @@ import (
 
 func TestMergeLines(t *testing.T) {
 
-	ch1 := make(chan LogList)
-	ch2 := make(chan LogList)
+	ch1 := make(chan LogList, 1)
+	ch2 := make(chan LogList, 1)
 
 	go func() {
 		var listlog LogList
