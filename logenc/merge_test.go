@@ -11,28 +11,24 @@ func TestMergeLines(t *testing.T) {
 	ch2 := make(chan LogList, 10)
 
 	go func() {
-		var listlog LogList
-		//var log Log
-		listlog.XML_RECORD_ROOT = make([]Log, 1)
 
-		listlog.XML_RECORD_ROOT[0].GenTestULID()
-		ch1 <- listlog
-		t.Log(listlog)
-		listlog.XML_RECORD_ROOT[0].GenTestULID()
-		ch1 <- listlog
-		t.Log(listlog)
-		listlog.XML_RECORD_ROOT[0].GenTestULID()
-		ch2 <- listlog
-		t.Log(listlog)
-		listlog.XML_RECORD_ROOT[0].GenTestULID()
-		ch2 <- listlog
-		ch1 <- listlog
-		t.Log(listlog)
-		t.Log(listlog)
+		gen := func() LogList {
+			var listlog LogList
+			//var log Log
+			listlog.XML_RECORD_ROOT = make([]Log, 1)
+			listlog.XML_RECORD_ROOT[0].GenTestULID()
+			return listlog
+		}
 
-		listlog.XML_RECORD_ROOT[0].GenTestULID()
-		ch1 <- listlog
-		t.Log(listlog)
+		ch1 <- gen()
+		ch1 <- gen()
+		ch2 <- gen()
+
+		dup := gen()
+		ch2 <- dup
+		ch1 <- dup
+
+		ch1 <- gen()
 
 		close(ch1)
 		close(ch2)
