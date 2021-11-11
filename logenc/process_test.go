@@ -30,6 +30,7 @@ func TestComparefiles2(t *testing.T) {
 			result: []int{1, 2, 3},
 		},
 	}
+
 	r := rand.New(rand.NewSource(99))
 
 	qtype := "0,"
@@ -48,8 +49,6 @@ func TestComparefiles2(t *testing.T) {
 		XML_MESSAGE := "Состояние '" + randomdata.IpV4Address() + "Cервер КС_UDP/Пинг',"
 		address := randomdata.ProvinceForCountry("GB") + "\n"
 		time1 := randomdata.FullDate() + ","
-		//mkdir 1
-		//create file << ulid
 		file, err := os.OpenFile("test"+strconv.Itoa(i), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			log.Fatal(err)
@@ -59,13 +58,51 @@ func TestComparefiles2(t *testing.T) {
 		ulid1 := time_ulid.String()
 		//mkulid
 		LINE := ML_APPNAME + XML_APPPATH + XML_APPPID + XML_THREAD + time1 + qtype + ulid1 + XML_MESSAGE + XML_DETAILS + address
-		file.Write([]byte(LINE))
 		//write to file
-
-		Comparefiles2(
-			"test0",
-			"test1",
-			"Test")
-
+		file.Write([]byte(LINE))
 	}
+	/*
+		for i, k := range tests {
+			result, err := os.OpenFile("test", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+			if err != nil {
+				log.Fatal(err)
+			}
+			file1, err := os.OpenFile("test0", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer file1.Close()
+
+			file2, err := os.OpenFile("test1", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer file2.Close()
+			scanner1 := bufio.NewScanner(file1)
+
+			scanner2 := bufio.NewScanner(file2)
+
+			info1, err := os.Stat("test0")
+			info2, err := os.Stat("test1")
+			if info1.Size() > info2.Size() {
+				for scanner1.Scan() {
+
+				}
+			} else if info1.Size() < info2.Size() {
+				for scanner2.Scan() {
+
+				}
+			} else {
+				for scanner1.Scan() {
+
+				}
+			}
+	*/
+	Comparefiles2(
+		"test0",
+		"test1",
+		"Test")
+
+	//}
+
 }

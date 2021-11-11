@@ -354,26 +354,26 @@ func CopyLogs(path string) {
 	defer original.Close()
 
 	if CheckFileSum(path) == true {
-		new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+"old", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		old, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+"old", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer new.Close()
-
-		bytesWritten, err := io.Copy(new, original)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Printf("Bytes Written: %d\n", bytesWritten)
-	} else {
-		old, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+"new", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer old.Close()
 
 		bytesWritten, err := io.Copy(old, original)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Bytes Written: %d\n", bytesWritten)
+	} else {
+		new, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+"new", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer new.Close()
+
+		bytesWritten, err := io.Copy(new, original)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -482,18 +482,19 @@ func Comparefiles(path1 string, path2 string, path string) {
 */
 func Comparefiles2(path1 string, path2 string, path string) {
 
-	var str1 LogList
-	var str2 LogList
-	//var wg sync.WaitGroup
-	//var str1 string
-	//var str2 string
+	//var str1 LogList
+	//	var str2 LogList
+	ch1 := make(chan string, 100)
+
+	ch2 := make(chan string, 100)
+
+	//fileN := path
 	//var wait int32 = 0
-	fileN := path
-	//var wait int32 = 0
-	new, err := os.OpenFile("/home/nik/projects/Course/logi2/repdata/Test/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	new, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer new.Close()
 	file1, err := os.OpenFile(path1, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
@@ -507,31 +508,51 @@ func Comparefiles2(path1 string, path2 string, path string) {
 	defer file2.Close()
 
 	scanner1 := bufio.NewScanner(file1)
-
 	scanner2 := bufio.NewScanner(file2)
-	for scanner1.Scan() && scanner2.Scan() {
-		//if wait == 0 || wait == -1 {
-		str1 = ProcLineDecodeXML(scanner1.Text())
-		//}
-		//if wait == 0 || wait == -1 {
-		str2 = ProcLineDecodeXML(scanner2.Text())
-		//}
 
-		ulid1, _ := ulid.ParseStrict(str1.XML_RECORD_ROOT[0].XML_ULID)
-		ulid2, _ := ulid.ParseStrict(str2.XML_RECORD_ROOT[0].XML_ULID)
+	//info1, err := os.Stat(path1)
+	//info2, err := os.Stat(path2)
 
-		if ulid1.Compare(ulid2) == 1 {
-			new.Write([]byte(scanner2.Text()))
+	go func() {
+		for {
+			select {
+			case line1, _ := <-ch1:
+				ulid1, _ := ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
 
-			//atomic.StoreInt32(&wait, 1)
+			case line2, _ := <-ch2:
+				ulid2, _ := ulid.ParseStrict(line2.XML_RECORD_ROOT[0].XML_ULID)
 
-		} else if ulid1.Compare(ulid2) == -1 {
-			new.Write([]byte(scanner1.Text()))
-			//atomic.StoreInt32(&wait, -1)
-
-		} else {
-			new.Write([]byte(scanner2.Text()))
+			}
 		}
 
+	}()
+
+	for scanner1.Scan() {
+
+		ch1 <- ProcLineDecodeXML(scanner1.Text())
+
 	}
+	for scanner1.Scan() {
+		ch2 <- ProcLineDecodeXML(scanner2.Text())
+
+	}
+	/*
+		for scanner1.Scan() || scanner2.Scan() {
+			str1 = ProcLineDecodeXML(scanner1.Text())
+
+			str2 = ProcLineDecodeXML(scanner2.Text())
+
+			ulid1, _ := ulid.ParseStrict(str1.XML_RECORD_ROOT[0].XML_ULID)
+			ulid2, _ := ulid.ParseStrict(str2.XML_RECORD_ROOT[0].XML_ULID)
+
+			if ulid1.Compare(ulid2) == 1 {
+				new.Write([]byte(scanner2.Text()))
+
+			} else {
+				new.Write([]byte(scanner1.Text()))
+
+			}
+		}
+	*/
+
 }
