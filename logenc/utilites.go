@@ -8,8 +8,11 @@ import (
 	"encoding/xml"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"time"
+
+	"github.com/oklog/ulid/v2"
 )
 
 //XML_Structure
@@ -30,11 +33,13 @@ type Log struct {
 	DT_FORMAT   string `xml:"ddMMyyyyhhmmsszzz,omitempty"`
 }
 
-//pointer
-//type TypeFile struct {
-//	path string
-//	dir  []string
-//}
+func (me *Log) GenTestULID() {
+	now := time.Now().UnixNano()
+	entropy := rand.New(rand.NewSource(now))
+	timestamp := ulid.Timestamp(time.Now())
+	me.XML_ULID = ulid.MustNew(timestamp, entropy).String()
+}
+
 var (
 	count = 0
 )
