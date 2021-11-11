@@ -7,8 +7,8 @@ import (
 
 func TestMergeLines(t *testing.T) {
 
-	ch1 := make(chan LogList, 1)
-	ch2 := make(chan LogList, 1)
+	ch1 := make(chan LogList, 10)
+	ch2 := make(chan LogList, 10)
 
 	go func() {
 		var listlog LogList
@@ -44,8 +44,8 @@ func TestMergeLines(t *testing.T) {
 
 	got := 0
 	for val := range ch3 {
-		fmt.Println(val)
-		count++
+		fmt.Println(val.XML_RECORD_ROOT[0].XML_ULID)
+		got++
 	}
 
 	if got != 5 {
