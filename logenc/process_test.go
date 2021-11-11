@@ -98,10 +98,10 @@ func TestComparefiles2(t *testing.T) {
 				}
 			}
 	*/
-	Comparefiles2(
-		"test0",
-		"test1",
-		"Test")
+	//Comparefiles2(
+	//"test0",
+	//"test1",
+	//"Test")
 
 	//}
 

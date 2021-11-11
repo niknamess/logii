@@ -13,7 +13,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/oklog/ulid/v2"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
@@ -480,6 +479,7 @@ func Comparefiles(path1 string, path2 string, path string) {
 		wg.Wait()
 
 */
+/*
 func Comparefiles2(path1 string, path2 string, path string) {
 
 	//var str1 LogList
@@ -529,11 +529,11 @@ func Comparefiles2(path1 string, path2 string, path string) {
 
 	for scanner1.Scan() {
 
-		ch1 <- ProcLineDecodeXML(scanner1.Text())
+		ch1 <- ProcLine(scanner1.Text())
 
 	}
 	for scanner1.Scan() {
-		ch2 <- ProcLineDecodeXML(scanner2.Text())
+		ch2 <- ProcLine(scanner2.Text())
 
 	}
 	/*
@@ -553,6 +553,7 @@ func Comparefiles2(path1 string, path2 string, path string) {
 
 			}
 		}
-	*/
+
 
 }
+*/

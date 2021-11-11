@@ -17,11 +17,13 @@ func TestMergeLines(t *testing.T) {
 
 		listlog.XML_RECORD_ROOT[0].GenTestULID()
 		ch1 <- listlog
+		t.Log(listlog)
 		listlog.XML_RECORD_ROOT[0].GenTestULID()
 		ch1 <- listlog
-
+		t.Log(listlog)
 		listlog.XML_RECORD_ROOT[0].GenTestULID()
 		ch2 <- listlog
+		t.Log(listlog)
 		listlog.XML_RECORD_ROOT[0].GenTestULID()
 		ch2 <- listlog
 		ch1 <- listlog
