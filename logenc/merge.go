@@ -1,6 +1,7 @@
 package logenc
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -92,16 +93,13 @@ func CreateDir(path string) {
 	}
 }
 
-func DeleteOldsFiles(path string) {
+func DeleteOldsFiles(path string, labels string) {
 	fileN := filepath.Base(path)
-	err := os.Remove("./repdata/" + fileN + "/" + fileN + "new")
+	err := os.Remove("./repdata/" + fileN + "/" + fileN + labels)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = os.Remove("./repdata/" + fileN + "/" + fileN + "old")
-	if err != nil {
-		log.Fatal(err)
-	}
+
 }
 
 func RenameFile(path string, label string) {
@@ -155,7 +153,6 @@ func Checkmd5rep(path string) {
 			return
 		} else {
 			CreateDir(path)
-			OpenCreateFile(path, "", original)
 			CopyFile(path, "", original)
 			WriteFileSum(path, "rep")
 		}
@@ -166,10 +163,14 @@ func Checkmd5rep(path string) {
 
 }
 
-func CopyLogs(path string) {
+func Replication(path string) {
 
 	//fileN := filepath.Base(path)
 	//CreateDir(path)
+	var ch1 chan LogList
+	var ch2 chan LogList
+	var ch3 chan LogList
+
 	original, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
@@ -177,16 +178,38 @@ func CopyLogs(path string) {
 	defer original.Close()
 
 	//CheckSum file (md5rep)
-	if CheckFileSum(path, "rep") == false {
-		//fileOld := OpenCreateFile(path, "", original)
-		//fileNew := OpenCreateFile(path, "new", original)
-
+	if CheckFileSum(path, "rep") == true {
 		//Rename old file
 		RenameFile(path, "old")
-		//Merge and create new file
 
+		fileChanged := CopyFile(path, "new", original)
+		defer fileChanged.Close()
+		fileOld := OpenCreateFile(path, "old", original)
+		defer fileOld.Close()
+		fileNew := OpenCreateFile(path, "", original)
+		defer fileNew.Close()
+		//
+		scanner1 := bufio.NewScanner(fileOld)
+		scanner2 := bufio.NewScanner(fileChanged)
+		//Merge and create new file
+		for scanner1.Scan() || scanner2.Scan() {
+			str1 := ProcLineDecodeXML(scanner1.Text())
+			str2 := ProcLineDecodeXML(scanner2.Text())
+			ch1 <- str1
+			ch2 <- str2
+			ch3 = MergeLines(ch1, ch2)
+		}
+		for val := range ch3 {
+
+			if len(val.XML_RECORD_ROOT) != 0 {
+				//got++
+				//fmt.Println(val.XML_RECORD_ROOT[0].XML_ULID)
+				fileNew.WriteString(val.XML_RECORD_ROOT[0].XML_ULID)
+			}
+		}
 		//Delete two old file
-		DeleteOldsFiles(path)
+		DeleteOldsFiles(path, "old")
+		DeleteOldsFiles(path, "new")
 
 	}
 
