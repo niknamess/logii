@@ -135,35 +135,7 @@ func CopyFile(path string, label string, fileOs *os.File) *os.File {
 	return file
 }
 
-func Checkmd5rep(path string) {
-	fileN := filepath.Base(path)
-	original, err := os.Open(path)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer original.Close()
-
-	files, err := ioutil.ReadDir("./repdata")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, f := range files {
-		if f.Name() == fileN {
-			return
-		} else {
-			CreateDir(path)
-			CopyFile(path, "", original)
-			WriteFileSum(path, "rep")
-		}
-	}
-
-	//OpenCreateFile(path, "", original)
-	//WriteFileSum(path, "rep")
-
-}
-
-func Replication(path string) {
+func Merge(path string) {
 
 	//fileN := filepath.Base(path)
 	//CreateDir(path)
@@ -211,6 +183,31 @@ func Replication(path string) {
 		DeleteOldsFiles(path, "old")
 		DeleteOldsFiles(path, "new")
 
+	}
+
+}
+
+func Replication(path string) {
+	fileN := filepath.Base(path)
+	original, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer original.Close()
+
+	files, err := ioutil.ReadDir("/home/nik/projects/Course/logi2/repdata/")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, f := range files {
+		if f.Name() == fileN {
+			Merge(path)
+		} else {
+			CreateDir(path)
+			CopyFile(path, "", original)
+			WriteFileSum(path, "rep")
+		}
 	}
 
 }
