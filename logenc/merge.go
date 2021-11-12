@@ -2,6 +2,7 @@ package logenc
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/oklog/ulid/v2"
 )
@@ -12,8 +13,8 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 
 	go func() {
 		//saveulid1:= emptyUlid
-		//entropy := rand.New(rand.NewSource(1))
-		//minUlid := ulid.MustNew(0, entropy)
+		entropy := rand.New(rand.NewSource(1))
+		minUlid := ulid.MustNew(0, entropy)
 		emptyUlid, _ := ulid.ParseStrict("")
 		//saveulid1 := emptyUlid
 		//saveulid2 := emptyUlid
@@ -46,12 +47,26 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 					//fmt.Println("check lin2", line2.XML_RECORD_ROOT[0].XML_ULID)
 
 				}
+				//bestline
 			}
 			fmt.Println("ulid1", ulid1)
 			fmt.Println("ulid2", ulid2)
 			fmt.Println("check")
 			//fmt.Println("start5")
+			
 			if !ok1 && !ok2 {
+				fmt.Println("Stop")
+				fmt.Println("ulid1", ulid1)
+				fmt.Println("ulid2", ulid2)
+				if ulid1.String() != "00000000000000000000000000" {
+					res <- line1
+					fmt.Println("1", line1)
+				} else if ulid2.String() != "00000000000000000000000000" {
+					res <- line2
+					fmt.Println("2", line2)
+				}
+
+				fmt.Println("stop")
 				close(res)
 				return
 			}
@@ -62,26 +77,28 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 			bestUlid := emptyUlid
 			var bestLine LogList
 
-			if ulid1.String() == "00000000000000000000000000" {
+			if ulid1.Compare(minUlid) < 1 {
 				bestUlid = ulid2
 				bestLine = line2
 				//saveulid1 = ulid2
 
-			} else if ulid2.String() == "00000000000000000000000000" {
+			} else if ulid2.Compare(minUlid) < 1 {
 				bestUlid = ulid1
 				bestLine = line1
 				//saveulid2 = ulid1
 
 			}
 
-			if bestUlid.String() != "00000000000000000000000000" {
+			if bestUlid.Compare(minUlid) > 0 {
 				res <- bestLine
+				fmt.Println("best", bestLine)
 				continue
 			}
 
 			// сравниваем гарантированно валидные ulid
 			if ulid1.Compare(ulid2) == 1 {
 				res <- line2
+				fmt.Println("2", line2)
 				//saveulid1 = ulid1
 				ulid2 = emptyUlid
 
@@ -94,8 +111,10 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 
 				//new.Write([]byte(scanner2.Text()))
 
-			} else {
+			} else if ulid1.Compare(ulid2) == -1 {
 				res <- line1
+				fmt.Println("1", line1)
+
 				//saveulid2 = ulid2
 				ulid1 = emptyUlid
 				//fmt.Println(line1, "line1")
@@ -107,6 +126,12 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 				//fmt.Println(ulid1)
 				//new.Write([]byte(scanner1.Text()))
 
+			} else {
+				res <- line1
+				fmt.Println("1", line1)
+
+				ulid1 = emptyUlid
+				ulid2 = emptyUlid
 			}
 			//	if !ok1 && !ok2 {
 			//	close(res)

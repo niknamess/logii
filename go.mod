@@ -14,5 +14,6 @@ require (
 	github.com/hpcloud/tail v1.0.0
 	github.com/oklog/ulid/v2 v2.0.2
 	github.com/prometheus/client_golang v1.11.0
+	github.com/sabhiram/go-gitignore v0.0.0-20210923224102-525f6e181f06 // indirect
 	golang.org/x/sys v0.0.0-20211109065445-02f5c0300f6e // indirect
 )

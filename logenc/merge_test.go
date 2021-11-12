@@ -2,10 +2,12 @@ package logenc
 
 import (
 	"fmt"
+	//"sync"
 	"testing"
 )
 
 func TestMergeLines(t *testing.T) {
+	//var wg sync.WaitGroup
 
 	ch1 := make(chan LogList, 10)
 	ch2 := make(chan LogList, 10)
@@ -37,11 +39,20 @@ func TestMergeLines(t *testing.T) {
 	want := 5
 
 	ch3 := MergeLines(ch1, ch2)
+	//wg.Wait()
 
 	got := 0
+	//wg.Add(1)
+	//defer wg.Done()
 	for val := range ch3 {
-		fmt.Println(val.XML_RECORD_ROOT[0].XML_ULID)
-		got++
+
+		if len(val.XML_RECORD_ROOT) != 0 {
+			got++
+			fmt.Println(val.XML_RECORD_ROOT[0].XML_ULID)
+		}
+
+		//fmt.Println(val.XML_RECORD_ROOT[0].XML_ULID)
+		//got++
 	}
 
 	if got != 5 {
