@@ -3,6 +3,7 @@ package logenc
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -103,51 +104,85 @@ func DeleteOldsFiles(path string) {
 	}
 }
 
-func RenameFile(path string) {
+func RenameFile(path string, label string) {
 	fileN := filepath.Base(path)
 	Original_Path := "./repdata/" + fileN + "/" + fileN
-	New_Path := "./repdata/" + fileN + "/" + fileN + "old"
+	New_Path := "./repdata/" + fileN + "/" + fileN + label
 	e := os.Rename(Original_Path, New_Path)
 	if e != nil {
 		log.Fatal(e)
 	}
 }
 
-func OpenCreateFile(path string, label string, fileOs *os.File) {
+func OpenCreateFile(path string, label string, fileOs *os.File) *os.File {
 	fileN := filepath.Base(path)
-	old, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer old.Close()
+	defer file.Close()
 
-	bytesWritten, err := io.Copy(old, fileOs)
+	return file
+}
+
+func CopyFile(path string, label string, fileOs *os.File) *os.File {
+	fileN := filepath.Base(path)
+	file, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	bytesWritten, err := io.Copy(file, fileOs)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Printf("Bytes Written: %d\n", bytesWritten)
-
+	return file
 }
 
-func CopyLogs(path string) {
-
-	//fileN := filepath.Base(path)
-	CreateDir(path)
+func Checkmd5rep(path string) {
+	fileN := filepath.Base(path)
 	original, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer original.Close()
 
-	//CheckSum file (md5)
-	if CheckFileSum(path) == true {
-		OpenCreateFile(path, "", original)
-	} else {
-		OpenCreateFile(path, "new", original)
+	files, err := ioutil.ReadDir("./repdata")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, f := range files {
+		if f.Name() == fileN {
+			return
+		} else {
+			CreateDir(path)
+			OpenCreateFile(path, "", original)
+			CopyFile(path, "", original)
+			WriteFileSum(path, "rep")
+		}
+	}
+
+	//OpenCreateFile(path, "", original)
+	//WriteFileSum(path, "rep")
+
+}
+
+func CopyLogs(path string) {
+
+	//fileN := filepath.Base(path)
+	//CreateDir(path)
+	original, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer original.Close()
+
+	//CheckSum file (md5rep)
+	if CheckFileSum(path, "rep") == false {
+		//fileOld := OpenCreateFile(path, "", original)
+		//fileNew := OpenCreateFile(path, "new", original)
 
 		//Rename old file
-		RenameFile(path)
+		RenameFile(path, "old")
 		//Merge and create new file
 
 		//Delete two old file

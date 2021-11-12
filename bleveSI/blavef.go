@@ -16,16 +16,11 @@ var (
 	Logger       *log.Logger
 	mu           sync.Mutex
 	sliceLoglist []logenc.LogList
-	//lines []string
 )
 
-//classic
 func ProcFileBreve(fileN string, file string) {
-	//func ProcFileBreve(file string) {
 	var wg sync.WaitGroup
-	//var counter int32 = 0
 	var data logenc.LogList
-	//metaname := "example.bleve"
 	if len(file) <= 0 {
 		return
 	}
@@ -33,7 +28,7 @@ func ProcFileBreve(fileN string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension
-	if logenc.CheckFileSum(file) == false {
+	if logenc.CheckFileSum(file, "") == false {
 		return
 	}
 
@@ -63,10 +58,6 @@ func ProcFileBreve(fileN string, file string) {
 						break brloop
 					}
 					data = logenc.ProcLineDecodeXML(line)
-					//fmt.Println((data.XML_RECORD_ROOT))
-					//fmt.Println(len(data.XML_RECORD_ROOT))
-					//atomic.AddInt32(&counter, 1)
-					//println(counter)
 					if len(data.XML_RECORD_ROOT) > 0 {
 						index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
 					}
@@ -86,7 +77,7 @@ func ProcFileBreve(fileN string, file string) {
 	close(ch)
 	wg.Wait()
 	index.Close()
-	logenc.WriteFileSum(file)
+	logenc.WriteFileSum(file, "")
 }
 
 func ProcFileBleveSPEED(fileN string, file string) {
@@ -99,7 +90,7 @@ func ProcFileBleveSPEED(fileN string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension
-	if logenc.CheckFileSum(file) == false {
+	if logenc.CheckFileSum(file, "") == false {
 		return
 	}
 	index, err := bleve.Open(metaname)
@@ -114,51 +105,33 @@ func ProcFileBleveSPEED(fileN string, file string) {
 	}
 	ch := make(chan string, 100)
 	for i := 5; i > 0; i-- {
-		//brloop:
 		go func() {
-			//wg.Add(1)
-			//println("Start") //wg.Done()
-
-			//brloop:
 			for {
 				select {
 				case line, ok := <-ch:
 					if !ok {
 						break //brloop
 					}
-					//for i := 5; i > 0; i-- {
 					go func(line string) {
-						//wg.Add(1)
-						//defer wg.Done()
-						//BUFFER
 						data = logenc.ProcLineDecodeXML(line)
 						sliceLoglist = append(sliceLoglist, data)
 						if len(sliceLoglist) == 100 {
 							for i := 0; i < len(sliceLoglist); i++ {
 								if len(data.XML_RECORD_ROOT) > 0 {
 									index.Index(data.XML_RECORD_ROOT[0].XML_ULID, sliceLoglist[i])
-									//sliceLoglist = nil
 								}
 							}
 							sliceLoglist = nil
 						}
-						//buf := buffer.NewSpill(1024, data)
-						//	b, _ := json.Marshal(data)
-						//	buf := buffer.NewSpill(1024, b)
 
-						//BUFFER
-
-						//	atomic.AddInt32(&counter, 1)
-						//	defer println(counter)
 						if len(data.XML_RECORD_ROOT) > 0 {
 							index.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
 						}
-						//defer printlm
+
 					}(line)
-					//}
+
 				}
 			}
-			//println("Stop") //wg.Done()
 		}()
 	}
 	err = logenc.ReadLines(file, func(line string) {
@@ -169,7 +142,7 @@ func ProcFileBleveSPEED(fileN string, file string) {
 	}
 	close(ch)
 	index.Close()
-	logenc.WriteFileSum(file)
+	logenc.WriteFileSum(file, "")
 }
 
 func ProcBleveSearch(fileN string, word string) []string {
@@ -178,7 +151,6 @@ func ProcBleveSearch(fileN string, word string) []string {
 	filename := fileN
 	metaname := dir + filename + extension
 	index, _ := bleve.Open(metaname)
-	//query := bleve.NewFuzzyQuery(dir)
 	query := bleve.NewMatchQuery(word)
 	query.Fuzziness = 1
 	mq := bleve.NewMatchPhraseQuery(word)
@@ -206,20 +178,16 @@ func ProcBleveSearch(fileN string, word string) []string {
 func ProcFileBreveSLOWLY(fileName string, file string) {
 	const pieces int = 10
 
-	//func ProcFileBreve(file string) {
 	var wg sync.WaitGroup
-	//var counter int32 = 0
 	var lines []string
-	//var data logenc.LogList
 
 	if len(file) <= 0 {
 		return
 	}
-
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileName + extension
-	if logenc.CheckFileSum(file) == false {
+	if logenc.CheckFileSum(file, "") == false {
 		return
 	}
 
@@ -271,10 +239,8 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 		}
 
 	}
-
 	for _, data := range datas {
 
-		//fmt.Println("data len=", len(data))
 		wg.Add(1)
 		go func(dataPiece []logenc.LogList) {
 
@@ -289,6 +255,6 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 	}
 
 	wg.Wait()
-	logenc.WriteFileSum(file)
+	logenc.WriteFileSum(file, "")
 
 }
