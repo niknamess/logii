@@ -1,7 +1,6 @@
 package logenc
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -84,6 +83,20 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	return res
 }
 
+/*
+func Readln(r *bufio.Reader) (string, error) {
+	var (
+		isPrefix bool  = true
+		err      error = nil
+		line, ln []byte
+	)
+	for isPrefix && err == nil {
+		line, isPrefix, err = r.ReadLine()
+		ln = append(ln, line...)
+	}
+	return string(ln), err
+}
+*/
 func CreateDir(path string) {
 	fileN := filepath.Base(path)
 	//Create a folder/directory at a full qualified path
@@ -139,6 +152,7 @@ func Merge(path string) {
 
 	//fileN := filepath.Base(path)
 	//CreateDir(path)
+
 	var ch1 chan LogList
 	var ch2 chan LogList
 	var ch3 chan LogList
@@ -161,16 +175,52 @@ func Merge(path string) {
 		fileNew := OpenCreateFile(path, "", original)
 		defer fileNew.Close()
 		//
-		scanner1 := bufio.NewScanner(fileOld)
-		scanner2 := bufio.NewScanner(fileChanged)
+		//scanner1 := bufio.NewScanner(fileOld)
+		//	scanner2 := bufio.NewScanner(fileChanged)
+
+		//same := bytes.Equal([]byte(fileChanged), []byte(fileOld))
+		//fmt.Println(same)
+		//r1 := bufio.NewReader(fileChanged)
+		//s1, e1 := Readln(r1)
+		//r2 := bufio.NewReader(fileOld)
+		//s2, e2 := Readln(r2)
+		//for e1 == nil && e2 == nil {
+
+		//	s1, e1 = Readln(r1)
+		//	s2, e2 = Readln(r2)
+		//	str1 := ProcLineDecodeXML(s1)
+		//	str2 := ProcLineDecodeXML(s2)
+		//	ch1 <- str1
+		//	ch2 <- str2
+
+		//}
+
 		//Merge and create new file
-		for scanner1.Scan() && scanner2.Scan() {
-			str1 := ProcLineDecodeXML(scanner1.Text())
-			str2 := ProcLineDecodeXML(scanner2.Text())
-			ch1 <- str1
-			ch2 <- str2
-			ch3 = MergeLines(ch1, ch2)
+
+		err = ReadLines(path+"new", func(line1 string) {
+			ch1 <- ProcLineDecodeXML(line1)
+		})
+		if err != nil {
+			log.Fatalf("ReadLines: %s", err)
 		}
+		err = ReadLines(path+"old", func(line2 string) {
+			ch2 <- ProcLineDecodeXML(line2)
+		})
+		if err != nil {
+			log.Fatalf("ReadLines: %s", err)
+		}
+
+		//for scanner1.Scan() {
+		//	str1 := ProcLineDecodeXML(scanner1.Text())
+		//	ch1 <- str1
+		//	//ch3 = MergeLines(ch1, ch2)
+		//	}
+		//	for scanner2.Scan() {
+		//		str2 := ProcLineDecodeXML(scanner2.Text())
+		//		ch2 <- str2
+		//		//ch3 = MergeLines(ch1, ch2)
+		//	}
+		ch3 = MergeLines(ch1, ch2)
 		for val := range ch3 {
 
 			if len(val.XML_RECORD_ROOT) != 0 {
@@ -204,7 +254,7 @@ func IsDirEmpty(name string) (bool, error) {
 }
 
 func Replication(path string) {
-
+	CreateDir("")
 	fileN := filepath.Base(path)
 	original, err := os.Open(path)
 	if err != nil {
