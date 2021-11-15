@@ -33,10 +33,10 @@ type Log struct {
 	DT_FORMAT   string `xml:"ddMMyyyyhhmmsszzz,omitempty"`
 }
 
-func (me *Log) GenTestULID() {
+func (me *Log) GenTestULID(tt time.Time) {
 	now := time.Now().UnixNano()
 	entropy := rand.New(rand.NewSource(now))
-	timestamp := ulid.Timestamp(time.Now())
+	timestamp := ulid.Timestamp(tt)
 	me.XML_ULID = ulid.MustNew(timestamp, entropy).String()
 }
 

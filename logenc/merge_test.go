@@ -3,6 +3,7 @@ package logenc
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func ATestReplication(t *testing.T) {
@@ -20,11 +21,13 @@ func TestMergeLines(t *testing.T) {
 	ch1 := make(chan LogList, 10)
 	ch2 := make(chan LogList, 10)
 
+	now := time.Now().UTC()
 	go func() {
 		gen := func() LogList {
 			var listlog LogList
 			listlog.XML_RECORD_ROOT = make([]Log, 1)
-			listlog.XML_RECORD_ROOT[0].GenTestULID()
+			listlog.XML_RECORD_ROOT[0].GenTestULID(now)
+			now = now.Add(time.Microsecond)
 			return listlog
 		}
 

@@ -18,6 +18,23 @@ var dlog bool = !!!false
 func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	res := make(chan LogList)
 	var nullULID string = "00000000000000000000000000"
+
+	var savedUlid ulid.ULID
+
+	writeRes := func(line LogList, uu ulid.ULID) {
+		if uu.Compare(savedUlid) < 1 {
+			if dlog {
+				fmt.Println("!write:", savedUlid, "  ", uu)
+			}
+			return
+		}
+		savedUlid = uu
+		res <- line
+		if dlog {
+			fmt.Println("write:", uu)
+		}
+	}
+
 	go func() {
 		entropy := rand.New(rand.NewSource(1))
 		minUlid := ulid.MustNew(0, entropy)
@@ -33,7 +50,7 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 				line1, ok1 = <-ch1
 				if ok1 && len(line1.XML_RECORD_ROOT) != 0 && line1.XML_RECORD_ROOT[0].XML_ULID != nullULID {
 					if dlog {
-						fmt.Println("line1 st", line1)
+						fmt.Println("ulid1 read", line1)
 					}
 					ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
 				}
@@ -42,7 +59,7 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 				line2, ok2 = <-ch2
 				if ok2 && len(line2.XML_RECORD_ROOT) != 0 && line2.XML_RECORD_ROOT[0].XML_ULID != nullULID {
 					if dlog {
-						fmt.Println("line2 st", line2)
+						fmt.Println("ulid2 read", line2)
 					}
 					ulid2, _ = ulid.ParseStrict(line2.XML_RECORD_ROOT[0].XML_ULID)
 				}
@@ -62,40 +79,53 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 			var bestLine LogList
 
 			if ulid1.Compare(minUlid) < 1 {
+				ulid1 = emptyUlid
 				bestUlid = ulid2
 				bestLine = line2
-			} else if ulid2.Compare(minUlid) < 1 {
+			}
+
+			if ulid2.Compare(minUlid) < 1 {
+				ulid2 = emptyUlid
 				bestUlid = ulid1
 				bestLine = line1
-
-			}
-			if bestUlid.Compare(minUlid) > 0 {
-				res <- bestLine
-				if dlog {
-					fmt.Println("best", bestLine)
+				if bestUlid.Compare(minUlid) < 1 {
+					// в случае если нет ни одного ULID
+					if dlog {
+						fmt.Println("check: no one")
+					}
+					continue
 				}
+			}
+
+			if bestUlid.Compare(minUlid) > 0 {
+				if dlog {
+					fmt.Println("check: only one", bestLine)
+				}
+				writeRes(bestLine, bestUlid)
+
 				ulid1 = emptyUlid
 				ulid2 = emptyUlid
 				continue
 			}
+
 			// сравниваем гарантированно валидные ulid
 			if ulid1.Compare(ulid2) == 1 {
-				res <- line2
 				if dlog {
-					fmt.Println("2", line2)
+					fmt.Println("check: ulid1>ulid2", line2)
 				}
+				writeRes(line2, ulid2)
 				ulid2 = emptyUlid
 			} else if ulid1.Compare(ulid2) == -1 {
-				res <- line1
 				if dlog {
-					fmt.Println("1", line1)
+					fmt.Println("check: ulid2>ulid1", line1)
 				}
+				writeRes(line1, ulid1)
 				ulid1 = emptyUlid
 			} else {
-				res <- line1
 				if dlog {
-					fmt.Println("1", line1)
+					fmt.Println("check: ulid1=ulid2", line1)
 				}
+				writeRes(line1, ulid1)
 
 				ulid1 = emptyUlid
 				ulid2 = emptyUlid
