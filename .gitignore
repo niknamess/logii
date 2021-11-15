@@ -8,3 +8,6 @@ logtest/
 __debug_bin
 blavestorage/
 md5
+repdata
+logenc/repdata
+logenc/md5repdata

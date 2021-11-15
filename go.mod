@@ -11,6 +11,7 @@ require (
 	github.com/blevesearch/mmap-go v1.0.3 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
+	github.com/hlubek/readercomp v0.0.0-20210927065201-8f5e69adbe1c // indirect
 	github.com/hpcloud/tail v1.0.0
 	github.com/oklog/ulid/v2 v2.0.2
 	github.com/prometheus/client_golang v1.11.0
