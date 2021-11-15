@@ -154,8 +154,9 @@ func Merge(path string) {
 	//fileN := filepath.Base(path)
 	//CreateDir(path)
 
-	ch1 := make(chan LogList)
-	ch2 := make(chan LogList)
+	ch1 := make(chan LogList, 10)
+	ch2 := make(chan LogList, 10)
+	ch3 := make(chan LogList, 10)
 	//var ch3 chan LogList
 
 	original, err := os.Open(path)
@@ -221,17 +222,30 @@ func Merge(path string) {
 			}
 		*/
 		//}()
-		for scanner1.Scan() {
-			str1 := ProcLineDecodeXML(scanner1.Text())
-			ch1 <- str1
-			//ch3 = MergeLines(ch1, ch2)
-		}
-		for scanner2.Scan() {
-			str2 := ProcLineDecodeXML(scanner2.Text())
-			ch2 <- str2
-			//ch3 = MergeLines(ch1, ch2)
-		}
-		ch3 := MergeLines(ch1, ch2)
+
+		go func() {
+			for scanner1.Scan() {
+				str1 := ProcLineDecodeXML(scanner1.Text())
+				if len(str1.XML_RECORD_ROOT) != 0 {
+					ch1 <- str1
+				}
+				//ch3 = MergeLines(ch1, ch2)
+			}
+		}()
+		go func() {
+			for scanner2.Scan() {
+				str2 := ProcLineDecodeXML(scanner2.Text())
+				if len(str2.XML_RECORD_ROOT) != 0 {
+					ch2 <- str2
+				}
+				//ch3 = MergeLines(ch1, ch2)
+			}
+			//close(ch1)
+			//close(ch2)
+		}()
+		close(ch1)
+		close(ch2)
+		ch3 = MergeLines(ch1, ch2)
 		for val := range ch3 {
 
 			if len(val.XML_RECORD_ROOT) != 0 {
