@@ -13,6 +13,8 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
+var dlog bool = !!!false
+
 func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	res := make(chan LogList)
 	var nullULID string = "00000000000000000000000000"
@@ -29,19 +31,25 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 			if ulid1 == emptyUlid {
 				line1, ok1 = <-ch1
 				if ok1 && len(line1.XML_RECORD_ROOT) != 0 && line1.XML_RECORD_ROOT[0].XML_ULID != nullULID {
-					fmt.Println("line1 st", line1)
+					if dlog {
+						fmt.Println("line1 st", line1)
+					}
 					ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
 				}
 			}
 			if ulid2 == emptyUlid {
 				line2, ok2 = <-ch2
 				if ok2 && len(line2.XML_RECORD_ROOT) != 0 && line2.XML_RECORD_ROOT[0].XML_ULID != nullULID {
-					fmt.Println("line2 st", line2)
+					if dlog {
+						fmt.Println("line2 st", line2)
+					}
 					ulid2, _ = ulid.ParseStrict(line2.XML_RECORD_ROOT[0].XML_ULID)
 				}
 			}
 			if !ok1 && !ok2 {
-				fmt.Println("stop")
+				if dlog {
+					fmt.Println("stop")
+				}
 				close(res)
 				return
 			}
@@ -59,21 +67,29 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 			}
 			if bestUlid.Compare(minUlid) > 0 {
 				res <- bestLine
-				fmt.Println("best", bestLine)
+				if dlog {
+					fmt.Println("best", bestLine)
+				}
 				continue
 			}
 			// сравниваем гарантированно валидные ulid
 			if ulid1.Compare(ulid2) == 1 {
 				res <- line2
-				fmt.Println("2", line2)
+				if dlog {
+					fmt.Println("2", line2)
+				}
 				ulid2 = emptyUlid
 			} else if ulid1.Compare(ulid2) == -1 {
 				res <- line1
-				fmt.Println("1", line1)
+				if dlog {
+					fmt.Println("1", line1)
+				}
 				ulid1 = emptyUlid
 			} else {
 				res <- line1
-				fmt.Println("1", line1)
+				if dlog {
+					fmt.Println("1", line1)
+				}
 
 				ulid1 = emptyUlid
 				ulid2 = emptyUlid
