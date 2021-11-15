@@ -24,8 +24,6 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 		emptyUlid, _ := ulid.ParseStrict("")
 		var ulid1 ulid.ULID
 		var ulid2 ulid.ULID
-		var saveRes ulid.ULID
-
 		var line1 LogList
 		var line2 LogList
 		var ok1, ok2 bool
@@ -73,32 +71,27 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 			}
 			if bestUlid.Compare(minUlid) > 0 {
 				res <- bestLine
-				//saveRes = bestUlid
 				if dlog {
 					fmt.Println("best", bestLine)
 				}
 				ulid1 = emptyUlid
 				ulid2 = emptyUlid
 				continue
-
 			}
 			// сравниваем гарантированно валидные ulid
-			if ulid1.Compare(ulid2) == 1 && saveRes.Compare(ulid2) != 0 {
+			if ulid1.Compare(ulid2) == 1 {
 				res <- line2
-				saveRes = ulid2
 				if dlog {
 					fmt.Println("2", line2)
 				}
 				ulid2 = emptyUlid
-			} else if ulid1.Compare(ulid2) == -1 && saveRes.Compare(ulid1) != 0 {
+			} else if ulid1.Compare(ulid2) == -1 {
 				res <- line1
-				saveRes = ulid1
 				if dlog {
 					fmt.Println("1", line1)
 				}
 				ulid1 = emptyUlid
-			} else if saveRes.Compare(ulid1) != 0 {
-				saveRes = ulid1
+			} else {
 				res <- line1
 				if dlog {
 					fmt.Println("1", line1)
