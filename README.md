@@ -52,4 +52,3 @@
 # RUN
 - make dev 
 
-add notebook
