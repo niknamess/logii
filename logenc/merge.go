@@ -164,7 +164,7 @@ func Merge(path string) {
 		scanner1 := bufio.NewScanner(fileOld)
 		scanner2 := bufio.NewScanner(fileChanged)
 		//Merge and create new file
-		for scanner1.Scan() || scanner2.Scan() {
+		for scanner1.Scan() && scanner2.Scan() {
 			str1 := ProcLineDecodeXML(scanner1.Text())
 			str2 := ProcLineDecodeXML(scanner2.Text())
 			ch1 <- str1
@@ -186,8 +186,25 @@ func Merge(path string) {
 	}
 
 }
+func IsDirEmpty(name string) (bool, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return false, err
+	}
+	defer f.Close()
+
+	// read in ONLY one file
+	_, err = f.Readdir(1)
+
+	// and if the file is EOF... well, the dir is empty.
+	if err == io.EOF {
+		return true, nil
+	}
+	return false, err
+}
 
 func Replication(path string) {
+
 	fileN := filepath.Base(path)
 	original, err := os.Open(path)
 	if err != nil {
@@ -195,18 +212,32 @@ func Replication(path string) {
 	}
 	defer original.Close()
 
-	files, err := ioutil.ReadDir("/home/nik/projects/Course/logi2/repdata/")
+	files, err := ioutil.ReadDir("/home/nik/projects/Course/logi2/logenc/repdata/")
 	if err != nil {
+		//CreateDir(path)
 		log.Fatal(err)
 	}
+	//defer files.Close()
+	//files.Size()
+	ok, err := IsDirEmpty("/home/nik/projects/Course/logi2/logenc/repdata/")
+	if err != nil {
+		fmt.Println(err)
 
+	}
+	if ok == true {
+		CreateDir(path)
+		CopyFile(path, "", original)
+		WriteFileSum(path, "rep")
+	}
+	//if err == io.EOF {
+	//  return true, nil
+	// }
 	for _, f := range files {
+		fmt.Println(f.Name())
 		if f.Name() == fileN {
 			Merge(path)
-		} else {
-			CreateDir(path)
-			CopyFile(path, "", original)
-			WriteFileSum(path, "rep")
+			//ind = false
+			return
 		}
 	}
 
