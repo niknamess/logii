@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestReplication(t *testing.T) {
+func ATestReplication(t *testing.T) {
 	type args struct {
 		path string
 	}
