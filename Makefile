@@ -15,6 +15,7 @@ dev: tst build
 
 .PHONY: tst
 tst:
+	go clean -testcache
 	go test ./...
 
 .PHONY: clean
