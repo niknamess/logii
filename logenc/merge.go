@@ -24,14 +24,14 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	writeRes := func(line LogList, uu ulid.ULID) {
 		if uu.Compare(savedUlid) < 1 {
 			if dlog {
-				fmt.Println("!write:", savedUlid, "  ", uu)
+				fmt.Println("   !write:", savedUlid, "  ", uu)
 			}
 			return
 		}
 		savedUlid = uu
 		res <- line
 		if dlog {
-			fmt.Println("write:", uu)
+			fmt.Println("    write:", uu)
 		}
 	}
 
@@ -91,7 +91,7 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 				if bestUlid.Compare(minUlid) < 1 {
 					// в случае если нет ни одного ULID
 					if dlog {
-						fmt.Println("check: no one")
+						fmt.Println("  check: no one")
 					}
 					continue
 				}
@@ -99,7 +99,7 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 
 			if bestUlid.Compare(minUlid) > 0 {
 				if dlog {
-					fmt.Println("check: only one", bestLine)
+					fmt.Println("  check: only one", bestLine)
 				}
 				writeRes(bestLine, bestUlid)
 
@@ -111,19 +111,19 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 			// сравниваем гарантированно валидные ulid
 			if ulid1.Compare(ulid2) == 1 {
 				if dlog {
-					fmt.Println("check: ulid1>ulid2", line2)
+					fmt.Println("  check: ulid1>ulid2", ulid2, " < ", ulid1)
 				}
 				writeRes(line2, ulid2)
 				ulid2 = emptyUlid
 			} else if ulid1.Compare(ulid2) == -1 {
 				if dlog {
-					fmt.Println("check: ulid2>ulid1", line1)
+					fmt.Println("  check: ulid2>ulid1", ulid1, " < ", ulid2)
 				}
 				writeRes(line1, ulid1)
 				ulid1 = emptyUlid
 			} else {
 				if dlog {
-					fmt.Println("check: ulid1=ulid2", line1)
+					fmt.Println("  check: ulid1=ulid2", ulid1, " = ", ulid2)
 				}
 				writeRes(line1, ulid1)
 

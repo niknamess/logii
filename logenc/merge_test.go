@@ -27,7 +27,7 @@ func TestMergeLines(t *testing.T) {
 			var listlog LogList
 			listlog.XML_RECORD_ROOT = make([]Log, 1)
 			listlog.XML_RECORD_ROOT[0].GenTestULID(now)
-			now = now.Add(time.Microsecond)
+			now = now.Add(time.Millisecond)
 			return listlog
 		}
 
