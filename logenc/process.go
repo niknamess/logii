@@ -303,6 +303,9 @@ func WriteFileSum(file string, typeS string) {
 		line++
 	}
 	scanner = nil
+	//if ind == true && strings.Contains(scanner.Text(), (fileN)) {
+
+	//	} else
 	if ind == true {
 
 		f.Write([]byte(checksum2 + " " + fileN + "\n"))
@@ -334,4 +337,49 @@ func FileMD5(path string) string {
 		panic(err)
 	}
 	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
+func RemoveLine(path string, fileN string, label string) {
+
+	Original_Path := path + label
+	New_Path := path + label + "remove"
+	e := os.Rename(Original_Path, New_Path)
+	if e != nil {
+		log.Fatal(e)
+	}
+
+	fileR, err := os.OpenFile(path+label+"remove", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fileR.Close()
+
+	file, err := os.OpenFile(path+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	//scanner1 := bufio.NewScanner(file)
+	scanner2 := bufio.NewScanner(fileR)
+	//re := regexp.MustCompile(fileN)
+	line := 1
+	for scanner2.Scan() {
+		//res := re.ReplaceAllString(scanner2.Text(), "")
+		if strings.Contains(scanner2.Text(), fileN) {
+			fmt.Println(scanner2.Text())
+		}
+		fmt.Println(scanner2.Text())
+		line++
+		file.Write([]byte(scanner2.Text() + "\n"))
+
+	}
+
+	//remove
+	err = os.Remove(path + label + "remove")
+	if err != nil {
+		log.Fatal(err)
+	}
 }

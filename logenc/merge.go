@@ -254,10 +254,11 @@ func Merge(path string) {
 		wg.Wait()
 		close(ch1)
 		close(ch2)
-		err = os.Remove("test" + fileN)
-		if err != nil {
-			log.Fatal(err)
-		}
+		//err = os.Remove("test" + fileN)
+		//if err != nil {
+		//	log.Fatal(err)
+		//	continue
+		//	}
 
 		f, _ := os.Create("test" + fileN)
 		ch3 := MergeLines(ch1, ch2)
@@ -326,6 +327,8 @@ func Replication(path string) {
 		fmt.Println(f.Name())
 		if f.Name() == fileN {
 			Merge(path)
+			WriteFileSum("./repdata/"+fileN+"/"+fileN, "rep")
+			//RemoveLine("md5", fileN, "rep")
 			return
 		}
 	}
