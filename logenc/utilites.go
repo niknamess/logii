@@ -139,6 +139,16 @@ func DecodeXML(line string) (LogList, error) {
 	return v, err
 }
 
+func EncodeXML(tmp LogList) (v string) {
+	//print("DecodeXML")
+
+	//var v = LogList{}
+
+	k, _ := xml.Marshal(tmp)
+	v = string(k)
+	return v
+}
+
 func datestr2time(str string) time.Time {
 	// format example: 08092021224536920  from xml
 	const shortForm = "02012006150405.000"
@@ -150,6 +160,37 @@ func datestr2time(str string) time.Time {
 }
 
 func EncodeCSV(val LogList) string {
+	buf := bytes.NewBuffer([]byte{})
+	writer := csv.NewWriter(buf)
+	for _, logstr := range val.XML_RECORD_ROOT {
+		//TIME
+		//print("EncodeCSV")
+		t := datestr2time(logstr.XML_TIME)
+		//fmt.Println(logstr.XML_TIME, t, err)
+		//TYPE
+		typeM := "INFO"
+		if logstr.XML_TYPE == "1" {
+			typeM = "DEBUG"
+		} else if logstr.XML_TYPE == "2" {
+			typeM = "WARNING"
+		} else if logstr.XML_TYPE == "3" {
+			typeM = "ERROR"
+		} else if logstr.XML_TYPE == "4" {
+			typeM = "FATAL"
+		}
+		//id := fmt.Sprint(count)
+		err := writer.Write([]string{typeM, logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RubyDate), logstr.XML_ULID, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
+		count++
+		if err != nil {
+			log.Fatalln("error writing record to csv:", err)
+		}
+	}
+
+	writer.Flush()
+	return buf.String()
+}
+
+func DecodeString(val LogList) string {
 	buf := bytes.NewBuffer([]byte{})
 	writer := csv.NewWriter(buf)
 	for _, logstr := range val.XML_RECORD_ROOT {

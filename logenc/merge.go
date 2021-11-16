@@ -9,11 +9,12 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/oklog/ulid/v2"
 )
 
-var dlog bool = !!!false
+var dlog bool = !!false
 
 func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	res := make(chan LogList)
@@ -202,114 +203,78 @@ func CopyFile(path string, label string, fileOs *os.File) *os.File {
 }
 
 func Merge(path string) {
-	//fileN := filepath.Base(path)
-	//fileN := filepath.Base(path)
-	//CreateDir(path)
+	fileN := filepath.Base(path)
+	var wg sync.WaitGroup
 
-	ch1 := make(chan LogList, 10)
-	ch2 := make(chan LogList, 10)
-	ch3 := make(chan LogList, 10)
-	//var ch3 chan LogList
-
+	ch1 := make(chan LogList, 100)
+	ch2 := make(chan LogList, 100)
 	original, err := os.Open(path)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer original.Close()
 
-	//CheckSum file (md5rep)
 	if CheckFileSum(path, "rep") == true {
-		//Rename old file
 		RenameFile(path, "old")
+		CopyFile(path, "new", original)
+		OpenCreateFile(path, "old", original)
+		fileNew, err := os.OpenFile("./repdata/"+fileN+"/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
-		fileChanged := CopyFile(path, "new", original)
-		fileChanged.Close()
-		fileOld := OpenCreateFile(path, "old", original)
-		fileOld.Close()
-		fileNew := OpenCreateFile(path, "", original)
-		defer fileNew.Close()
-		//
-		FC, _ := os.Open("/home/nik/projects/Course/logi2/logenc/repdata/19-05-2021/19-05-2021" + "new")
-
+		if err != nil {
+			log.Fatal(err)
+		}
+		FC, _ := os.Open("./repdata/" + fileN + "/" + fileN + "new")
 		defer FC.Close()
-
-		FN, _ := os.Open("/home/nik/projects/Course/logi2/logenc/repdata/19-05-2021/19-05-2021" + "old")
-
+		FN, _ := os.Open("./repdata/" + fileN + "/" + fileN + "old")
 		defer FN.Close()
-
 		scanner1 := bufio.NewScanner(FN)
 		scanner2 := bufio.NewScanner(FC)
 
-		//same := bytes.Equal([]byte(fileChanged), []byte(fileOld))
-		//fmt.Println(same)
-		//r1 := bufio.NewReader(fileChanged)
-		//s1, e1 := Readln(r1)
-		//r2 := bufio.NewReader(fileOld)
-		//s2, e2 := Readln(r2)
-		//for e1 == nil && e2 == nil {
-
-		//	s1, e1 = Readln(r1)
-		//	s2, e2 = Readln(r2)
-		//	str1 := ProcLineDecodeXML(s1)
-		//	str2 := ProcLineDecodeXML(s2)
-		//	ch1 <- str1
-		//	ch2 <- str2
-
-		//}
-
-		//Merge and create new file
-		//go func() {
-		/*
-			err = ReadLines("./repdata/"+fileN+"/"+fileN+"new", func(line1 string) {
-				ch1 <- ProcLineDecodeXML(line1)
-			})
-			if err != nil {
-				log.Fatalf("ReadLines: %s", err)
-			}
-			err = ReadLines("./repdata/"+fileN+"/"+fileN+"old", func(line2 string) {
-				ch2 <- ProcLineDecodeXML(line2)
-			})
-			if err != nil {
-				log.Fatalf("ReadLines: %s", err)
-			}
-		*/
-		//}()
-
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			for scanner1.Scan() {
 				str1 := ProcLineDecodeXML(scanner1.Text())
 				if len(str1.XML_RECORD_ROOT) != 0 {
 					ch1 <- str1
 				}
-				//ch3 = MergeLines(ch1, ch2)
 			}
 		}()
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			for scanner2.Scan() {
 				str2 := ProcLineDecodeXML(scanner2.Text())
 				if len(str2.XML_RECORD_ROOT) != 0 {
 					ch2 <- str2
 				}
-				//ch3 = MergeLines(ch1, ch2)
 			}
-			//close(ch1)
-			//close(ch2)
 		}()
+
+		wg.Wait()
 		close(ch1)
 		close(ch2)
-		ch3 = MergeLines(ch1, ch2)
+		err = os.Remove("test" + fileN)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		f, _ := os.Create("test" + fileN)
+		ch3 := MergeLines(ch1, ch2)
 		for val := range ch3 {
 
 			if len(val.XML_RECORD_ROOT) != 0 {
-				//got++
-				//fmt.Println(val.XML_RECORD_ROOT[0].XML_ULID)
-				fileNew.WriteString(val.XML_RECORD_ROOT[0].XML_ULID)
+
+				xmlline := EncodeXML(val)
+				line := EncodeLine(xmlline)
+				f.WriteString(line + "\n")
+				fileNew.WriteString(line + "\n")
 			}
 		}
-		//Delete two old file
+		f.Close()
+		fileNew.Close()
 		DeleteOldsFiles(path, "old")
 		DeleteOldsFiles(path, "new")
-
 	}
 
 }
@@ -332,7 +297,7 @@ func IsDirEmpty(name string) (bool, error) {
 
 func Replication(path string) {
 	CreateDir("")
-	//pathrep := "/home/nik/projects/Course/logi2/logenc/repdata/"
+
 	fileN := filepath.Base(path)
 	original, err := os.Open(path)
 	if err != nil {
@@ -357,95 +322,17 @@ func Replication(path string) {
 		CopyFile(path, "", original)
 		WriteFileSum(path, "rep")
 	}
-	//if err == io.EOF {
-	//  return true, nil
-	// }
 	for _, f := range files {
 		fmt.Println(f.Name())
 		if f.Name() == fileN {
 			Merge(path)
-			//ind = false
 			return
 		}
 	}
+	if ok == false {
+		CreateDir(path)
+		CopyFile(path, "", original)
+		WriteFileSum(path, "rep")
+	}
 
 }
-
-/*
-func Comparefiles2(path1 string, path2 string, path string) {
-
-	//var str1 LogList
-	//	var str2 LogList
-	ch1 := make(chan string, 100)
-
-	ch2 := make(chan string, 100)
-
-	//fileN := path
-	//var wait int32 = 0
-	new, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer new.Close()
-	file1, err := os.OpenFile(path1, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file1.Close()
-
-	file2, err := os.OpenFile(path2, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file2.Close()
-
-	scanner1 := bufio.NewScanner(file1)
-	scanner2 := bufio.NewScanner(file2)
-
-	//info1, err := os.Stat(path1)
-	//info2, err := os.Stat(path2)
-
-	go func() {
-		for {
-			select {
-			case line1, _ := <-ch1:
-				ulid1, _ := ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
-
-			case line2, _ := <-ch2:
-				ulid2, _ := ulid.ParseStrict(line2.XML_RECORD_ROOT[0].XML_ULID)
-
-			}
-		}
-
-	}()
-
-	for scanner1.Scan() {
-
-		ch1 <- ProcLine(scanner1.Text())
-
-	}
-	for scanner1.Scan() {
-		ch2 <- ProcLine(scanner2.Text())
-
-	}
-	/*
-		for scanner1.Scan() || scanner2.Scan() {
-			str1 = ProcLineDecodeXML(scanner1.Text())
-
-			str2 = ProcLineDecodeXML(scanner2.Text())
-
-			ulid1, _ := ulid.ParseStrict(str1.XML_RECORD_ROOT[0].XML_ULID)
-			ulid2, _ := ulid.ParseStrict(str2.XML_RECORD_ROOT[0].XML_ULID)
-
-			if ulid1.Compare(ulid2) == 1 {
-				new.Write([]byte(scanner2.Text()))
-
-			} else {
-				new.Write([]byte(scanner1.Text()))
-
-			}
-		}
-
-
-}
-*/
