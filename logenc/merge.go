@@ -9,7 +9,6 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"sync"
 
 	"github.com/oklog/ulid/v2"
 )
@@ -62,7 +61,6 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 						ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
 					}
 
-					//ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
 				}
 			}
 			if ulid2 == emptyUlid {
@@ -163,37 +161,37 @@ func Readln(r *bufio.Reader) (string, error) {
 	return string(ln), err
 }
 */
-func CreateDir(path string) {
+func CreateDir(dirpath string, path string) {
 	fileN := filepath.Base(path)
 	//Create a folder/directory at a full qualified path
-	err := os.MkdirAll("./repdata/"+fileN, os.ModePerm)
+	err := os.MkdirAll(dirpath+fileN, os.ModePerm)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func DeleteOldsFiles(path string, labels string) {
+func DeleteOldsFiles(dirpath string, path string, labels string) {
 	fileN := filepath.Base(path)
-	err := os.Remove("./repdata/" + fileN + "/" + fileN + labels)
+	err := os.Remove(dirpath + fileN + labels)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 }
 
-func RenameFile(path string, label string) {
+func RenameFile(dirpath string, path string, label string) {
 	fileN := filepath.Base(path)
-	Original_Path := "./repdata/" + fileN + "/" + fileN
-	New_Path := "./repdata/" + fileN + "/" + fileN + label
+	Original_Path := dirpath + fileN
+	New_Path := dirpath + fileN + label
 	e := os.Rename(Original_Path, New_Path)
 	if e != nil {
 		log.Fatal(e)
 	}
 }
 
-func OpenCreateFile(path string, label string, fileOs *os.File) *os.File {
+func OpenCreateFile(dirpath string, path string, label string, fileOs *os.File) *os.File {
 	fileN := filepath.Base(path)
-	file, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 	if err != nil {
 		log.Fatal(err)
@@ -203,9 +201,9 @@ func OpenCreateFile(path string, label string, fileOs *os.File) *os.File {
 	return file
 }
 
-func CopyFile(path string, label string, fileOs *os.File) *os.File {
+func CopyFile(dirpath string, path string, label string, fileOs *os.File) *os.File {
 	fileN := filepath.Base(path)
-	file, err := os.OpenFile("./repdata/"+fileN+"/"+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	bytesWritten, err := io.Copy(file, fileOs)
 	if err != nil {
 		log.Fatal(err)
@@ -214,9 +212,9 @@ func CopyFile(path string, label string, fileOs *os.File) *os.File {
 	return file
 }
 
-func Merge(path string) {
+func Merge(dirpath string, path string) {
 	fileN := filepath.Base(path)
-	var wg sync.WaitGroup
+	//var wg sync.WaitGroup
 
 	ch1 := make(chan LogList, 100)
 	ch2 := make(chan LogList, 100)
@@ -227,50 +225,44 @@ func Merge(path string) {
 	defer original.Close()
 
 	if CheckFileSum(path, "rep") == true {
-		RenameFile(path, "old")
-		CopyFile(path, "new", original)
-		OpenCreateFile(path, "old", original)
-		fileNew, err := os.OpenFile("./repdata/"+fileN+"/"+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		RenameFile(dirpath, path, "old")
+		CopyFile(dirpath, path, "new", original)
+		OpenCreateFile(dirpath, path, "old", original)
+		fileNew, err := os.OpenFile(dirpath+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 		if err != nil {
 			log.Fatal(err)
 		}
-		FC, _ := os.Open("./repdata/" + fileN + "/" + fileN + "new")
+		FC, _ := os.Open(dirpath + fileN + "new")
 		defer FC.Close()
-		FN, _ := os.Open("./repdata/" + fileN + "/" + fileN + "old")
+		FN, _ := os.Open(dirpath + fileN + "old")
 		defer FN.Close()
 		scanner1 := bufio.NewScanner(FN)
 		scanner2 := bufio.NewScanner(FC)
 
-		wg.Add(1)
 		go func() {
-			defer wg.Done()
+
 			for scanner1.Scan() {
 				str1 := ProcLineDecodeXML(scanner1.Text())
 				if len(str1.XML_RECORD_ROOT) != 0 {
 					ch1 <- str1
 				}
 			}
+			close(ch1)
+
 		}()
-		wg.Add(1)
+
 		go func() {
-			defer wg.Done()
+
 			for scanner2.Scan() {
 				str2 := ProcLineDecodeXML(scanner2.Text())
 				if len(str2.XML_RECORD_ROOT) != 0 {
 					ch2 <- str2
 				}
 			}
-		}()
+			close(ch2)
 
-		wg.Wait()
-		close(ch1)
-		close(ch2)
-		//err = os.Remove("test" + fileN)
-		//if err != nil {
-		//	log.Fatal(err)
-		//	continue
-		//	}
+		}()
 
 		f, _ := os.Create("test" + fileN)
 		ch3 := MergeLines(ch1, ch2)
@@ -284,10 +276,11 @@ func Merge(path string) {
 				fileNew.WriteString(line + "\n")
 			}
 		}
+
 		f.Close()
 		fileNew.Close()
-		DeleteOldsFiles(path, "old")
-		DeleteOldsFiles(path, "new")
+		DeleteOldsFiles(dirpath, path, "old")
+		DeleteOldsFiles(dirpath, path, "new")
 	}
 
 }
@@ -309,7 +302,8 @@ func IsDirEmpty(name string) (bool, error) {
 }
 
 func Replication(path string) {
-	CreateDir("")
+	var dirpath string = "./repdata/"
+	CreateDir(dirpath, "")
 
 	fileN := filepath.Base(path)
 	original, err := os.Open(path)
@@ -318,35 +312,34 @@ func Replication(path string) {
 	}
 	defer original.Close()
 
-	files, err := ioutil.ReadDir("/home/nik/projects/Course/logi2/logenc/repdata/")
+	files, err := ioutil.ReadDir(dirpath)
 	if err != nil {
-		//CreateDir(path)
+
 		log.Fatal(err)
 	}
-	//defer files.Close()
-	//files.Size()
-	ok, err := IsDirEmpty("/home/nik/projects/Course/logi2/logenc/repdata/")
+
+	ok, err := IsDirEmpty(dirpath)
 	if err != nil {
 		fmt.Println(err)
 
 	}
 	if ok == true {
-		CreateDir(path)
-		CopyFile(path, "", original)
+		//CreateDir(path)
+		CopyFile(dirpath, path, "", original)
 		WriteFileSum(path, "rep")
 	}
 	for _, f := range files {
 		fmt.Println(f.Name())
 		if f.Name() == fileN {
-			Merge(path)
-			WriteFileSum("./repdata/"+fileN+"/"+fileN, "rep")
-			//RemoveLine("md5", fileN, "rep")
+			Merge(dirpath, path)
+			WriteFileSum(dirpath+fileN, "rep")
+
 			return
 		}
 	}
 	if ok == false {
-		CreateDir(path)
-		CopyFile(path, "", original)
+		//CreateDir(path)
+		CopyFile(dirpath, path, "", original)
 		WriteFileSum(path, "rep")
 	}
 
