@@ -59,7 +59,9 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 					if err == nil {
 						//log.Fatal(err)
 						ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
-					}
+					} //else {
+					//	res <- line1
+					//}
 
 				}
 			}
@@ -72,7 +74,9 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 					_, err := ulid.Parse(line2.XML_RECORD_ROOT[0].XML_ULID)
 					if err == nil {
 						ulid2, _ = ulid.ParseStrict(line2.XML_RECORD_ROOT[0].XML_ULID)
-					}
+					} //else {
+					//	res <- line2
+					//}
 				}
 			}
 

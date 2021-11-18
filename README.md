@@ -32,6 +32,7 @@
 - [x] add func for compare control sum file
 - [x] add disign in web interface (table)
 - [x] add disign in web interface (colors for type message) 
+- [ ] add REST API 
 
 
 

@@ -42,7 +42,6 @@ func ProcWeb(dir1 string) {
 
 // Use - Stacking middlewares
 func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) http.HandlerFunc {
-	//fmt.Println("zzz")
 	for _, m := range mid {
 		handler = m(handler)
 	}

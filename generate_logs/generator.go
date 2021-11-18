@@ -1,15 +1,17 @@
 package generator
 
 import (
-	"encoding/base64"
 	"encoding/xml"
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 
 	//"strings"
 	"time"
 
+	"github.com/Pallinder/go-randomdata"
+	"github.com/oklog/ulid/v2"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	//"github.com/kataras/tablewriter"
 	//"github.com/lensesio/tableprinter"
@@ -42,81 +44,76 @@ const (
 	XOR_KEY = 59
 )
 
-func EncryptDecrypt(input []byte) (output string) {
-	data := base64.StdEncoding.Strict().EncodeToString(input)
-	result := []byte(data)
-
-	if len(data) <= 0 {
-		return ""
-	}
-
-	for i := 0; i < len(data); i++ {
-		result[i] ^= XOR_KEY
-	}
-	//print(result)
-	return string(result)
-}
-
 func init() {
-	file, err := os.OpenFile("./logtest/gen_logs", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("gen_logs", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
 	InfoLogger = log.New(file, "", 0)
 	WarningLogger = log.New(file, "", 0)
 	ErrorLogger = log.New(file, "", 0)
-
 }
 
 func ProcGenN() {
+
 	i := 0
-	XML_APPNAME := "TMCS Monitor,"
-	XML_APPPATH := "/usr/local/Lemz/tmcs/monitor/tmcs_monitor,"
-	XML_APPPID := "7481,"
-	XML_THREAD := "88,"
-	time1 := "Fri, 20 Aug 2021 00:43:44 UTC"
-	qtype := "0"
-	XML_ULID := "0001GHXYQ6EM4972TMPV0E0W6Q"
-	XML_MESSAGE := "Состояние '[192.168.1.128] Cервер КС_UDP/Пинг'"
-	XML_DETAILS := "Context:  -- void tmcs::AbstractMonitor::"
-	address := "sajjsaj"
-	line := XML_APPNAME + XML_APPPATH + XML_APPPID + XML_THREAD + time1 + qtype + XML_ULID + XML_MESSAGE + XML_DETAILS + address
-	line1 := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\" ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
-
-	//file, err := os.OpenFile("/home/nik/projects/logs/r/gen_logs.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-
+	r := rand.New(rand.NewSource(99))
+	XML_DETAILS := "Context:  -- void tmcs::AbstractMonitor::,"
+	//address := randomdata.ProvinceForCountry("GB")
+	line1 := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\"ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
 	infof := func(info string) {
 		InfoLogger.Output(2, logenc.EncodeLine(info))
 	}
-
-	warnof := func(info string) {
-		WarningLogger.Output(2, logenc.EncodeLine(info))
-	}
-
+	//warnof := func(info string) {
+	//	WarningLogger.Output(2, logenc.EncodeLine(info))
+	//}
 	erorof := func(info string) {
 		ErrorLogger.Output(2, logenc.EncodeLine(info))
 	}
-
+	//decode := func(info string) {
+	//	ErrorLogger.Output(2, (info))
+	//}
 	for true {
+
+		now := time.Now().UnixNano()
+		entropy := rand.New(rand.NewSource(now))
+		timestamp := ulid.Timestamp(time.Now())
+		XML_APPNAME := strconv.Itoa(r.Intn(10)) + "TMCS TEST,"
+		XML_APPPATH := strconv.Itoa(r.Intn(10)) + "/TEST/TEST,"
+		XML_APPPID := strconv.Itoa(r.Intn(1000)) + "," // "7481,"
+		XML_THREAD := strconv.Itoa(r.Intn(10)) + ","   //"88,"
+		XML_MESSAGE := "Состояние '" + randomdata.IpV4Address() + "Cервер КС_UDP/Пинг',"
+		XML_TYPE := strconv.Itoa(rand.Intn(4-1) + 1)
+		address := randomdata.ProvinceForCountry("GB") + "\n"
+		time1 := randomdata.FullDate() + ","
+		//file, err := os.OpenFile("test"+strconv.Itoa(i), os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		//	if err != nil {
+		//		log.Fatal(err)
+		//	}
+		//defer file.Close()
+		time_ulid := ulid.MustNew(timestamp, entropy)
+		ulid1 := time_ulid.String()
+		LINE := "<loglist><log module_name=" + XML_APPNAME +
+			" app_path=" + XML_APPPATH +
+			" app_pid=" + XML_APPPID +
+			" thread_id=" + XML_THREAD +
+			" time=" + time1 +
+			" ulid=" + ulid1 +
+			" type=" + XML_TYPE +
+			" message=" + XML_MESSAGE +
+			" ext_message=" + XML_DETAILS + address + "></loglist>"
+
 		rand.Seed(time.Now().UnixNano())
 		//print("it's work ea")
 
 		timer1 := time.NewTimer(4 * time.Second)
 		//InfoLogger.Println("Starting the application...")
-		infof(line)
+		infof(LINE)
+		//decode(LINE)
 
 		<-timer1.C
 		i++
 
-		timer2 := time.NewTimer(2 * time.Second)
-		infof(line)
-
-		<-timer2.C
-		i++
-		timer3 := time.NewTimer(2 * time.Second)
-		warnof(line)
-		<-timer3.C
-		i++
 		timer4 := time.NewTimer(2 * time.Second)
 		erorof(line1)
 		<-timer4.C

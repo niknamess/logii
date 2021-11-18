@@ -37,7 +37,7 @@ func BenchmarkProcMapFilePP(b *testing.B) {
 	//}
 }
 
-func GenerateTestFile(t *testing.T) {
+func BenchmarkGenerateTestFile(b *testing.B) {
 
 	tests := []struct {
 		nums1  []int
