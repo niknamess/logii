@@ -38,6 +38,7 @@ var (
 	WarningLogger *log.Logger
 	InfoLogger    *log.Logger
 	ErrorLogger   *log.Logger
+	Logger        *log.Logger
 )
 
 const (
@@ -45,13 +46,20 @@ const (
 )
 
 func init() {
-	file, err := os.OpenFile("gen_logs", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile("gen_logs_coded", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	filed, err := os.OpenFile("gen_logs_decoded", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
 	InfoLogger = log.New(file, "", 0)
-	WarningLogger = log.New(file, "", 0)
+	//WarningLogger = log.New(file, "", 0)
 	ErrorLogger = log.New(file, "", 0)
+
+	Logger = log.New(filed, "", 0)
+
 }
 
 func ProcGenN() {
@@ -70,9 +78,9 @@ func ProcGenN() {
 	erorof := func(info string) {
 		ErrorLogger.Output(2, logenc.EncodeLine(info))
 	}
-	//decode := func(info string) {
-	//	ErrorLogger.Output(2, (info))
-	//}
+	decode := func(info string) {
+		Logger.Output(2, (info))
+	}
 	for true {
 
 		now := time.Now().UnixNano()
@@ -109,7 +117,7 @@ func ProcGenN() {
 		timer1 := time.NewTimer(4 * time.Second)
 		//InfoLogger.Println("Starting the application...")
 		infof(LINE)
-		//decode(LINE)
+		decode(LINE)
 
 		<-timer1.C
 		i++

@@ -12,3 +12,8 @@ repdata
 logenc/repdata
 logenc/md5rep
 md5rep
+test_/test0
+test_/test1
+generate_logs/gen_logs_coded
+generate_logs/gen_logs_decoded
+
