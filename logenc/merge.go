@@ -19,6 +19,7 @@ var dlog bool = !!false
 func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	res := make(chan LogList)
 	var nullULID string = "00000000000000000000000000"
+	var count int = 0
 
 	var savedUlid ulid.ULID
 
@@ -31,6 +32,7 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 		}
 		savedUlid = uu
 		res <- line
+		count++
 		if dlog {
 			fmt.Println("    write:", uu)
 		}
@@ -50,10 +52,17 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 			if ulid1 == emptyUlid {
 				line1, ok1 = <-ch1
 				if ok1 && len(line1.XML_RECORD_ROOT) != 0 && line1.XML_RECORD_ROOT[0].XML_ULID != nullULID {
+
 					if dlog {
 						fmt.Println("ulid1 read", line1)
 					}
-					ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
+					_, err := ulid.Parse(line1.XML_RECORD_ROOT[0].XML_ULID)
+					if err == nil {
+						//log.Fatal(err)
+						ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
+					}
+
+					//ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
 				}
 			}
 			if ulid2 == emptyUlid {
@@ -62,7 +71,10 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 					if dlog {
 						fmt.Println("ulid2 read", line2)
 					}
-					ulid2, _ = ulid.ParseStrict(line2.XML_RECORD_ROOT[0].XML_ULID)
+					_, err := ulid.Parse(line2.XML_RECORD_ROOT[0].XML_ULID)
+					if err == nil {
+						ulid2, _ = ulid.ParseStrict(line2.XML_RECORD_ROOT[0].XML_ULID)
+					}
 				}
 			}
 
@@ -133,7 +145,7 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 			}
 		}
 	}()
-
+	fmt.Println("count", count)
 	return res
 }
 

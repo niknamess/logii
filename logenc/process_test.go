@@ -14,6 +14,7 @@ func TestRemoveLine(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			RemoveLine(tt.args.path, tt.args.fileN, tt.args.label)
