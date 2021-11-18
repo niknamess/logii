@@ -1,0 +1,13 @@
+logi2
+*.log
+*.json
+*.vscode
+~/.logi2
+*.bleve
+logtest/
+__debug_bin
+blavestorage/
+md5
+repdata
+logenc/repdata
+logenc/md5repdata
