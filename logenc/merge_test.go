@@ -6,16 +6,6 @@ import (
 	"time"
 )
 
-func ATestReplication(t *testing.T) {
-	type args struct {
-		path string
-	}
-
-	Replication("/home/nik/projects/Course/logi2/repdata/Test/29-05-2021")
-	//Replication("/home/nik/projects/Course/logi2/repdata/Test/19-05-2021")
-
-}
-
 func TestMergeLines(t *testing.T) {
 	//var wg sync.WaitGroup
 

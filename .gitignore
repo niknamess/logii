@@ -10,4 +10,5 @@ blavestorage/
 md5
 repdata
 logenc/repdata
-logenc/md5repdata
+logenc/md5rep
+md5rep

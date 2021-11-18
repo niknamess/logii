@@ -264,7 +264,7 @@ func Merge(dirpath string, path string) {
 
 		}()
 
-		f, _ := os.Create("test" + fileN)
+		//f, _ := os.Create("test" + fileN)
 		ch3 := MergeLines(ch1, ch2)
 		for val := range ch3 {
 
@@ -272,12 +272,12 @@ func Merge(dirpath string, path string) {
 
 				xmlline := EncodeXML(val)
 				line := EncodeLine(xmlline)
-				f.WriteString(line + "\n")
+				//f.WriteString(line + "\n")
 				fileNew.WriteString(line + "\n")
 			}
 		}
 
-		f.Close()
+		//f.Close()
 		fileNew.Close()
 		DeleteOldsFiles(dirpath, path, "old")
 		DeleteOldsFiles(dirpath, path, "new")
