@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"strconv"
 
 	//"encoding/json"
@@ -199,7 +198,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 
 }
 
-func JsonDecode() []byte {
+func JsonDecode() []FileStruct {
 
 	var idents []FileStruct
 	var fileList = make(map[string][]string)
@@ -222,6 +221,6 @@ func JsonDecode() []byte {
 		//res2B, _ := json.Marshal(group)
 		idents = append(idents, group)
 	}
-	result, _ := json.Marshal(idents)
-	return result
+	//result, _ := json.Marshal(idents)
+	return idents
 }
