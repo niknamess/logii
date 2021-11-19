@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/oklog/ulid/v2"
@@ -219,4 +220,17 @@ func DecodeString(val LogList) string {
 
 	writer.Flush()
 	return buf.String()
+}
+
+//rune ='symbol'
+func Remove(s string, symbol rune) string {
+	return strings.Map(
+		func(r rune) rune {
+			if r != symbol {
+				return r
+			}
+			return -1
+		},
+		s,
+	)
 }

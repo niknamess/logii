@@ -2,7 +2,11 @@ package controllers
 
 import (
 	"encoding/base64"
+	"encoding/json"
+	"strconv"
+
 	//"encoding/json"
+
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -30,6 +34,17 @@ var (
 type MyStruct struct {
 	DirN string
 	File string
+}
+
+type FileList struct {
+	//JNAME json.Name    `json:"filelist"`
+	files []FileStruct `json:"file"`
+}
+
+type FileStruct struct {
+	ID      int    `json:"id"`
+	NAME    string `json:"filename"`
+	HASHSUM string `json:"hashsum"`
 }
 
 // RootHandler - http handler for handling / path
@@ -154,6 +169,14 @@ func ViewDir(conn *websocket.Conn, search string) {
 			bleveSI.ProcFileBreveSLOWLY(fileN, fileaddr)
 			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 			fmt.Println(fileaddr)
+			//filestring := fileList["FileList"][i]
+			//fileNjson := filepath.Base(fileaddr)
+			//hashsumfile := logenc.FileMD5(filestring)
+			//group := FileStruct{
+			//	ID:      1,
+			//	NAME:    fileN,
+			//	HASHSUM: hashsumfile,
+			//}
 
 		}
 
@@ -174,4 +197,31 @@ func ViewDir(conn *websocket.Conn, search string) {
 	}
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 
+}
+
+func JsonDecode() []byte {
+
+	var idents []FileStruct
+	var fileList = make(map[string][]string)
+	files, _ := ioutil.ReadDir("/home/nik/projects/Course/tmcs-log-agent-storage/")
+	countFiles := (len(files))
+
+	fileList["FileList"] = util.Conf.Dir
+	for i := 0; i < countFiles; i++ {
+		fileaddr := fileList["FileList"][i]
+		fileN := filepath.Base(fileaddr)
+		IDfile, _ := strconv.Atoi(logenc.Remove(fileN, '-'))
+		filestring := fileList["FileList"][i]
+
+		hashsumfile := logenc.FileMD5(filestring)
+		group := FileStruct{
+			ID:      IDfile,
+			NAME:    fileN,
+			HASHSUM: hashsumfile,
+		}
+		//res2B, _ := json.Marshal(group)
+		idents = append(idents, group)
+	}
+	result, _ := json.Marshal(idents)
+	return result
 }
