@@ -14,7 +14,7 @@ import (
 	"github.com/prateeknischal/webtail/util"
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
-	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
+	//"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
 var (
@@ -26,6 +26,12 @@ var (
 	// subsequent indexing attempts in cron trigger
 	indexMap = make(map[string]bool)
 )
+
+type FileStruct struct {
+	ID      int    `json:"id"`
+	NAME    string `json:"filename"`
+	HASHSUM string `json:"hashsum"`
+}
 
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
@@ -188,7 +194,7 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 func AddJsonInfo(conn *websocket.Conn) []byte {
 	dirpath := "/home/nik/projects/Course/tmcs-log-agent-storage/"
-	var idents []controllers.FileStruct
+	var idents []FileStruct
 	var fileList = make(map[string][]string)
 	files, _ := ioutil.ReadDir(dirpath)
 	countFiles := (len(files))
@@ -199,7 +205,7 @@ func AddJsonInfo(conn *websocket.Conn) []byte {
 		fileN := filepath.Base(fileaddr)
 		IDfile, _ := strconv.Atoi(logenc.Remove(fileN, '-'))
 		hashsumfile := logenc.FileMD5(fileaddr)
-		group := controllers.FileStruct{
+		group := FileStruct{
 			ID:      IDfile,
 			NAME:    fileN,
 			HASHSUM: hashsumfile,
