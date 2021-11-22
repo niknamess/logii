@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"encoding/base64"
+	"log"
+	"os"
 	"strconv"
 
 	//"encoding/json"
@@ -35,15 +37,20 @@ type MyStruct struct {
 	File string
 }
 
-type FileList struct {
-	//JNAME json.Name    `json:"filelist"`
-	files []FileStruct `json:"file"`
-}
+//type FileList struct {
+//JNAME json.Name    `json:"filelist"`
+//files []FileStruct `json:"file"`
+//}
 
 type FileStruct struct {
 	ID      int    `json:"id"`
 	NAME    string `json:"filename"`
 	HASHSUM string `json:"hashsum"`
+}
+type UlpoadFileStruct struct {
+	ID      int    `json:"id"`
+	NAME    string `json:"filename"`
+	Content []byte
 }
 
 // RootHandler - http handler for handling / path
@@ -150,7 +157,6 @@ func Indexing(conn *websocket.Conn, filename string) {
 //View List of Dir
 func ViewDir(conn *websocket.Conn, search string) {
 	var fileList = make(map[string][]string)
-	//var result MyStruct
 	files, _ := ioutil.ReadDir("/home/nik/projects/Course/tmcs-log-agent-storage/")
 	//"/home/nik/projects/Course/tmcs-log-agent-storage/"
 	//"./view"
@@ -167,7 +173,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 			go logenc.Replication(fileaddr)
 			bleveSI.ProcFileBreveSLOWLY(fileN, fileaddr)
 			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
-			fmt.Println(fileaddr)
+			//fmt.Println(fileaddr)
 			//filestring := fileList["FileList"][i]
 			//fileNjson := filepath.Base(fileaddr)
 			//hashsumfile := logenc.FileMD5(filestring)
@@ -191,14 +197,14 @@ func ViewDir(conn *websocket.Conn, search string) {
 			if util.TailDir(conn, fileN, search, SearchMap) == true {
 				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 			}
-			fmt.Println(fileaddr)
+			//fmt.Println(fileaddr)
 		}
 	}
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 
 }
 
-func JsonDecode() []FileStruct {
+func JsonEncode() []FileStruct {
 
 	var idents []FileStruct
 	var fileList = make(map[string][]string)
@@ -210,9 +216,7 @@ func JsonDecode() []FileStruct {
 		fileaddr := fileList["FileList"][i]
 		fileN := filepath.Base(fileaddr)
 		IDfile, _ := strconv.Atoi(logenc.Remove(fileN, '-'))
-		filestring := fileList["FileList"][i]
-
-		hashsumfile := logenc.FileMD5(filestring)
+		hashsumfile := logenc.FileMD5(fileaddr)
 		group := FileStruct{
 			ID:      IDfile,
 			NAME:    fileN,
@@ -220,7 +224,37 @@ func JsonDecode() []FileStruct {
 		}
 		//res2B, _ := json.Marshal(group)
 		idents = append(idents, group)
+		fmt.Println(idents)
 	}
 	//result, _ := json.Marshal(idents)
 	return idents
+}
+
+func Sendfile(FileN string) UlpoadFileStruct {
+	var group UlpoadFileStruct
+	dirpath := "/home/nik/projects/Course/tmcs-log-agent-storage/"
+	IDfile, _ := strconv.Atoi(logenc.Remove(FileN, '-'))
+	files, err := ioutil.ReadDir(dirpath)
+	if err != nil {
+
+		log.Fatal(err)
+	}
+
+	for _, f := range files {
+		//fmt.Println(f.Name())
+		if f.Name() == FileN {
+			original, err := os.ReadFile(dirpath + FileN)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			group = UlpoadFileStruct{
+				ID:      IDfile,
+				NAME:    FileN,
+				Content: original,
+			}
+			return group
+		}
+	}
+	return group
 }

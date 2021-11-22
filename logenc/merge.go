@@ -333,7 +333,7 @@ func Replication(path string) {
 		WriteFileSum(path, "rep")
 	}
 	for _, f := range files {
-		fmt.Println(f.Name())
+		//fmt.Println(f.Name())
 		if f.Name() == fileN {
 			Merge(dirpath, path)
 			WriteFileSum(dirpath+fileN, "rep")

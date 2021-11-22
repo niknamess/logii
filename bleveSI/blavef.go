@@ -227,7 +227,7 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 
 	curNum := 0
 
-	fmt.Println("lines", len(lines))
+	//fmt.Println("lines", len(lines))
 
 	for _, line := range lines {
 
