@@ -28,11 +28,12 @@ func ProcWeb(dir1 string) {
 	}
 
 	router := mux.NewRouter()
+	router.HandleFunc("/ws/", Use(controllers.BodyHandler)).Methods("POST")
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler)).Methods("GET")
 	router.HandleFunc("/", Use(controllers.RootHandler)).Methods("GET")
 	router.HandleFunc("/searchproject", controllers.SearchHandler)
 	//router.HandleFunc( controllers.SearchHandler)
-	router.HandleFunc("/ws/", Use(controllers.BodyHandler)).Methods("GET")
+	//router.HandleFunc("/ws/", Use(controllers.BodyHandler)).Methods("GET")
 
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/static")))
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

@@ -193,6 +193,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 
 }
 
+/*
 func JsonEncode() []FileStruct {
 
 	var idents []FileStruct
@@ -218,7 +219,7 @@ func JsonEncode() []FileStruct {
 	//result, _ := json.Marshal(idents)
 	return idents
 }
-
+*/
 func Sendfile(FileN string) UlpoadFileStruct {
 	var group UlpoadFileStruct
 	dirpath := "/home/nik/projects/Course/tmcs-log-agent-storage/"
