@@ -1,16 +1,20 @@
 package util
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
+	"github.com/prateeknischal/webtail/util"
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
+	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
 var (
@@ -180,4 +184,32 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 	}
 	return false
 
+}
+
+func AddJsonInfo(conn *websocket.Conn) []byte {
+	dirpath := "/home/nik/projects/Course/tmcs-log-agent-storage/"
+	var idents []controllers.FileStruct
+	var fileList = make(map[string][]string)
+	files, _ := ioutil.ReadDir(dirpath)
+	countFiles := (len(files))
+
+	fileList["FileList"] = util.Conf.Dir
+	for i := 0; i < countFiles; i++ {
+		fileaddr := fileList["FileList"][i]
+		fileN := filepath.Base(fileaddr)
+		IDfile, _ := strconv.Atoi(logenc.Remove(fileN, '-'))
+		hashsumfile := logenc.FileMD5(fileaddr)
+		group := controllers.FileStruct{
+			ID:      IDfile,
+			NAME:    fileN,
+			HASHSUM: hashsumfile,
+		}
+		//res2B, _ := json.Marshal(idents)
+		idents = append(idents, group)
+		fmt.Println(idents)
+	}
+	res2B, _ := json.Marshal(idents)
+	conn.WriteMessage(websocket.TextMessage, res2B)
+	//result, _ := json.Marshal(idents)
+	return res2B
 }

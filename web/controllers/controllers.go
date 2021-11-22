@@ -148,8 +148,6 @@ func Indexing(conn *websocket.Conn, filename string) {
 			bleveSI.ProcFileBreveSLOWLY(fileN, filename)
 			conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 		}()
-		//logenc.Replication(filename)
-
 		SearchMap = logenc.ProcMapFile(filename)
 	}
 }
@@ -173,15 +171,6 @@ func ViewDir(conn *websocket.Conn, search string) {
 			go logenc.Replication(fileaddr)
 			bleveSI.ProcFileBreveSLOWLY(fileN, fileaddr)
 			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
-			//fmt.Println(fileaddr)
-			//filestring := fileList["FileList"][i]
-			//fileNjson := filepath.Base(fileaddr)
-			//hashsumfile := logenc.FileMD5(filestring)
-			//group := FileStruct{
-			//	ID:      1,
-			//	NAME:    fileN,
-			//	HASHSUM: hashsumfile,
-			//}
 
 		}
 
@@ -257,4 +246,34 @@ func Sendfile(FileN string) UlpoadFileStruct {
 		}
 	}
 	return group
+}
+
+func BodyHandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, w.Header())
+	if err != nil {
+		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
+		return
+	}
+	filenameB, _ := base64.StdEncoding.DecodeString(mux.Vars(r)["b64file"])
+
+	FilePath := string(filenameB)
+	if filenameB == nil {
+		return
+	}
+
+	ok := false
+	for _, wFile := range util.Conf.Dir {
+		if FilePath == wFile {
+			ok = true
+			break
+		}
+	}
+	if ok {
+
+		//util.TailFile(conn, filename, search, SearchMap, false)
+		jsonmes := util.AddJsonInfo(conn)
+		fmt.Println(jsonmes)
+	}
+
+	w.WriteHeader(http.StatusUnauthorized)
 }
