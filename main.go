@@ -21,12 +21,13 @@ func main() {
 	flagGen := flag.String("g", "", "generate_logs")
 	flagWeb := flag.String("p", "", "web_interface")
 	flagTest := flag.String("c", "", "web_interface and generate log")
+	flagProm := flag.String("m", "", "prometheus")
 	//flagBleve := flag.String("b", "", "Bleve on bleve file")
 	//flagBleveSearch := flag.String("k", "", "Bleve search")
 	//flagMap := flag.String("m", "", "Map creating")
 	flag.Parse()
 
-	go logenc.Promrun()
+	//go logenc.Promrun()
 
 	if len(*flagServ) > 0 {
 		fmt.Println("flagServ:", *flagServ)
@@ -57,6 +58,12 @@ func main() {
 
 	if len(*flagWeb) > 0 {
 		web.ProcWeb(*flagWeb)
+
+	}
+
+	if len(*flagProm) > 0 {
+		go logenc.Promrun(*flagProm)
+
 	}
 	//if len(*flagMap) > 0 {
 	//	logenc.ProcMapFilePP(*flagMap)

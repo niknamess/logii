@@ -158,9 +158,10 @@ func procFileWrite(file string) {
 	close(ch)
 }
 
-func Promrun() {
+func Promrun(port string) {
+	//portStr := strconv.Itoa(port)
 	http.Handle("/metrics", promhttp.Handler())
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":"+port+"", nil))
 }
 
 func ProcLineDecodeXML(line string) (val LogList) {

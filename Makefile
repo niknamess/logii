@@ -12,6 +12,11 @@ build: clean
 .PHONY: dev
 dev: tst build
 	@$(MEPATH)/logi2 -p 15000
+	@$(MEPATH)/logi2 -m 8080
+.PHONY: dev2
+dev2: tst build
+	@$(MEPATH)/logi2 -p 16000
+	@$(MEPATH)/logi2 -m 8081
 
 .PHONY: tst
 tst:
