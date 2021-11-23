@@ -54,13 +54,14 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
 
     $scope.open_connection = function(file) {
+        var filename = file.replace(/^.*[\\\/]/, '')
         lastItem = null
         lastItem = file;
 
 
         console.log(file)
         $scope.showCard = false;
-        angular.element(document.querySelector("#filename")).html("File: " + file)
+        angular.element(document.querySelector("#filename")).html("File: " + filename)
 
 
 
@@ -103,11 +104,11 @@ function initWS(file) {
 
     container.html("")
     socket.onopen = function() {
-        container.append("<p><b>Tailing file: " + file + "</b></p>");
+        var filename = file.replace(/^.*[\\\/]/, '')
+        container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
             container.append("<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\"> <tr > <td width=\"550\" height=\"100\" >" +
-                "TYPE MESSAGE" + "</td> <td width=\"550\" height=\"100\" >" +
                 "APPNAME" + "</td> <td width=\"550px\" height=\"100px\" >" +
                 "APPPATH" + "</td> <td width=\"550px\" height=\"100px\" >" +
                 "APPPID" + "</td><td width=\"550px\" height=\"100px\" >" +
@@ -120,13 +121,9 @@ function initWS(file) {
     }
 
     socket.onmessage = function(e) {
-        //  let msg = e.data.trim();
         str = e.data.trim();
         if (str.indexOf("INFO") == 0) {
-            //for (i = 0; i < str.length; i++)
-            //  output.push("<tr><td>" + str[i].slice(0, -1).split(",").join("</td><td>") + "</td></tr>");
-            //output = "<table>" + output.join("") + "</table>";
-            //container.append(output);
+
             str = str.replace("INFO", "");
             str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' ><tr >" +
                 str.replace(/,\n/g, "<tr  >")
@@ -134,11 +131,8 @@ function initWS(file) {
                 .replace(/<tr>$/, "") +
                 "</table>";
             container.append(str);
-            //str.css("background-color", 'red');
-            //container.append("<p style='background-color: white; color:black'>" + str + "</p>" + "<hr>");
 
         } else if (str.indexOf("ERROR") == 0) {
-            //str.css("background-color", 'orange');
             str = str.replace("ERROR", "");
             str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#dc143c\" ><tr >" +
                 str.replace(/,\n/g, "<tr >")
@@ -146,16 +140,10 @@ function initWS(file) {
                 .replace(/<tr>$/, "") +
                 "</table>";
             container.append(str);
-            //container.append("<p style='background-color: maroon; color:orange'>" + str + "</p>" + "<hr>");
-            //}
-
 
         } else if (str.indexOf("WARNING") == 0) {
-            //str.css("background-color", 'yellow');
             str = str.replace("WARNING", "");
             str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" ><tr >" +
-
-                //   str = "<table border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" ><tr>" +
                 str.replace(/,\n/g, "<tr >")
                 .replace(/,/g, "<td width=\"550\" height=\"100\">")
                 .replace(/<tr>$/, "") +
@@ -177,25 +165,5 @@ function initWS(file) {
         container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
     }
 
-
-    //  window.alert("Socket " + socket);
     return socket;
-
-
 }
-
-d3.text(str, function(data) {
-    var parsedCSV = d3.csv.parseRows(data);
-
-    var container = d3.select("container")
-        .append("table")
-
-    .selectAll("tr")
-        .data(parsedCSV).enter()
-        .append("tr")
-
-    .selectAll("td")
-        .data(function(d) { return d; }).enter()
-        .append("td")
-        .text(function(d) { return d; });
-});

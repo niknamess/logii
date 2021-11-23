@@ -28,7 +28,7 @@ func ProcWeb(dir1 string) {
 	}
 
 	router := mux.NewRouter()
-	router.HandleFunc("/ws/", Use(controllers.BodyHandler)).Methods("POST")
+	router.HandleFunc("/logs/{b64file}", Use(controllers.BodyHandler)).Methods("POST")
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler)).Methods("GET")
 	router.HandleFunc("/", Use(controllers.RootHandler)).Methods("GET")
 	router.HandleFunc("/searchproject", controllers.SearchHandler)
