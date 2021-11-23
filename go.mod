@@ -9,6 +9,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a // indirect
 	github.com/blevesearch/bleve v1.0.14
 	github.com/blevesearch/mmap-go v1.0.3 // indirect
+	github.com/gobwas/ws v1.1.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/sessions v1.2.1 // indirect
