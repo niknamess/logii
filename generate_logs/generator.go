@@ -7,14 +7,11 @@ import (
 	"os"
 	"strconv"
 
-	//"strings"
 	"time"
 
 	"github.com/Pallinder/go-randomdata"
 	"github.com/oklog/ulid/v2"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
-	//"github.com/kataras/tablewriter"
-	//"github.com/lensesio/tableprinter"
 )
 
 type LogList struct {
