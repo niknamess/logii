@@ -2,12 +2,7 @@ package web
 
 import (
 	"fmt"
-	"io"
-	"log"
 	"net/http"
-	"net/url"
-	"os"
-	"strings"
 
 	"github.com/alecthomas/kingpin"
 	"github.com/gorilla/mux"
@@ -28,13 +23,13 @@ var (
 func ProcWeb(dir1 string) {
 	kingpin.Parse()
 	err := util.ParseConfig(*dir, *cron, *cert)
-	go curl()
+	//go curl()
 	//go postScrape()
 	if err != nil {
 		panic(err)
 	}
 	//portVFC := port
-	//go controllers.VFC("")
+	go controllers.GetFiles("10015")
 
 	router := mux.NewRouter()
 	//router.HandleFunc("/logs/{b64file}", Use(controllers.BodyHandler)).Methods("POST")
@@ -65,62 +60,3 @@ var (
 	fileName    string
 	fullURLFile string
 )
-
-func curl() {
-	////files, err := ioutil.ReadDir("http://localhost:10015/vfs/data/")
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
-
-	//for _, file := range files {
-	//	fmt.Println(file.Name(), file.IsDir())
-	//}
-	resp, err := http.Get("http://localhost:10015/vfs/data/")
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, v := range logenc.getLinks(resp.Body) {
-
-		fullURLFile = "http://localhost:10015/vfs/data/" + v
-
-		// Build fileName from fullPath
-		fileURL, err := url.Parse(fullURLFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		path := fileURL.Path
-		segments := strings.Split(path, "/")
-		fileName = segments[len(segments)-1]
-
-		// Create blank file
-
-		//file, err := os.Create(fileName)
-		//if err != nil {
-		//	log.Fatal(err)
-		//}
-
-		file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		if err != nil {
-			log.Fatal(err)
-		}
-		client := http.Client{
-			CheckRedirect: func(r *http.Request, via []*http.Request) error {
-				r.URL.Opaque = r.URL.Path
-				return nil
-			},
-		}
-		// Put content on file
-		resp, err := client.Get(fullURLFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer resp.Body.Close()
-
-		size, err := io.Copy(file, resp.Body)
-
-		defer file.Close()
-
-		fmt.Printf("Downloaded a file %s with size %d", fileName, size)
-	}
-
-}

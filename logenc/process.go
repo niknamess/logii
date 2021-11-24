@@ -341,6 +341,7 @@ func FileMD5(path string) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
+/*
 func RemoveLine(path string, fileN string, label string) {
 
 	Original_Path := path + label
@@ -385,7 +386,7 @@ func RemoveLine(path string, fileN string, label string) {
 		log.Fatal(err)
 	}
 }
-
+*/
 /*
 func DeleteHTMLTeg(s string) (clean string) {
 	doc, err := html.Parse(strings.NewReader(s))
@@ -413,7 +414,7 @@ func DeleteHTMLTeg(s string) (clean string) {
 }
 */
 //Collect all links from response body and return it as an array of strings
-func getLinks(body io.Reader) []string {
+func GetLinks(body io.Reader) []string {
 	var links []string
 	z := html.NewTokenizer(body)
 	for {

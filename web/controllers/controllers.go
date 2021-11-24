@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"encoding/base64"
+	"io"
 	"log"
 	"os"
-	"strconv"
+	"strings"
 
 	//"encoding/json"
 
@@ -12,6 +13,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"path/filepath"
 
 	"github.com/gorilla/mux"
@@ -220,7 +222,7 @@ func JsonEncode() []FileStruct {
 	return idents
 }
 */
-
+/*
 func Sendfile(FileN string) UlpoadFileStruct {
 	var group UlpoadFileStruct
 	dirpath := "/home/nik/projects/Course/tmcs-log-agent-storage/"
@@ -249,7 +251,7 @@ func Sendfile(FileN string) UlpoadFileStruct {
 	}
 	return group
 }
-
+*/
 /*
 func BodyHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, w.Header())
@@ -305,3 +307,45 @@ func Client() {
 
 }
 */
+func GetFiles(port string) {
+	resp, err := http.Get("http://localhost:" + port + "/vfs/data/")
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range logenc.GetLinks(resp.Body) {
+
+		fullURLFile = "http://localhost:" + port + "/vfs/data/" + v
+
+		fileURL, err := url.Parse(fullURLFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		path := fileURL.Path
+		segments := strings.Split(path, "/")
+		fileName = segments[len(segments)-1]
+
+		file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		client := http.Client{
+			CheckRedirect: func(r *http.Request, via []*http.Request) error {
+				r.URL.Opaque = r.URL.Path
+				return nil
+			},
+		}
+		// Put content on file
+		resp, err := client.Get(fullURLFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+
+		size, err := io.Copy(file, resp.Body)
+
+		defer file.Close()
+
+		fmt.Printf("Downloaded a file %s with size %d", fileName, size)
+	}
+
+}

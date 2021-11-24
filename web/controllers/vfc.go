@@ -11,6 +11,11 @@ import (
 	"github.com/spf13/afero"
 )
 
+var (
+	fileName    string
+	fullURLFile string
+)
+
 // RunHTTP run http api
 func VFC(port string) {
 	//strconv.Itoa(port)

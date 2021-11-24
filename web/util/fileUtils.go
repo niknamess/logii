@@ -1,17 +1,14 @@
 package util
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
-	"github.com/prateeknischal/webtail/util"
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	//"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
@@ -192,6 +189,7 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 }
 
+/*
 func AddJsonInfo(conn *websocket.Conn) []byte {
 	dirpath := "/home/nik/projects/Course/tmcs-log-agent-storage/"
 	var idents []FileStruct
@@ -219,3 +217,4 @@ func AddJsonInfo(conn *websocket.Conn) []byte {
 	//result, _ := json.Marshal(idents)
 	return res2B
 }
+*/
