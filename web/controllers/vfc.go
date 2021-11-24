@@ -1,4 +1,4 @@
-package vfc
+package controllers
 
 import (
 	"fmt"
@@ -12,9 +12,9 @@ import (
 )
 
 // RunHTTP run http api
-func VFC() {
-
-	addr := ":10015"
+func VFC(port string) {
+	//strconv.Itoa(port)
+	addr := ":" + port
 
 	//dir := "/home/maxxant/Documents/log"
 	dir := "./repdata"

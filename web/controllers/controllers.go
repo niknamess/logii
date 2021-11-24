@@ -155,7 +155,7 @@ func Indexing(conn *websocket.Conn, filename string) {
 //View List of Dir
 func ViewDir(conn *websocket.Conn, search string) {
 	var fileList = make(map[string][]string)
-	files, _ := ioutil.ReadDir("/home/nik/projects/Course/tmcs-log-agent-storage/")
+	files, _ := ioutil.ReadDir("./repdata")
 	//"/home/nik/projects/Course/tmcs-log-agent-storage/"
 	//"./view"
 	countFiles := (len(files))

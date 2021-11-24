@@ -9,6 +9,7 @@ import (
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
+	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 	flagWeb := flag.String("p", "", "web_interface")
 	flagTest := flag.String("c", "", "web_interface and generate log")
 	flagProm := flag.String("m", "", "prometheus")
+	flagVFC := flag.String("v", "", "vfc")
 	//flagBleve := flag.String("b", "", "Bleve on bleve file")
 	//flagBleveSearch := flag.String("k", "", "Bleve search")
 	//flagMap := flag.String("m", "", "Map creating")
@@ -62,7 +64,11 @@ func main() {
 	}
 
 	if len(*flagProm) > 0 {
-		go logenc.Promrun(*flagProm)
+		logenc.Promrun(*flagProm)
+
+	}
+	if len(*flagVFC) > 0 {
+		controllers.VFC(*flagVFC)
 
 	}
 	//if len(*flagMap) > 0 {

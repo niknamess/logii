@@ -53,4 +53,5 @@
 
 # RUN
 - make dev (http://localhost:15000/)
+(http://localhost:10015/vfs/data/)
 
