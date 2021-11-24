@@ -278,3 +278,26 @@ func BodyHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusUnauthorized)
 }
+
+//upload file on other port
+func Upload(filename string, hostName string) string {
+	file, err := os.Open("../../send-files/" + filename)
+	if err != nil {
+		return "file not found"
+	}
+	defer file.Close()
+
+	res, err := http.Post("http://"+hostName+":8080/upload?filename="+filename, "binary/octet-stream", file)
+	if err != nil {
+		return "file not send"
+	}
+	defer res.Body.Close()
+	message, _ := ioutil.ReadAll(res.Body)
+	fmt.Printf(string(message))
+
+	return string(message)
+}
+
+func Client() {
+
+}

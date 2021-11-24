@@ -10,6 +10,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path"
 	"strings"
 	"time"
 
@@ -233,4 +234,9 @@ func Remove(s string, symbol rune) string {
 		},
 		s,
 	)
+}
+
+//ПОлучить расширение файла
+func GetExtensionFromFile(filename string) string {
+	return path.Ext(filename)
 }
