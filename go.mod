@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/Pallinder/go-randomdata v1.2.0
+	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/RoaringBitmap/roaring v0.9.4 // indirect
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a // indirect
@@ -15,6 +16,7 @@ require (
 	github.com/gorilla/sessions v1.2.1 // indirect
 	github.com/gorilla/websocket v1.4.2
 	github.com/hpcloud/tail v1.0.0
+	github.com/melbahja/got v0.6.1 // indirect
 	github.com/oklog/ulid/v2 v2.0.2
 	github.com/prateeknischal/webtail v0.0.0-20180430201946-f080756c9d6c
 	github.com/prometheus/client_golang v1.11.0

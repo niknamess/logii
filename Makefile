@@ -12,15 +12,15 @@ build: clean
 .PHONY: dev
 dev: tst build
 	@$(MEPATH)/logi2 -p 15000
-	@$(MEPATH)/logi2 -m 8080
-	@$(MEPATH)/logi2 -v 10015
 
 .PHONY: dev2
 dev2: tst build
 	@$(MEPATH)/logi2 -p 16000
-	@$(MEPATH)/logi2 -m 8081
+
+.PHONY: vfc
+vfc: tst build
 	@$(MEPATH)/logi2 -v 10015
-	
+
 .PHONY: tst
 tst:
 	go clean -testcache

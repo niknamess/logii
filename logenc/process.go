@@ -14,6 +14,7 @@ import (
 	"sync"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/net/html"
 )
 
 var (
@@ -382,5 +383,57 @@ func RemoveLine(path string, fileN string, label string) {
 	err = os.Remove(path + label + "remove")
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+/*
+func DeleteHTMLTeg(s string) (clean string) {
+	doc, err := html.Parse(strings.NewReader(s))
+	if err != nil {
+		log.Fatal(err)
+	}
+	var f func(*html.Node)
+	f = func(n *html.Node) {
+		if n.Type == html.ElementNode && n.Data == "a" {
+			for _, a := range n.Attr {
+				if a.Key == "href" {
+					fmt.Println("TEST")
+					clean = a.Val
+					break
+				}
+			}
+		}
+		for c := n.FirstChild; c != nil; c = c.NextSibling {
+
+			f(c)
+		}
+	}
+	f(doc)
+	return clean
+}
+*/
+//Collect all links from response body and return it as an array of strings
+func getLinks(body io.Reader) []string {
+	var links []string
+	z := html.NewTokenizer(body)
+	for {
+		tt := z.Next()
+
+		switch tt {
+		case html.ErrorToken:
+			//todo: links list shoudn't contain duplicates
+			return links
+		case html.StartTagToken, html.EndTagToken:
+			token := z.Token()
+			if "a" == token.Data {
+				for _, attr := range token.Attr {
+					if attr.Key == "href" {
+						links = append(links, attr.Val)
+					}
+
+				}
+			}
+
+		}
 	}
 }

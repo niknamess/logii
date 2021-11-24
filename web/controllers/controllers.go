@@ -220,6 +220,7 @@ func JsonEncode() []FileStruct {
 	return idents
 }
 */
+
 func Sendfile(FileN string) UlpoadFileStruct {
 	var group UlpoadFileStruct
 	dirpath := "/home/nik/projects/Course/tmcs-log-agent-storage/"
