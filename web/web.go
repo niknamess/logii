@@ -8,11 +8,13 @@ import (
 	"github.com/gorilla/mux"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/util"
+	"gitlab.topaz-atcs.com/tmcs/logi2/web/vfc"
 )
 
 var (
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./view").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/logi2/repdata/").ExistingFilesOrDirs()
+	//dir  = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/tmcs-log-agent-storage/").ExistingFilesOrDirs()
 	dir  = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
 	port = kingpin.Flag("port", "Port number to host the server").Short('p').Default("15000").Int()
 	cron = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
@@ -26,6 +28,7 @@ func ProcWeb(dir1 string) {
 	if err != nil {
 		panic(err)
 	}
+	go vfc.VFC()
 
 	router := mux.NewRouter()
 	//router.HandleFunc("/logs/{b64file}", Use(controllers.BodyHandler)).Methods("POST")

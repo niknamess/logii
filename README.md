@@ -52,5 +52,5 @@
 
 
 # RUN
-- make dev 
+- make dev (http://localhost:15000/)
 
