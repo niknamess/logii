@@ -249,6 +249,7 @@ func Sendfile(FileN string) UlpoadFileStruct {
 	return group
 }
 
+/*
 func BodyHandler(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
@@ -278,8 +279,9 @@ func BodyHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusUnauthorized)
 }
-
+*/
 //upload file on other port
+/*
 func Upload(filename string, hostName string) string {
 	file, err := os.Open("../../send-files/" + filename)
 	if err != nil {
@@ -301,3 +303,4 @@ func Upload(filename string, hostName string) string {
 func Client() {
 
 }
+*/
