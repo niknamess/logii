@@ -21,25 +21,22 @@ var (
 )
 
 func ProcWeb(dir1 string) {
+
 	controllers.GetFiles("10015")
+
 	kingpin.Parse()
+
 	err := util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
-	//go curl()
-	//go postScrape()
+
 	if err != nil {
 		panic(err)
 	}
-	//portVFC := port
-	go controllers.GetFiles("10015")
+	go Loop()
 
 	router := mux.NewRouter()
-	//router.HandleFunc("/logs/{b64file}", Use(controllers.BodyHandler)).Methods("POST")
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler)).Methods("GET")
 	router.HandleFunc("/", Use(controllers.RootHandler)).Methods("GET")
 	router.HandleFunc("/searchproject", controllers.SearchHandler)
-	//router.HandleFunc( controllers.SearchHandler)
-	//router.HandleFunc("/ws/", Use(controllers.BodyHandler)).Methods("GET")
-
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/static")))
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "index.tmpl")
@@ -57,7 +54,14 @@ func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) h
 	return handler
 }
 
-var (
-	fileName    string
-	fullURLFile string
-)
+func Loop() {
+	for {
+		controllers.GetFiles("10015")
+		err := util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
+		//go curl()
+		//go postScrape()
+		if err != nil {
+			panic(err)
+		}
+	}
+}

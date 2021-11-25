@@ -341,12 +341,12 @@ func GetFiles(port string) {
 		}
 		defer resp.Body.Close()
 
-		size, err := io.Copy(file, resp.Body)
+		_, err = io.Copy(file, resp.Body)
 		logenc.Replication("./testsave/" + fileName)
 		fmt.Println("Merge", fileName)
 		defer file.Close()
 		logenc.DeleteOldsFiles("./testsave/", fileName, "")
-		fmt.Printf("Downloaded a file %s with size %d", fileName, size)
+		//fmt.Printf("Downloaded a file %s with size %d", fileName, size)
 	}
 
 }
