@@ -21,8 +21,9 @@ var (
 )
 
 func ProcWeb(dir1 string) {
+	controllers.GetFiles("10015")
 	kingpin.Parse()
-	err := util.ParseConfig(*dir, *cron, *cert)
+	err := util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
 	//go curl()
 	//go postScrape()
 	if err != nil {
