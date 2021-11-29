@@ -6,13 +6,13 @@ import (
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 )
 
-func ABenchmarkProcFileBreve(b *testing.B) {
+func BenchmarkProcFileBreve(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
 	}
 
-	bleveSI.ProcFileBreve("test4", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded1937")
+	bleveSI.ProcBlev("test4", "./view/22-06-2021")
 
 }
 
@@ -22,7 +22,7 @@ func ABenchmarkProcFileBreveS(b *testing.B) {
 		file  string
 	}
 
-	bleveSI.ProcFileBreveSLOWLY("test777", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded1936")
+	bleveSI.ProcFileBreveSLOWLY("test777", "./view/22-06-2021")
 
 }
 
@@ -32,7 +32,7 @@ func ABenchmarkProcFileSSS(b *testing.B) {
 		file  string
 	}
 
-	bleveSI.ProcBleveScorch("test123", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded1938")
+	bleveSI.ProcBleveScorch("test123", "./view/22-06-2021")
 	//generator.Remove("/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193","test")
 
 }
@@ -43,7 +43,7 @@ func ABenchmarkProcFileBatch(b *testing.B) {
 		file  string
 	}
 
-	bleveSI.ProcBlev("test87", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded1933")
+	bleveSI.ProcBlev("test87", "./view/22-06-2021")
 	//generator.Remove("/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193","test")
 
 }
@@ -53,7 +53,7 @@ func ATestProcBleveS(t *testing.T) {
 		file  string
 	}
 
-	bleveSI.ProcBlev("test7", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded1934")
+	bleveSI.ProcBlev("test7", "./view/22-06-2021")
 
 }
 
@@ -63,5 +63,5 @@ func ATestProcBleveScorch(t *testing.T) {
 		file  string
 	}
 
-	bleveSI.ProcBleveScorch("test5", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded1933")
+	bleveSI.ProcBleveScorch("test5", "./view/22-06-2021")
 }
