@@ -1,0 +1,115 @@
+<< define "index" >>
+<html>
+  <head>
+    <title>Logi2</title>
+  
+    <link rel="stylesheet" href="/css/angular-material.min.css">
+    <link rel="stylesheet" href="/css/fonts.css">
+  </head>
+  <body ng-app="logi2">
+ 
+    <div ng-controller="mainController as mc" layout="column" ng-cloak>
+      <md-toolbar class="md-hue-2 md-whiteframe-z3">
+        <div class="md-toolbar-tools">
+          <section layout="row" flex>
+            <div ng-click="mc.toggleSideNav()" layout="column" class="md-padding">
+              <h2>Logi2</h2>
+            </div>
+            <div flex layout-align="center center" layout="column">
+              <h3 id="filename"></h3>
+              
+            </div>
+          </section>
+        </div>
+      </md-toolbar>
+      <md-content flex layout-padding layout="column">
+        <md-content flex>
+          <md-input-container>
+            <label>Font Size</label>
+            <md-select ng-model="currSize">
+              <md-option ng-repeat="size in mc.fontSize" ng-value="size">
+                {{size}}
+              </md-option>
+            </md-select>
+          </md-input-container>
+        </md-content>
+        <iframe name="hiddenFrame" class="hide"></iframe>
+        <form action="searchproject" method="GET" target="hiddenFrame">
+            <label>Search</label><br>
+            <input type="text" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs"/><br><br>
+            <button  id="btn" (click)=”handleClick($event)” type=”button” >Find</button> 
+            <button  id="res" (click)=”handleClick($event)” type=”button” >On start page</button> 
+          <!--  <button  id="view" (click)=”handleClick($event)” type=”button” >On start page</button> -->
+            <md-content class="md-padding">
+          <div layout="row" ng-hide="!showCard" class="ng-hide">
+            <md-content flex></md-content>
+            <md-card flex layout-align="center center">
+              <md-card-title>
+                <md-card-title-text>
+                  <span class="md-headline">Logi 2 service to view log</span>
+                </md-card-title-text>
+              </md-card-title>
+              <md-card-content>
+              <p>
+                Logi 2 
+              </p>
+                 
+                  <md-icon md-svg-icon="/img/ic_launch_black_24px.svg"></md-icon>
+                </md-button>
+              </p>
+            </md-card>
+            <md-content flex></md-content>
+          </div>
+        </md-content>
+
+
+        </form>
+        <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
+          <!-- Content will be inserted by websocket connection -->
+       
+      </md-content>
+      <div>
+        <section layout="row">
+          <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+          <md-toolbar>
+            <h1 class="md-toolbar-tools">Log Directory</h1>
+          </md-toolbar>
+          <md-content>
+            <md-list>
+              <<range .FileList>>
+              <md-list-item class="md-3-line" id="filelist" ng-click="open_connection('<<.>>')">
+                <div class="md-list-item-text">
+                  <<.>>
+                </div>
+              </md-list-item>
+                   
+              <md-divider></md-divider>
+
+              <<end>>
+            </md-list>
+          </md-content>
+        </section>
+      </div>
+    </div>
+  </body>
+  <script src="/js/angular.min.js"></script>
+  <script src="/js/angular-animate.min.js"></script>
+  <script src="/js/angular-messages.min.js"></script>
+  <script src="/js/angular-aria.min.js"></script>
+  <script src="/js/angular-ui-router.min.js"></script>
+  <script src="/js/angular-material.min.js"></script>
+  <script src="/js/ui-bootstrap.min.js"></script>
+  <script src="/js/ui-bootstrap-tpls.min.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/index.js"></script>
+  <style type="text/css">
+    .scrollLock{
+    position: fixed;
+    }
+    md-sidenav, md-backdrop,  {
+    position: fixed !important;
+    }
+  </style>
+ 
+</html>
+<< end >>
