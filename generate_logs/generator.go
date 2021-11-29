@@ -121,7 +121,7 @@ func ProcGenN() {
 
 			// Could not obtain stat, handle error
 		}
-		if fi.Size() >= 200000 {
+		if fi.Size() >= 20000000 {
 			countFile++
 			fmt.Println(fi.Size())
 			label = strconv.Itoa(countFile)

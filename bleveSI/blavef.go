@@ -33,9 +33,9 @@ func BleveIndex(fileN string) (bleve.Index, error) {
 }
 func ProcBlev(fileN string, file string) {
 	var count int = 0
-	if logenc.CheckFileSum(file, "") == false {
-		return
-	}
+	//if logenc.CheckFileSum(file, "") == false {
+	//	return
+	//}
 	var wg sync.WaitGroup
 	index, err := BleveIndex(fileN)
 	if err != nil {
@@ -59,10 +59,10 @@ func ProcBlev(fileN string, file string) {
 					if !ok {
 						break brloop
 					}
-					if count == 100 {
+					if count == 1000 {
 						err = index.Batch(batch)
 						if err != nil {
-							panic(err)
+							fmt.Println("index.Batch(batch) err: ", err)
 						}
 						count = 0
 						batch = index.NewBatch()
@@ -72,16 +72,16 @@ func ProcBlev(fileN string, file string) {
 					if len(data.XML_RECORD_ROOT) > 0 {
 						batch.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
 						count++
-						if count == 100 {
-							fmt.Println(count)
-						}
+						//if count == 100 {
+						//	fmt.Println(count)
+						//	}
 					}
 
 				}
 			}
 			err = index.Batch(batch)
 			if err != nil {
-				panic(err)
+				fmt.Println("index.Batch(batch) err: ", err)
 			}
 
 		}()
@@ -95,7 +95,7 @@ func ProcBlev(fileN string, file string) {
 	close(ch)
 	wg.Wait()
 	index.Close()
-	logenc.WriteFileSum(file, "")
+	//logenc.WriteFileSum(file, "")
 }
 
 func ProcBleveSearchv2(fileN string, word string) []string {
