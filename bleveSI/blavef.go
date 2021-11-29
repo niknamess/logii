@@ -1,0 +1,134 @@
+package bleveSI
+
+import (
+	"fmt"
+	"log"
+	"runtime"
+	"sync"
+
+	"github.com/blevesearch/bleve"
+	"github.com/blevesearch/bleve/index/scorch"
+	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
+)
+
+var (
+	Logger       *log.Logger
+	mu           sync.Mutex
+	sliceLoglist []logenc.LogList
+)
+
+//example Speed
+func BleveIndex(fileN string) (bleve.Index, error) {
+
+	dir := "./blevestorage/"
+	extension := ".bleve"
+	metaname := dir + fileN + extension
+
+	index, err := bleve.Open(metaname)
+	if err == bleve.ErrorIndexPathDoesNotExist {
+		mapping := bleve.NewIndexMapping()
+		//kvStore := scorch.Name
+		//kvConfig :=nil
+		index, err = bleve.NewUsing(metaname, mapping, scorch.Name, scorch.Name, nil)
+	}
+
+	return index, err
+}
+
+func ProcBlev(fileN string, file string) {
+	if logenc.CheckFileSum(file, "") == false {
+		return
+	}
+	//batch := index.NewBatch()
+	var wg sync.WaitGroup
+	index, err := BleveIndex(fileN)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	var data logenc.LogList
+	ch := make(chan string, 100)
+	//batch := index.NewBatch()
+
+	for i := runtime.NumCPU() + 1; i > 0; i-- {
+		go func() {
+			wg.Add(1)
+			defer wg.Done()
+			batch := index.NewBatch()
+		brloop:
+
+			for {
+
+				select {
+				case line, ok := <-ch:
+					if !ok {
+						break brloop
+					}
+
+					//batch := index.NewBatch()
+					//r _, message := range slice {
+					//fmt.Printf("%d %s\n", i, message.Id)
+					//	batch.Index(message.Id, message)
+					//}
+					data = logenc.ProcLineDecodeXML(line)
+					if len(data.XML_RECORD_ROOT) > 0 {
+						batch.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+					}
+
+				}
+			}
+			err = index.Batch(batch)
+			if err != nil {
+				panic(err)
+			}
+
+		}()
+
+	}
+
+	err = logenc.ReadLines(file, func(line string) {
+		ch <- line
+	})
+	if err != nil {
+		log.Fatalf("ReadLines: %s", err)
+	}
+	close(ch)
+	wg.Wait()
+	index.Close()
+	logenc.WriteFileSum(file, "")
+
+}
+
+func ProcBleveSearchv2(fileN string, word string) []string {
+	dir := "./blevestorage/"
+	extension := ".bleve"
+	//kvConfig := map[string]interface{}{
+	//	"create_if_missing": true,
+	//}
+	filename := fileN
+	metaname := dir + filename + extension
+	index, _ := bleve.OpenUsing(metaname, nil)
+
+	query := bleve.NewMatchQuery(word)
+	query.Fuzziness = 1
+	mq := bleve.NewMatchPhraseQuery(word)
+	rq := bleve.NewRegexpQuery(word)
+	q := bleve.NewDisjunctionQuery(query, mq, rq)
+
+	searchRequest := bleve.NewSearchRequest(q)
+	searchRequest.Size = 1000000000000000000
+
+	searchResult, _ := index.Search(searchRequest)
+	searchRequest.Fields = []string{"XML_RECORD_ROOT"}
+
+	docs := make([]string, 0)
+
+	for _, val := range searchResult.Hits {
+		id := val.ID
+		docs = append(docs, id)
+	}
+	fmt.Println(docs)
+	index.Close()
+	return docs
+
+}
