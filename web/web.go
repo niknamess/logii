@@ -22,7 +22,11 @@ var (
 
 func ProcWeb(dir1 string) {
 
+<<<<<<< HEAD
 	util.GetFiles("localhost", "10015")
+=======
+	controllers.GetFiles("10015")
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 
 	kingpin.Parse()
 
@@ -31,9 +35,13 @@ func ProcWeb(dir1 string) {
 	if err != nil {
 		panic(err)
 	}
+<<<<<<< HEAD
 	//	go Loop("192.168.0.193", "10015")
 	//go Loop("192.168.0.214", "10015")
 	//go Loop("192.168.0.213", "10015")
+=======
+	go Loop()
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 
 	router := mux.NewRouter()
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler)).Methods("GET")
@@ -56,9 +64,15 @@ func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) h
 	return handler
 }
 
+<<<<<<< HEAD
 func Loop(port string, address string) {
 	for {
 		util.GetFiles(port, address)
+=======
+func Loop() {
+	for {
+		controllers.GetFiles("10015")
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 		err := util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
 		//go curl()
 		//go postScrape()

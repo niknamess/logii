@@ -8,7 +8,10 @@ import (
 
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
+<<<<<<< HEAD
 	test "gitlab.topaz-atcs.com/tmcs/logi2/test_"
+=======
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
@@ -25,8 +28,11 @@ func main() {
 	flagTest := flag.String("c", "", "web_interface and generate log")
 	flagProm := flag.String("m", "", "prometheus")
 	flagVFC := flag.String("v", "", "vfc")
+<<<<<<< HEAD
 	flagR := flag.String("r", "", "remove")
 	flagIp := flag.String("i", "", "ip")
+=======
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 	//flagBleve := flag.String("b", "", "Bleve on bleve file")
 	//flagBleveSearch := flag.String("k", "", "Bleve search")
 	//flagMap := flag.String("m", "", "Map creating")
@@ -74,6 +80,7 @@ func main() {
 		controllers.VFC(*flagVFC)
 
 	}
+<<<<<<< HEAD
 	if len(*flagR) > 0 {
 
 		generator.Example()
@@ -82,6 +89,8 @@ func main() {
 
 		test.GetOutboundIP()
 	}
+=======
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 	//if len(*flagMap) > 0 {
 	//	logenc.ProcMapFilePP(*flagMap)
 	//}

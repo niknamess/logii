@@ -21,6 +21,7 @@ dev2: tst build
 vfc: tst build
 	@$(MEPATH)/logi2 -v 10015
 
+<<<<<<< HEAD
 .PHONY: gen
 gen: tst build
 	@$(MEPATH)/logi2 -g Foxtrot Uniform Charlie Kilo
@@ -33,6 +34,8 @@ rm: build
 ip: tst build
 	@$(MEPATH)/logi2 -i Foxtrot Uniform Charlie Kilo
 
+=======
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 .PHONY: tst
 tst:
 	go clean -testcache

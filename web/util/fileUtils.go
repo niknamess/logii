@@ -2,11 +2,15 @@ package util
 
 import (
 	"fmt"
+<<<<<<< HEAD
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+=======
+	"io/ioutil"
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,8 +29,12 @@ var (
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
+<<<<<<< HEAD
 	indexMap  = make(map[string]bool)
 	SearchMap map[string]string
+=======
+	indexMap = make(map[string]bool)
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 )
 
 type FileStruct struct {
@@ -41,7 +49,11 @@ type FileStruct struct {
 func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]string) {
 
 	fileN := filepath.Base(fileName)
+<<<<<<< HEAD
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
+=======
+	UlidC := bleveSI.ProcBleveSearch(fileN, lookFor)
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
@@ -173,7 +185,11 @@ func dfs(file string) {
 func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]string) bool {
 
 	fileN := filepath.Base(fileName)
+<<<<<<< HEAD
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
+=======
+	UlidC := bleveSI.ProcBleveSearch(fileN, lookFor)
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 
 	if len(UlidC) == 0 {
 		println("Break")
@@ -194,6 +210,7 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 }
 
+<<<<<<< HEAD
 func Indexing(conn *websocket.Conn, filename string) {
 
 	if filename == "undefined" {
@@ -295,3 +312,34 @@ func GetFiles(address string, port string) {
 	}
 
 }
+=======
+/*
+func AddJsonInfo(conn *websocket.Conn) []byte {
+	dirpath := "/home/nik/projects/Course/tmcs-log-agent-storage/"
+	var idents []FileStruct
+	var fileList = make(map[string][]string)
+	files, _ := ioutil.ReadDir(dirpath)
+	countFiles := (len(files))
+
+	fileList["FileList"] = util.Conf.Dir
+	for i := 0; i < countFiles; i++ {
+		fileaddr := fileList["FileList"][i]
+		fileN := filepath.Base(fileaddr)
+		IDfile, _ := strconv.Atoi(logenc.Remove(fileN, '-'))
+		hashsumfile := logenc.FileMD5(fileaddr)
+		group := FileStruct{
+			ID:      IDfile,
+			NAME:    fileN,
+			HASHSUM: hashsumfile,
+		}
+		//res2B, _ := json.Marshal(idents)
+		idents = append(idents, group)
+		fmt.Println(idents)
+	}
+	res2B, _ := json.Marshal(idents)
+	conn.WriteMessage(websocket.TextMessage, res2B)
+	//result, _ := json.Marshal(idents)
+	return res2B
+}
+*/
+>>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
