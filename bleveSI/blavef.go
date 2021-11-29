@@ -23,23 +23,19 @@ func BleveIndex(fileN string) (bleve.Index, error) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension
-
 	index, err := bleve.Open(metaname)
 	if err == bleve.ErrorIndexPathDoesNotExist {
 		mapping := bleve.NewIndexMapping()
-		//kvStore := scorch.Name
-		//kvConfig :=nil
 		index, err = bleve.NewUsing(metaname, mapping, scorch.Name, scorch.Name, nil)
 	}
 
 	return index, err
 }
-
 func ProcBlev(fileN string, file string) {
+	var count int = 0
 	if logenc.CheckFileSum(file, "") == false {
 		return
 	}
-	//batch := index.NewBatch()
 	var wg sync.WaitGroup
 	index, err := BleveIndex(fileN)
 	if err != nil {
@@ -48,7 +44,6 @@ func ProcBlev(fileN string, file string) {
 	}
 	var data logenc.LogList
 	ch := make(chan string, 100)
-	//batch := index.NewBatch()
 
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
@@ -64,15 +59,22 @@ func ProcBlev(fileN string, file string) {
 					if !ok {
 						break brloop
 					}
+					if count == 100 {
+						err = index.Batch(batch)
+						if err != nil {
+							panic(err)
+						}
+						count = 0
+						batch = index.NewBatch()
+					}
 
-					//batch := index.NewBatch()
-					//r _, message := range slice {
-					//fmt.Printf("%d %s\n", i, message.Id)
-					//	batch.Index(message.Id, message)
-					//}
 					data = logenc.ProcLineDecodeXML(line)
 					if len(data.XML_RECORD_ROOT) > 0 {
 						batch.Index(data.XML_RECORD_ROOT[0].XML_ULID, data)
+						count++
+						if count == 100 {
+							fmt.Println(count)
+						}
 					}
 
 				}
@@ -83,9 +85,7 @@ func ProcBlev(fileN string, file string) {
 			}
 
 		}()
-
 	}
-
 	err = logenc.ReadLines(file, func(line string) {
 		ch <- line
 	})
@@ -96,15 +96,11 @@ func ProcBlev(fileN string, file string) {
 	wg.Wait()
 	index.Close()
 	logenc.WriteFileSum(file, "")
-
 }
 
 func ProcBleveSearchv2(fileN string, word string) []string {
 	dir := "./blevestorage/"
 	extension := ".bleve"
-	//kvConfig := map[string]interface{}{
-	//	"create_if_missing": true,
-	//}
 	filename := fileN
 	metaname := dir + filename + extension
 	index, _ := bleve.OpenUsing(metaname, nil)
@@ -114,15 +110,11 @@ func ProcBleveSearchv2(fileN string, word string) []string {
 	mq := bleve.NewMatchPhraseQuery(word)
 	rq := bleve.NewRegexpQuery(word)
 	q := bleve.NewDisjunctionQuery(query, mq, rq)
-
 	searchRequest := bleve.NewSearchRequest(q)
 	searchRequest.Size = 1000000000000000000
-
 	searchResult, _ := index.Search(searchRequest)
 	searchRequest.Fields = []string{"XML_RECORD_ROOT"}
-
 	docs := make([]string, 0)
-
 	for _, val := range searchResult.Hits {
 		id := val.ID
 		docs = append(docs, id)
