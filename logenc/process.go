@@ -258,7 +258,7 @@ func ProcMapFileREZERV(file string) {
 }
 
 func CheckFileSum(file string, typeS string) bool {
-
+	ind = true
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
 	hashFileName := "md5" + typeS

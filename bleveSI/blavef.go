@@ -3,7 +3,6 @@ package bleveSI
 import (
 	"fmt"
 	"log"
-	"os"
 	"runtime"
 	"sync"
 
@@ -34,9 +33,6 @@ func BleveIndex(fileN string) (bleve.Index, error) {
 }
 func ProcBlev(fileN string, file string) {
 	var count int = 0
-
-	_, err := os.OpenFile("./md5", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	//f.Write([]byte("start" + "\n"))
 	if logenc.CheckFileSum(file, "") == false {
 		return
 	}
