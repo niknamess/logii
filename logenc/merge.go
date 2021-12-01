@@ -311,7 +311,7 @@ func Replication(path string) {
 		fmt.Println(err)
 
 	}
-	if ok == true {
+	if ok {
 		//CreateDir(path)
 		CopyFile(dirpath, path, "", original)
 		WriteFileSum(path, "rep")
@@ -326,7 +326,7 @@ func Replication(path string) {
 			}
 		}
 	}
-	if ok == false {
+	if !ok {
 		//CreateDir(path)
 		CopyFile(dirpath, path, "", original)
 		WriteFileSum(path, "rep")
