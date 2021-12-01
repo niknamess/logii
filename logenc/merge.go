@@ -189,15 +189,20 @@ func OpenCreateFile(dirpath string, path string, label string, fileOs *os.File) 
 	file.Close()
 }
 
-func CopyFile(dirpath string, path string, label string, fileOs *os.File) *os.File {
+func CopyFile(dirpath string, path string, label string, fileOs *os.File) {
 	fileN := filepath.Base(path)
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
 	bytesWritten, err := io.Copy(file, fileOs)
 	if err != nil {
 		log.Fatal(err)
+	} else {
+		fmt.Printf("Bytes Written: %d\n", bytesWritten)
 	}
-	fmt.Printf("Bytes Written: %d\n", bytesWritten)
-	return file
+	file.Close()
 }
 
 func Merge(dirpath string, path string) {
