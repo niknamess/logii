@@ -289,22 +289,6 @@ func IsDirEmpty(name string) (bool, error) {
 	return false, err
 }
 
-func IsFileEmpty(name string) bool {
-
-	// read in ONLY one file
-	info, err := os.Stat(name)
-	if err != nil {
-
-	}
-	if info.Size() == 0 {
-		return true
-	}
-
-	// and if the file is EOF... well, the dir is empty.
-
-	return false
-}
-
 func Replication(path string) {
 	var dirpath string = "./repdata/"
 	CreateDir(dirpath, "")
