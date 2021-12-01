@@ -151,20 +151,6 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	return res
 }
 
-/*
-func Readln(r *bufio.Reader) (string, error) {
-	var (
-		isPrefix bool  = true
-		err      error = nil
-		line, ln []byte
-	)
-	for isPrefix && err == nil {
-		line, isPrefix, err = r.ReadLine()
-		ln = append(ln, line...)
-	}
-	return string(ln), err
-}
-*/
 func CreateDir(dirpath string, path string) {
 	fileN := filepath.Base(path)
 	//Create a folder/directory at a full qualified path

@@ -77,20 +77,11 @@ func main() {
 		generator.Example()
 	}
 
-	//if len(*flagInfo) > 0 {
-	//	generator.DiskInfo()
-	//}
-
 	if len(*flagTest) > 0 {
 
 		generator.ProcGenN()
 
 	}
-	//if len(*flagDD) > 0 {
-
-	//generator.DeleteFile90()
-
-	//}
 
 	if len(*flagSearch) > 0 {
 		var text string

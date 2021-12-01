@@ -334,7 +334,7 @@ func DiskInfo(dir string) {
 		z := new(big.Float).Quo(y, x)
 
 		if z.Cmp(big.NewFloat(0.8)) == 1 || z.Cmp(big.NewFloat(0.8)) == 0 {
-			//fmt.Println("HAHA")
+			//fmt.Println("HAHA")ste
 			FindOldestfile(dir)
 
 		} else {

@@ -237,16 +237,3 @@ func ProcBleveScorch(fileN string, file string) {
 	logenc.WriteFileSum(file, "")
 
 }
-
-/*
-func buildMapping() *mapping.IndexMappingImpl {
-	ruFieldMapping := bleve.NewTextFieldMapping()
-	ruFieldMapping.Analyzer = ru.AnalyzerName
-	eventMapping := bleve.NewDocumentMapping()
-	eventMapping.AddFieldMappingsAt("message", ruFieldMapping)
-	mapping := bleve.NewIndexMapping()
-	mapping.DefaultMapping = eventMapping
-	mapping.DefaultAnalyzer = ru.AnalyzerName
-	return mapping
-}
-*/
