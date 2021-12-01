@@ -5,11 +5,14 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/big"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
@@ -292,6 +295,94 @@ func GetFiles(address string, port string) {
 		defer file.Close()
 		logenc.DeleteOldsFiles("./testsave/", fileName, "")
 		//fmt.Printf("Downloaded a file %s with size %d", fileName, size)
+	}
+
+}
+
+//Disk Check
+type DiskStatus struct {
+	All  uint64 `json:"all"`
+	Used uint64 `json:"used"`
+	Free uint64 `json:"free"`
+}
+
+func DiskUsage(path string) (disk DiskStatus) {
+	fs := syscall.Statfs_t{}
+	err := syscall.Statfs(path, &fs)
+	if err != nil {
+		return
+	}
+	disk.All = fs.Blocks * uint64(fs.Bsize)
+	disk.Free = fs.Bfree * uint64(fs.Bsize)
+	disk.Used = disk.All - disk.Free
+	return
+}
+
+const (
+	B  = 1
+	KB = 1024 * B
+	MB = 1024 * KB
+	GB = 1024 * MB
+	//limit big.Float = 0.8
+)
+
+func DiskInfo(dir string) {
+	time.Sleep(time.Second * 55)
+	for {
+		disk := DiskUsage(dir)
+		x, y := big.NewFloat(float64(disk.All)/float64(GB)), big.NewFloat(float64(disk.Used)/float64(GB))
+		z := new(big.Float).Quo(y, x)
+
+		if z.Cmp(big.NewFloat(0.8)) == 1 || z.Cmp(big.NewFloat(0.8)) == 0 {
+			//fmt.Println("HAHA")
+			FindOldestfile(dir)
+
+		} else {
+			//fmt.Println("HA")
+			DeleteFile90(dir)
+		}
+		fmt.Printf("All: %.2f GB\n", float64(disk.All)/float64(GB))
+		fmt.Printf("Used: %.2f GB\n", float64(disk.Used)/float64(GB))
+		fmt.Printf("Free: %.2f GB\n", float64(disk.Free)/float64(GB))
+	}
+
+}
+
+func FindOldestfile(dir string) {
+	var name string
+	var cutoff = time.Hour
+	fileInfo, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	now := time.Now()
+	//fmt.Println(now)
+	for _, info := range fileInfo {
+		if diff := now.Sub(info.ModTime()); diff > cutoff {
+			cutoff = now.Sub(info.ModTime())
+			name = info.Name()
+
+		}
+	}
+	logenc.DeleteOldsFiles(dir, name, "")
+}
+
+func DeleteFile90(dir string) {
+
+	var cutoff = 24 * time.Hour * 90
+	fileInfo, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	now := time.Now()
+	fmt.Println(now)
+	for _, info := range fileInfo {
+		fmt.Println(info.Name())
+		if diff := now.Sub(info.ModTime()); diff > cutoff {
+			fmt.Printf("Deleting %s which is %s old\n", info.Name(), diff)
+			logenc.DeleteOldsFiles(dir, info.Name(), "")
+
+		}
 	}
 
 }

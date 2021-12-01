@@ -128,7 +128,7 @@ func ProcWrite(dir string) {
 
 func procFileWrite(file string) {
 
-	filew, err1 := os.OpenFile("/home/nik/projects/logs/r/mainlogs1.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	filew, err1 := os.OpenFile("./logs/r/mainlogs1.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err1 != nil {
 		log.Fatal(err1)
 	}

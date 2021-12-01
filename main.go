@@ -8,7 +8,6 @@ import (
 
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
-	test "gitlab.topaz-atcs.com/tmcs/logi2/test_"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
@@ -26,10 +25,9 @@ func main() {
 	flagProm := flag.String("m", "", "prometheus")
 	flagVFC := flag.String("v", "", "vfc")
 	flagR := flag.String("r", "", "remove")
-	flagIp := flag.String("i", "", "ip")
-	//flagBleve := flag.String("b", "", "Bleve on bleve file")
-	//flagBleveSearch := flag.String("k", "", "Bleve search")
-	//flagMap := flag.String("m", "", "Map creating")
+	//flagInfo := flag.String("i", "", "info")
+	//flagDD := flag.String("o", "", "dd")
+
 	flag.Parse()
 
 	//go logenc.Promrun()
@@ -78,28 +76,21 @@ func main() {
 
 		generator.Example()
 	}
-	if len(*flagIp) > 0 {
 
-		test.GetOutboundIP()
-	}
-	//if len(*flagMap) > 0 {
-	//	logenc.ProcMapFilePP(*flagMap)
+	//if len(*flagInfo) > 0 {
+	//	generator.DiskInfo()
 	//}
-	//if len(*flagBleve) > 0 {
 
-	//logenc.ProcFileBreve(*flagBleve)
-
-	//}
-	//if len(*flagBleveSearch) > 0 {
-
-	//	logenc.ProcBleveSearch(*flagBleveSearch)
-
-	//}
 	if len(*flagTest) > 0 {
 
 		generator.ProcGenN()
 
 	}
+	//if len(*flagDD) > 0 {
+
+	//generator.DeleteFile90()
+
+	//}
 
 	if len(*flagSearch) > 0 {
 		var text string

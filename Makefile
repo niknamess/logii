@@ -29,9 +29,13 @@ gen: tst build
 rm: build
 	@$(MEPATH)/logi2 -r Foxtrot Uniform Charlie Kilo
 
-.PHONY: ip
-ip: tst build
+.PHONY: inf
+inf: tst build
 	@$(MEPATH)/logi2 -i Foxtrot Uniform Charlie Kilo
+
+.PHONY: dd
+dd: tst build
+	@$(MEPATH)/logi2 -o Foxtrot Uniform Charlie Kilo
 
 .PHONY: tst
 tst:

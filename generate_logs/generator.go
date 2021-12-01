@@ -108,36 +108,40 @@ func ProcGenN() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		//	filed, err := os.OpenFile("./genrlogs./gen_logs_decoded"+labeld, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		//	if err != nil {
-		//		log.Fatal(err)
-		//	}
+
+		//fileT, err := os.OpenFile("./test_/genrlogs./gen_logs_coded"+filesFrom+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		//if err != nil {
+		//	log.Fatal(err)
+		//}
+
 		InfoLogger := log.New(file, "", 0)
 
 		ErrorLogger := log.New(file, "", 0)
-		//	Logger = log.New(filed, "", 0)
+
+		//InfoLogger = log.New(fileT, "", 0)
+
+		//ErrorLogger = log.New(fileT, "", 0)
+
+		//fiT, err := fileT.Stat()
+		//if err != nil {
+
+		//}
+		//if fiT.Size() >= 20000 {
+		//	countFile++
+		//	fmt.Println(fiT.Size())
+		//	label = strconv.Itoa(countFile)
+
+		//}
 		fi, err := file.Stat()
 		if err != nil {
 
-			// Could not obtain stat, handle error
 		}
-		if fi.Size() >= 200000 {
+		if fi.Size() >= 20000000 {
 			countFile++
 			fmt.Println(fi.Size())
 			label = strconv.Itoa(countFile)
 
 		}
-
-		//fid, err := filed.Stat()
-		//if err != nil {
-		// Could not obtain stat, handle error
-		//}
-		//if fid.Size() >= 2000000000 {
-		//	fmt.Println(fid.Size())
-		//	countFiled++
-		//	labeld = strconv.Itoa(countFiled)
-
-		//}
 
 		infof := func(info string) {
 			InfoLogger.Output(2, logenc.EncodeLine(info))
@@ -147,13 +151,8 @@ func ProcGenN() {
 			ErrorLogger.Output(2, logenc.EncodeLine(info))
 		}
 
-		//timer1 := time.NewTimer(4 * time.Second)
 		infof(LINE)
-		//decode(LINE)
 
-		//<-timer1.C
-
-		//		timer4 := time.NewTimer(2 * time.Second)
 		erorof(line1)
 		//<-timer4.C
 		if countFile >= 10 {

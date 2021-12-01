@@ -25,8 +25,6 @@ func VFC(port string) {
 	dir := "./genrlogs./"
 	//dir := "/home/nik/projects/Course/tmcs-log-agent-storage/"
 
-	//fs http.FileSystem
-
 	var listener net.Listener
 	var err error
 	listenErr := 0
@@ -52,30 +50,15 @@ func VFC(port string) {
 
 	fsbase := afero.NewBasePathFs(afero.NewOsFs(), dir)
 	fsInput := afero.NewReadOnlyFs(fsbase)
-	//fsInput := afero.NewRegexpFs(fsro, regexp.MustCompile(`\.ads$`))
-
-	// fs0 := httpfs.New(mapfs.New(map[string]string{
-	// 	"zzz-last-file.txt":   "It should be visited last.",
-	// 	"a-file.txt":          "It` has stuff.",
-	// 	"another-file.txt":    "Also stuff.",
-	// 	"folderA/entry-A.txt": "Alpha.",
-	// 	"folderA/entry-B.txt": "Beta.",
-	// }))
-
 	fsRoot := union.New(map[string]http.FileSystem{
-		// "/fs0":   fs0,
 		"/data": afero.NewHttpFs(fsInput),
 	})
 
 	router := mux.NewRouter()
 
-	//fileserver := http.FileServer(fs.Dir("/"))
 	fileserver := http.FileServer(fsRoot)
 	router.PathPrefix("/vfs/").Handler(http.StripPrefix("/vfs/", fileserver))
 	fmt.Println("running /vfs")
-
-	// router.Handle("/debug/vars", http.DefaultServeMux)
-	//router.Handle("/debug/metrics", exp.ExpHandler(metrics.DefaultRegistry))
 
 	srv := &http.Server{
 		Handler:      router,

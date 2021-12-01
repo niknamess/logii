@@ -18,5 +18,5 @@ generate_logs/gen_logs_coded
 generate_logs/gen_logs_decoded
 gen_logs_coded
 gen_logs_decoded
-genrlogs.
+genrlogs./
 testsave/
