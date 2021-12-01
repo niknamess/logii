@@ -57,7 +57,7 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 					}
 					_, err := ulid.Parse(line1.XML_RECORD_ROOT[0].XML_ULID)
 					if err == nil {
-						//log.Fatal(err)
+
 						ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
 					} //else {
 					//	res <- line1
@@ -184,7 +184,8 @@ func OpenCreateFile(dirpath string, path string, label string, fileOs *os.File) 
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		log.Println(err)
 	}
 	file.Close()
 }
@@ -214,7 +215,8 @@ func Merge(dirpath string, path string) {
 	ch2 := make(chan LogList, 100)
 	original, err := os.Open(path)
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		log.Println(err)
 	}
 	defer original.Close()
 

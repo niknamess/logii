@@ -21,7 +21,6 @@ func main() {
 	flagWrite := flag.String("w", "", "write_logs")
 	flagGen := flag.String("g", "", "generate_logs")
 	flagWeb := flag.String("p", "", "web_interface")
-	flagTest := flag.String("c", "", "web_interface and generate log")
 	flagProm := flag.String("m", "", "prometheus")
 	flagVFC := flag.String("v", "", "vfc")
 	flagR := flag.String("r", "", "remove")
@@ -75,12 +74,6 @@ func main() {
 	if len(*flagR) > 0 {
 
 		generator.Example()
-	}
-
-	if len(*flagTest) > 0 {
-		// TODO same as flagGen
-		generator.ProcGenN()
-
 	}
 
 	if len(*flagSearch) > 0 {

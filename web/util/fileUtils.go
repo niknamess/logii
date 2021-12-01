@@ -119,19 +119,6 @@ func IndexFiles(fileList []string) error {
 	return nil
 }
 
-/* skip all files that are :
-   a: append-only
-   l: exclusive use
-   T: temporary file; Plan 9 only
-   L: symbolic link
-   D: device file
-   p: named pipe (FIFO)
-   S: Unix domain socket
-   u: setuid
-   g: setgid
-   c: Unix character device, when ModeDevice is set
-   t: sticky
-*/
 func dfs(file string) {
 	// Mostly useful for first entry, as the paths may be like ../dir or ~/path/../dir
 	// or some wierd *nixy style, Once the file is cleaned and made into an absolute
@@ -163,7 +150,7 @@ func dfs(file string) {
 		}
 	} else if strings.ContainsAny(s.Mode().String(), "alTLDpSugct") {
 		// skip these files
-		// @TODO try including names PIPES
+		// try including names PIPES
 	} else {
 		// only remaining file are ascii files that can be then differentiated
 		// by the user as golang has only these many categorization
@@ -197,20 +184,20 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 }
 
-func Indexing(conn *websocket.Conn, filename string) {
+func Indexing(conn *websocket.Conn, fileaddr string) {
 
-	if filename == "undefined" {
+	if fileaddr == "undefined" {
 		return
 	} else {
-		fileN := filepath.Base(filename)
-		fmt.Println(filename)
-		go logenc.Replication(filename)
+		fileN := filepath.Base(fileaddr)
+		fmt.Println(fileaddr)
+		go logenc.Replication(fileaddr)
 		go func() {
 			conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-			bleveSI.ProcBlev(fileN, filename)
+			bleveSI.ProcBlev(fileN, fileaddr)
 			conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 		}()
-		SearchMap = logenc.ProcMapFile(filename)
+		SearchMap = logenc.ProcMapFile(fileaddr)
 	}
 }
 
@@ -380,7 +367,7 @@ func DeleteFile90(dir string) {
 	now := time.Now()
 	fmt.Println(now)
 	for _, info := range fileInfo {
-		fmt.Println(info.Name())
+		//fmt.Println(info.Name())
 		if diff := now.Sub(info.ModTime()); diff > cutoff {
 			fmt.Printf("Deleting %s which is %s old\n", info.Name(), diff)
 			logenc.DeleteOldsFiles(dir, info.Name(), "")
