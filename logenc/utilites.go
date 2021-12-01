@@ -151,7 +151,7 @@ func EncodeXML(tmp LogList) (v string) {
 	return v
 }
 
-func Datestr2time(str string) time.Time {
+func datestr2time(str string) time.Time {
 	// format example: 08092021224536920  from xml
 	const shortForm = "02012006150405.000"
 
@@ -167,7 +167,7 @@ func EncodeCSV(val LogList) string {
 	for _, logstr := range val.XML_RECORD_ROOT {
 		//TIME
 		//print("EncodeCSV")
-		t := Datestr2time(logstr.XML_TIME)
+		t := datestr2time(logstr.XML_TIME)
 		//fmt.Println(logstr.XML_TIME, t, err)
 		//TYPE
 		typeM := "INFO"
@@ -198,7 +198,7 @@ func DecodeString(val LogList) string {
 	for _, logstr := range val.XML_RECORD_ROOT {
 		//TIME
 		//print("EncodeCSV")
-		t := Datestr2time(logstr.XML_TIME)
+		t := datestr2time(logstr.XML_TIME)
 		//fmt.Println(logstr.XML_TIME, t, err)
 		//TYPE
 		typeM := "INFO"
