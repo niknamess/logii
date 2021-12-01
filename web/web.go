@@ -32,7 +32,7 @@ func ProcWeb(dir1 string) {
 		panic(err)
 	}
 	go util.DeleteFile90("./repdata")
-
+	go util.DiskInfo("./repdata")
 	//	go Loop("192.168.0.193", "10015")
 	//go Loop("192.168.0.214", "10015")
 	//go Loop("192.168.0.213", "10015")

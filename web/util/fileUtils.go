@@ -5,11 +5,13 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/big"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -300,7 +302,7 @@ func GetFiles(address string, port string) {
 func DeleteFile90(dir string) {
 	for {
 		var cutoff = 24 * time.Hour * 90
-		fileInfo, err := ioutil.ReadDir("./")
+		fileInfo, err := ioutil.ReadDir(dir)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
@@ -314,4 +316,74 @@ func DeleteFile90(dir string) {
 			}
 		}
 	}
+}
+
+//Disk Check
+type DiskStatus struct {
+	All  uint64 `json:"all"`
+	Used uint64 `json:"used"`
+	Free uint64 `json:"free"`
+}
+
+func DiskUsage(path string) (disk DiskStatus) {
+	fs := syscall.Statfs_t{}
+	err := syscall.Statfs(path, &fs)
+	if err != nil {
+		return
+	}
+	disk.All = fs.Blocks * uint64(fs.Bsize)
+	disk.Free = fs.Bfree * uint64(fs.Bsize)
+	disk.Used = disk.All - disk.Free
+	return
+}
+
+const (
+	B  = 1
+	KB = 1024 * B
+	MB = 1024 * KB
+	GB = 1024 * MB
+	//limit big.Float = 0.8
+)
+
+func DiskInfo(dir string) {
+	for {
+		disk := DiskUsage("/")
+		//task:=float64(disk.All)/float64(GB)
+		x, y := big.NewFloat(float64(disk.All)/float64(GB)), big.NewFloat(float64(disk.Used)/float64(GB))
+		z := new(big.Float).Quo(y, x)
+		fmt.Println(z)
+		task := z.Cmp(big.NewFloat(0.8))
+		fmt.Println(task)
+		if z.Cmp(big.NewFloat(0.8)) == 1 || z.Cmp(big.NewFloat(0.8)) == 0 {
+			//fmt.Println("HAHA")
+			FindOldestfile(dir)
+		}
+		fmt.Printf("All: %.2f GB\n", float64(disk.All)/float64(GB))
+		fmt.Printf("Used: %.2f GB\n", float64(disk.Used)/float64(GB))
+		fmt.Printf("Free: %.2f GB\n", float64(disk.Free)/float64(GB))
+	}
+}
+
+func FindOldestfile(dir string) {
+	var name string
+	var cutoff = time.Hour
+	fileInfo, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	now := time.Now()
+	fmt.Println(now)
+	for _, info := range fileInfo {
+		if diff := now.Sub(info.ModTime()); diff > cutoff {
+			cutoff = now.Sub(info.ModTime())
+			name = info.Name()
+
+		}
+	}
+	//fmt.Println("NN", name, cutoff)
+	logenc.DeleteOldsFiles(dir, name, "")
+}
+
+func float(z *big.Float) {
+	panic("unimplemented")
 }

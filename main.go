@@ -25,6 +25,8 @@ func main() {
 	flagProm := flag.String("m", "", "prometheus")
 	flagVFC := flag.String("v", "", "vfc")
 	flagR := flag.String("r", "", "remove")
+	//flagInfo := flag.String("i", "", "info")
+	//flagDD := flag.String("o", "", "dd")
 
 	flag.Parse()
 
@@ -75,24 +77,20 @@ func main() {
 		generator.Example()
 	}
 
-	//if len(*flagMap) > 0 {
-	//	logenc.ProcMapFilePP(*flagMap)
+	//if len(*flagInfo) > 0 {
+	//	generator.DiskInfo()
 	//}
-	//if len(*flagBleve) > 0 {
 
-	//logenc.ProcFileBreve(*flagBleve)
-
-	//}
-	//if len(*flagBleveSearch) > 0 {
-
-	//	logenc.ProcBleveSearch(*flagBleveSearch)
-
-	//}
 	if len(*flagTest) > 0 {
 
 		generator.ProcGenN()
 
 	}
+	//if len(*flagDD) > 0 {
+
+	//generator.DeleteFile90()
+
+	//}
 
 	if len(*flagSearch) > 0 {
 		var text string
