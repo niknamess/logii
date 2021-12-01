@@ -186,7 +186,7 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 		for i := 0; i < len(UlidC); i++ {
 
 			_, found := SearchMap[UlidC[i]]
-			if found == true {
+			if found {
 				return true
 
 			}
@@ -245,7 +245,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 			fileN := filepath.Base(fileaddr)
 			go logenc.Replication(fileaddr)
 			bleveSI.ProcBlev(fileN, fileaddr)
-			if TailDir(conn, fileN, search, SearchMap) == true {
+			if TailDir(conn, fileN, search, SearchMap) {
 				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 			}
 			//fmt.Println(fileaddr)
@@ -272,6 +272,8 @@ func GetFiles(address string, port string) {
 		segments := strings.Split(path, "/")
 		fileName := segments[len(segments)-1]
 
+		// FIXME file descriptor leaks
+
 		file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			log.Fatal(err)
@@ -290,6 +292,7 @@ func GetFiles(address string, port string) {
 		defer resp.Body.Close()
 
 		_, err = io.Copy(file, resp.Body)
+		// FIXME err != nil
 		logenc.Replication("./testsave/" + fileName)
 		fmt.Println("Merge", fileName)
 		defer file.Close()

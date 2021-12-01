@@ -26,6 +26,7 @@ func MakeAndStartCron(repeat time.Duration, run func(...interface{}) error, v ..
 func GetOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
 	if err != nil {
+		// TODO  log.Fatal(err) !!!
 		log.Fatal(err)
 	}
 	defer conn.Close()

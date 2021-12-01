@@ -13,7 +13,7 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-var dlog bool = !!false
+var dlog bool = false
 
 func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	res := make(chan LogList)
@@ -156,7 +156,7 @@ func CreateDir(dirpath string, path string) {
 	//Create a folder/directory at a full qualified path
 	err := os.MkdirAll(dirpath+fileN, os.ModePerm)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("CreateDir:", err)
 	}
 }
 
@@ -164,7 +164,7 @@ func DeleteOldsFiles(dirpath string, path string, labels string) {
 	fileN := filepath.Base(path)
 	err := os.Remove(dirpath + fileN + labels)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("DeleteOldsFiles:", err)
 	}
 
 }
@@ -175,7 +175,7 @@ func RenameFile(dirpath string, path string, label string) {
 	New_Path := dirpath + fileN + label
 	e := os.Rename(Original_Path, New_Path)
 	if e != nil {
-		log.Fatal(e)
+		log.Println("RenameFile:", e)
 	}
 }
 
@@ -193,16 +193,17 @@ func CopyFile(dirpath string, path string, label string, fileOs *os.File) {
 	fileN := filepath.Base(path)
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return
 	}
+	defer file.Close()
+
 	bytesWritten, err := io.Copy(file, fileOs)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	} else {
 		fmt.Printf("Bytes Written: %d\n", bytesWritten)
 	}
-	file.Close()
 }
 
 func Merge(dirpath string, path string) {
@@ -294,6 +295,7 @@ func IsDirEmpty(name string) (bool, error) {
 	return false, err
 }
 
+// TODO test
 func Replication(path string) {
 	var dirpath string = "./repdata/"
 	CreateDir(dirpath, "")

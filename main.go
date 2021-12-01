@@ -78,7 +78,7 @@ func main() {
 	}
 
 	if len(*flagTest) > 0 {
-
+		// TODO same as flagGen
 		generator.ProcGenN()
 
 	}
