@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
@@ -294,4 +295,23 @@ func GetFiles(address string, port string) {
 		//fmt.Printf("Downloaded a file %s with size %d", fileName, size)
 	}
 
+}
+
+func DeleteFile90(dir string) {
+	for {
+		var cutoff = 24 * time.Hour * 90
+		fileInfo, err := ioutil.ReadDir("./")
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		now := time.Now()
+		fmt.Println(now)
+		for _, info := range fileInfo {
+			if diff := now.Sub(info.ModTime()); diff > cutoff {
+				fmt.Printf("Deleting %s which is %s old\n", info.Name(), diff)
+				logenc.DeleteOldsFiles(dir, info.Name(), "")
+
+			}
+		}
+	}
 }
