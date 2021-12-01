@@ -29,14 +29,6 @@ gen: tst build
 rm: build
 	@$(MEPATH)/logi2 -r Foxtrot Uniform Charlie Kilo
 
-.PHONY: inf
-inf: tst build
-	@$(MEPATH)/logi2 -i Foxtrot Uniform Charlie Kilo
-
-.PHONY: dd
-dd: tst build
-	@$(MEPATH)/logi2 -o Foxtrot Uniform Charlie Kilo
-
 .PHONY: tst
 tst:
 	go clean -testcache
