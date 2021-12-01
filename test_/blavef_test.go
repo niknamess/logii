@@ -16,7 +16,7 @@ func BenchmarkProcFileBreve(b *testing.B) {
 
 }
 
-func ABenchmarkProcFileBreveS(b *testing.B) {
+func BenchmarkProcFileBreveS(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
@@ -26,7 +26,7 @@ func ABenchmarkProcFileBreveS(b *testing.B) {
 
 }
 
-func ABenchmarkProcFileSSS(b *testing.B) {
+func BenchmarkProcFileSSS(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
@@ -37,7 +37,7 @@ func ABenchmarkProcFileSSS(b *testing.B) {
 
 }
 
-func ABenchmarkProcFileBatch(b *testing.B) {
+func BenchmarkProcFileBatch(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
@@ -47,7 +47,7 @@ func ABenchmarkProcFileBatch(b *testing.B) {
 	//generator.Remove("/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193","test")
 
 }
-func ATestProcBleveS(t *testing.T) {
+func TestProcBleveS(t *testing.T) {
 	type args struct {
 		fileN string
 		file  string
