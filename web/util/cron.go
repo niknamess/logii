@@ -2,11 +2,8 @@ package util
 
 import (
 	"fmt"
-<<<<<<< HEAD
 	"log"
 	"net"
-=======
->>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 	"os"
 	"time"
 )
@@ -25,7 +22,6 @@ func MakeAndStartCron(repeat time.Duration, run func(...interface{}) error, v ..
 		}
 	}
 }
-<<<<<<< HEAD
 
 func GetOutboundIP() string {
 	conn, err := net.Dial("udp", "8.8.8.8:80")
@@ -42,5 +38,3 @@ func GetOutboundIP() string {
 	///return localAddr.IP
 	return str1
 }
-=======
->>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15

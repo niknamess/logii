@@ -22,12 +22,8 @@ func VFC(port string) {
 	addr := ":" + port
 
 	//dir := "/home/maxxant/Documents/log"
-<<<<<<< HEAD
 	dir := "./genrlogs./"
 	//dir := "/home/nik/projects/Course/tmcs-log-agent-storage/"
-=======
-	dir := "/home/nik/projects/Course/tmcs-log-agent-storage/"
->>>>>>> 7cc21d8bc26936e7ef731a8b2d1dc24da8cf5e15
 
 	//fs http.FileSystem
 
