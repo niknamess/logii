@@ -179,16 +179,14 @@ func RenameFile(dirpath string, path string, label string) {
 	}
 }
 
-func OpenCreateFile(dirpath string, path string, label string, fileOs *os.File) *os.File {
+func OpenCreateFile(dirpath string, path string, label string, fileOs *os.File) {
 	fileN := filepath.Base(path)
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()
-
-	return file
+	file.Close()
 }
 
 func CopyFile(dirpath string, path string, label string, fileOs *os.File) *os.File {
