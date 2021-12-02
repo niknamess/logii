@@ -17,7 +17,7 @@ var (
 	sliceLoglist []logenc.LogList
 )
 
-func BleveIndex(fileN string) (bleve.Index, error) {
+func bleveIndex(fileN string) (bleve.Index, error) {
 
 	dir := "./blevestorage/"
 	extension := ".bleve"
@@ -36,7 +36,7 @@ func ProcBleve(fileN string, file string) {
 		return
 	}
 	var wg sync.WaitGroup
-	index, err := BleveIndex(fileN)
+	index, err := bleveIndex(fileN)
 	if err != nil {
 		fmt.Println(err)
 		return
