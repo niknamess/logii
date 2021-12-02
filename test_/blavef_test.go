@@ -1,3 +1,6 @@
+//go:build test_all && !bleve_test
+// +build test_all,!bleve_test
+
 package test
 
 import (
@@ -57,7 +60,7 @@ func TestProcBleveS(t *testing.T) {
 
 }
 
-func ATestProcBleveScorch(t *testing.T) {
+func TestProcBleveScorch(t *testing.T) {
 	type args struct {
 		fileN string
 		file  string
@@ -66,7 +69,7 @@ func ATestProcBleveScorch(t *testing.T) {
 	bleveSI.ProcBleveScorch("test5", "./view/22-06-2021")
 }
 
-func ATestBleveSearch(t *testing.T) {
+func testBleveSearch(t *testing.T) {
 	type args struct {
 		fileN string
 		file  string
