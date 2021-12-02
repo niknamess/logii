@@ -200,39 +200,38 @@ func GetFiles(address string, port string) {
 		path := fileURL.Path
 		segments := strings.Split(path, "/")
 		fileName := segments[len(segments)-1]
-
-		//FIXME:
-		file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		if err != nil {
-			log.Fatal(err)
-		}
 		func() {
+			//FIXME:
+			file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			defer file.Close()
+
+			client := http.Client{
+				CheckRedirect: func(r *http.Request, via []*http.Request) error {
+					r.URL.Opaque = r.URL.Path
+					return nil
+				},
+			}
+			// Put content on file
+			resp, err := client.Get(fullURLFile)
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer resp.Body.Close()
+
+			_, err = io.Copy(file, resp.Body)
+			if err != nil {
+				log.Println(err)
+			}
+			logenc.Replication("./testsave/" + fileName)
+			fmt.Println("Merge", fileName)
+			logenc.DeleteOldsFiles("./testsave/", fileName, "")
+			//fmt.Printf("Downloaded a file %s with size %d", fileName, size)
 			file.Close()
 		}()
-
-		defer file.Close()
-
-		client := http.Client{
-			CheckRedirect: func(r *http.Request, via []*http.Request) error {
-				r.URL.Opaque = r.URL.Path
-				return nil
-			},
-		}
-		// Put content on file
-		resp, err := client.Get(fullURLFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer resp.Body.Close()
-
-		_, err = io.Copy(file, resp.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		logenc.Replication("./testsave/" + fileName)
-		fmt.Println("Merge", fileName)
-		logenc.DeleteOldsFiles("./testsave/", fileName, "")
-		//fmt.Printf("Downloaded a file %s with size %d", fileName, size)
 	}
 
 }
