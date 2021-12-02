@@ -6,17 +6,17 @@ import (
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 )
 
-func BenchmarkProcFileBreve(b *testing.B) {
+func BenchmarkProcFileBleve(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
 	}
 
-	bleveSI.ProcBlev("test4", "./view/22-06-2021")
+	bleveSI.ProcBleve("test4", "./view/22-06-2021")
 
 }
 
-func ABenchmarkProcFileBreveS(b *testing.B) {
+func BenchmarkProcFileBleveS(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
@@ -26,7 +26,7 @@ func ABenchmarkProcFileBreveS(b *testing.B) {
 
 }
 
-func ABenchmarkProcFileSSS(b *testing.B) {
+func BenchmarkProcFileSSS(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
@@ -37,31 +37,22 @@ func ABenchmarkProcFileSSS(b *testing.B) {
 
 }
 
-func ABenchmarkProcFileBatch(b *testing.B) {
+func BenchmarkProcFileBatch(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
 	}
 
-	bleveSI.ProcBlev("test87", "./view/22-06-2021")
+	bleveSI.ProcBleve("test87", "./view/22-06-2021")
 	//generator.Remove("/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193","test")
 
 }
-func ATestProcBleveS(t *testing.T) {
+func TestProcBleveS(t *testing.T) {
 	type args struct {
 		fileN string
 		file  string
 	}
 
-	bleveSI.ProcBlev("test7", "./view/22-06-2021")
+	bleveSI.ProcBleve("test7", "./view/22-06-2021")
 
-}
-
-func ATestProcBleveScorch(t *testing.T) {
-	type args struct {
-		fileN string
-		file  string
-	}
-
-	bleveSI.ProcBleveScorch("test5", "./view/22-06-2021")
 }

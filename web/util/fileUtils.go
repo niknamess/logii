@@ -28,8 +28,8 @@ var (
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap  = make(map[string]bool)
-	SearchMap map[string]string
+	indexMap = make(map[string]bool)
+	//SearchMap map[string]string
 )
 
 type FileStruct struct {
@@ -45,7 +45,6 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
-
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
@@ -68,6 +67,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			//}
 
 		}
+		//fmt.Println("Check")
 	} else if len(UlidC) == 0 {
 		println("Break")
 		return
@@ -119,19 +119,6 @@ func IndexFiles(fileList []string) error {
 	return nil
 }
 
-/* skip all files that are :
-   a: append-only
-   l: exclusive use
-   T: temporary file; Plan 9 only
-   L: symbolic link
-   D: device file
-   p: named pipe (FIFO)
-   S: Unix domain socket
-   u: setuid
-   g: setgid
-   c: Unix character device, when ModeDevice is set
-   t: sticky
-*/
 func dfs(file string) {
 	// Mostly useful for first entry, as the paths may be like ../dir or ~/path/../dir
 	// or some wierd *nixy style, Once the file is cleaned and made into an absolute
@@ -163,7 +150,7 @@ func dfs(file string) {
 		}
 	} else if strings.ContainsAny(s.Mode().String(), "alTLDpSugct") {
 		// skip these files
-		// @TODO try including names PIPES
+		// try including names PIPES
 	} else {
 		// only remaining file are ascii files that can be then differentiated
 		// by the user as golang has only these many categorization
@@ -186,7 +173,7 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 		for i := 0; i < len(UlidC); i++ {
 
 			_, found := SearchMap[UlidC[i]]
-			if found == true {
+			if found {
 				return true
 
 			}
@@ -194,64 +181,6 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 	}
 	return false
-
-}
-
-func Indexing(conn *websocket.Conn, filename string) {
-
-	if filename == "undefined" {
-		return
-	} else {
-		fileN := filepath.Base(filename)
-		fmt.Println(filename)
-		go logenc.Replication(filename)
-		go func() {
-			conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-			bleveSI.ProcBlev(fileN, filename)
-			conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
-		}()
-		SearchMap = logenc.ProcMapFile(filename)
-	}
-}
-
-//View List of Dir
-func ViewDir(conn *websocket.Conn, search string) {
-	var fileList = make(map[string][]string)
-	files, _ := ioutil.ReadDir("./repdata")
-	//"/home/nik/projects/Course/tmcs-log-agent-storage/"
-	//"./view"
-	countFiles := (len(files))
-	conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-	if len(search) == 0 {
-
-		fileList["FileList"] = Conf.Dir
-		//String[] values = fileList.get("FileList");
-		fmt.Println("start")
-		for i := 0; i < countFiles; i++ {
-			fileaddr := fileList["FileList"][i]
-			fileN := filepath.Base(fileaddr)
-			go logenc.Replication(fileaddr)
-			bleveSI.ProcBlev(fileN, fileaddr)
-			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
-
-		}
-
-	} else {
-		fileList["FileList"] = Conf.Dir
-		//String[] values = fileList.get("FileList");
-		fmt.Println("start")
-		for i := 0; i < countFiles; i++ {
-			fileaddr := fileList["FileList"][i]
-			fileN := filepath.Base(fileaddr)
-			go logenc.Replication(fileaddr)
-			bleveSI.ProcBlev(fileN, fileaddr)
-			if TailDir(conn, fileN, search, SearchMap) == true {
-				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
-			}
-			//fmt.Println(fileaddr)
-		}
-	}
-	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 
 }
 
@@ -272,6 +201,8 @@ func GetFiles(address string, port string) {
 		segments := strings.Split(path, "/")
 		fileName := segments[len(segments)-1]
 
+		// FIXME file descriptor leaks
+
 		file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			log.Fatal(err)
@@ -290,6 +221,7 @@ func GetFiles(address string, port string) {
 		defer resp.Body.Close()
 
 		_, err = io.Copy(file, resp.Body)
+		// FIXME err != nil
 		logenc.Replication("./testsave/" + fileName)
 		fmt.Println("Merge", fileName)
 		defer file.Close()
@@ -334,15 +266,15 @@ func DiskInfo(dir string) {
 		z := new(big.Float).Quo(y, x)
 
 		if z.Cmp(big.NewFloat(0.8)) == 1 || z.Cmp(big.NewFloat(0.8)) == 0 {
-			//fmt.Println("HAHA")
+			//fmt.Println("HAHA")ste
 			FindOldestfile(dir)
 
 		} else {
 			//fmt.Println("HA")
 			DeleteFile90(dir)
 		}
-		fmt.Printf("All: %.2f GB\n", float64(disk.All)/float64(GB))
-		fmt.Printf("Used: %.2f GB\n", float64(disk.Used)/float64(GB))
+		//fmt.Printf("All: %.2f GB\n", float64(disk.All)/float64(GB))
+		//fmt.Printf("Used: %.2f GB\n", float64(disk.Used)/float64(GB))
 		fmt.Printf("Free: %.2f GB\n", float64(disk.Free)/float64(GB))
 	}
 
@@ -375,9 +307,9 @@ func DeleteFile90(dir string) {
 		log.Fatal(err.Error())
 	}
 	now := time.Now()
-	fmt.Println(now)
+	//fmt.Println(now)
 	for _, info := range fileInfo {
-		fmt.Println(info.Name())
+		//fmt.Println(info.Name())
 		if diff := now.Sub(info.ModTime()); diff > cutoff {
 			fmt.Printf("Deleting %s which is %s old\n", info.Name(), diff)
 			logenc.DeleteOldsFiles(dir, info.Name(), "")
