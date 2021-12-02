@@ -66,7 +66,7 @@ func ATestProcBleveScorch(t *testing.T) {
 	bleveSI.ProcBleveScorch("test5", "./view/22-06-2021")
 }
 
-func TestBleveSearch(t *testing.T) {
+func ATestBleveSearch(t *testing.T) {
 	type args struct {
 		fileN string
 		file  string
