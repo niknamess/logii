@@ -6,7 +6,7 @@ import (
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 )
 
-func BenchmarkProcFileBreve(b *testing.B) {
+func BenchmarkProcFileBleve(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
@@ -16,7 +16,7 @@ func BenchmarkProcFileBreve(b *testing.B) {
 
 }
 
-func BenchmarkProcFileBreveS(b *testing.B) {
+func BenchmarkProcFileBleveS(b *testing.B) {
 	type args struct {
 		fileN string
 		file  string
