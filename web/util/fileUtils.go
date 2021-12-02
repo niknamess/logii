@@ -200,8 +200,8 @@ func GetFiles(address string, port string) {
 		path := fileURL.Path
 		segments := strings.Split(path, "/")
 		fileName := segments[len(segments)-1]
-		func() {
-			//FIXME:
+
+		func() { // lambda for defer file.Close()
 			file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 			if err != nil {
 				log.Fatal(err)
