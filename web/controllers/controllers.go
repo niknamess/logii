@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"encoding/base64"
+	"fmt"
+	"io/ioutil"
 
 	//"encoding/json"
 
@@ -11,6 +13,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
+	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/util"
 )
 
@@ -61,11 +65,11 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if filename == "undefined" {
-		util.ViewDir(conn, search)
+		ViewDir(conn, search)
 	}
 
 	if savefiles == nil {
-		util.Indexing(conn, filename)
+		Indexing(conn, filename)
 		savefiles = append(savefiles, filename)
 	} else {
 		for i := 0; i < len(savefiles); i++ {
@@ -78,7 +82,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 	if stringF == true {
-		util.Indexing(conn, filename)
+		Indexing(conn, filename)
 		savefiles = append(savefiles, filename)
 
 	}
@@ -108,5 +112,65 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	search = r.URL.Query().Get("search_string")
+
+}
+
+//NOT fileUtils !!!
+func Indexing(conn *websocket.Conn, fileaddr string) {
+	//var SearchMap map[string]string
+	if fileaddr == "undefined" {
+		return
+	} else {
+		fileN := filepath.Base(fileaddr)
+		fmt.Println(fileaddr)
+		go logenc.Replication(fileaddr)
+		go func() {
+			conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
+			bleveSI.ProcBlev(fileN, fileaddr)
+			conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
+		}()
+		SearchMap = logenc.ProcMapFile(fileaddr)
+	}
+}
+
+//View List of Dir
+//NOT fileUtils !!!
+func ViewDir(conn *websocket.Conn, search string) {
+	var fileList = make(map[string][]string)
+	files, _ := ioutil.ReadDir("./repdata")
+	//"/home/nik/projects/Course/tmcs-log-agent-storage/"
+	//"./view"
+	countFiles := (len(files))
+	conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
+	if len(search) == 0 {
+
+		fileList["FileList"] = util.Conf.Dir
+		//String[] values = fileList.get("FileList");
+		fmt.Println("start")
+		for i := 0; i < countFiles; i++ {
+			fileaddr := fileList["FileList"][i]
+			fileN := filepath.Base(fileaddr)
+			go logenc.Replication(fileaddr)
+			bleveSI.ProcBlev(fileN, fileaddr)
+			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
+
+		}
+
+	} else {
+		fileList["FileList"] = util.Conf.Dir
+		//String[] values = fileList.get("FileList");
+		fmt.Println("start")
+		for i := 0; i < countFiles; i++ {
+			fileaddr := fileList["FileList"][i]
+			fileN := filepath.Base(fileaddr)
+			go logenc.Replication(fileaddr)
+			bleveSI.ProcBlev(fileN, fileaddr)
+			if util.TailDir(conn, fileN, search, SearchMap) {
+				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
+			}
+			//fmt.Println(fileaddr)
+		}
+	}
+	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 
 }

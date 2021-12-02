@@ -83,7 +83,7 @@ func ProcGenN() {
 	filesFrom := string(util.GetOutboundIP()[len(util.GetOutboundIP())-3:])
 	//	last3  := string(s[len(s)-3:])
 	logenc.CreateDir("./genrlogs", "")
-	line1 := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\"ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
+	//line1 := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\"ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
 	/*
 		infof := func(info string) {
 			InfoLogger.Output(2, logenc.EncodeLine(info))
@@ -116,7 +116,7 @@ func ProcGenN() {
 
 		InfoLogger := log.New(file, "", 0)
 
-		ErrorLogger := log.New(file, "", 0)
+		//ErrorLogger := log.New(file, "", 0)
 
 		//InfoLogger = log.New(fileT, "", 0)
 
@@ -147,13 +147,13 @@ func ProcGenN() {
 			InfoLogger.Output(2, logenc.EncodeLine(info))
 		}
 
-		erorof := func(info string) {
-			ErrorLogger.Output(2, logenc.EncodeLine(info))
-		}
+		//erorof := func(info string) {
+		//	ErrorLogger.Output(2, logenc.EncodeLine(info))
+		//}
 
 		infof(LINE)
 
-		erorof(line1)
+		//erorof(line1)
 		//<-timer4.C
 		if countFile >= 10 {
 			return

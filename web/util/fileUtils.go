@@ -28,8 +28,8 @@ var (
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap  = make(map[string]bool)
-	SearchMap map[string]string
+	indexMap = make(map[string]bool)
+	//SearchMap map[string]string
 )
 
 type FileStruct struct {
@@ -45,7 +45,6 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
-
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
@@ -68,6 +67,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			//}
 
 		}
+		//fmt.Println("Check")
 	} else if len(UlidC) == 0 {
 		println("Break")
 		return
@@ -184,64 +184,6 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 }
 
-func Indexing(conn *websocket.Conn, fileaddr string) {
-
-	if fileaddr == "undefined" {
-		return
-	} else {
-		fileN := filepath.Base(fileaddr)
-		fmt.Println(fileaddr)
-		go logenc.Replication(fileaddr)
-		go func() {
-			conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-			bleveSI.ProcBlev(fileN, fileaddr)
-			conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
-		}()
-		SearchMap = logenc.ProcMapFile(fileaddr)
-	}
-}
-
-//View List of Dir
-func ViewDir(conn *websocket.Conn, search string) {
-	var fileList = make(map[string][]string)
-	files, _ := ioutil.ReadDir("./repdata")
-	//"/home/nik/projects/Course/tmcs-log-agent-storage/"
-	//"./view"
-	countFiles := (len(files))
-	conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-	if len(search) == 0 {
-
-		fileList["FileList"] = Conf.Dir
-		//String[] values = fileList.get("FileList");
-		fmt.Println("start")
-		for i := 0; i < countFiles; i++ {
-			fileaddr := fileList["FileList"][i]
-			fileN := filepath.Base(fileaddr)
-			go logenc.Replication(fileaddr)
-			bleveSI.ProcBlev(fileN, fileaddr)
-			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
-
-		}
-
-	} else {
-		fileList["FileList"] = Conf.Dir
-		//String[] values = fileList.get("FileList");
-		fmt.Println("start")
-		for i := 0; i < countFiles; i++ {
-			fileaddr := fileList["FileList"][i]
-			fileN := filepath.Base(fileaddr)
-			go logenc.Replication(fileaddr)
-			bleveSI.ProcBlev(fileN, fileaddr)
-			if TailDir(conn, fileN, search, SearchMap) {
-				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
-			}
-			//fmt.Println(fileaddr)
-		}
-	}
-	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
-
-}
-
 func GetFiles(address string, port string) {
 	resp, err := http.Get("http://" + address + ":" + port + "/vfs/data/")
 	if err != nil {
@@ -331,8 +273,8 @@ func DiskInfo(dir string) {
 			//fmt.Println("HA")
 			DeleteFile90(dir)
 		}
-		fmt.Printf("All: %.2f GB\n", float64(disk.All)/float64(GB))
-		fmt.Printf("Used: %.2f GB\n", float64(disk.Used)/float64(GB))
+		//fmt.Printf("All: %.2f GB\n", float64(disk.All)/float64(GB))
+		//fmt.Printf("Used: %.2f GB\n", float64(disk.Used)/float64(GB))
 		fmt.Printf("Free: %.2f GB\n", float64(disk.Free)/float64(GB))
 	}
 
@@ -365,7 +307,7 @@ func DeleteFile90(dir string) {
 		log.Fatal(err.Error())
 	}
 	now := time.Now()
-	fmt.Println(now)
+	//fmt.Println(now)
 	for _, info := range fileInfo {
 		//fmt.Println(info.Name())
 		if diff := now.Sub(info.ModTime()); diff > cutoff {
