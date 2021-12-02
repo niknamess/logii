@@ -38,3 +38,8 @@ tst:
 clean:
 	@rm -fR logi2
 
+.PHONY: doc
+doc:
+	xdg-open http://localhost:6060/pkg/gitlab.topaz-atcs.com/tmcs/logi2/
+	godoc -http=:6060
+
