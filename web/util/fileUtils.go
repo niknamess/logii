@@ -229,8 +229,6 @@ func GetFiles(address string, port string) {
 			logenc.Replication("./testsave/" + fileName)
 			fmt.Println("Merge", fileName)
 			logenc.DeleteOldsFiles("./testsave/", fileName, "")
-			//fmt.Printf("Downloaded a file %s with size %d", fileName, size)
-			file.Close()
 		}()
 	}
 
