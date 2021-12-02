@@ -74,7 +74,7 @@ func ProcFileBreve(fileN string, file string) {
 	logenc.WriteFileSum(file, "")
 }
 
-func ProcBleveSearch(fileN string, word string) []string {
+func ProcBleveSearchv1(fileN string, word string) []string {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	filename := fileN

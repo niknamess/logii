@@ -40,7 +40,6 @@ func main() {
 	if len(*flagFile) > 0 {
 
 		logenc.ProcFile(*flagFile)
-		//logenc.ProcBleveSearch(*flagBleveSearch)
 	}
 
 	if len(*flagDir) > 0 {

@@ -86,7 +86,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		savefiles = append(savefiles, filename)
 
 	}
-	///logenc.ProcFileBreveSLOWLY(fileN, filename)
+
 	// sanitize the file if it is present in the index or not.
 	filename = filepath.Clean(filename)
 	ok := false

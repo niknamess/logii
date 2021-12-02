@@ -17,7 +17,6 @@ var (
 	sliceLoglist []logenc.LogList
 )
 
-//example Speed
 func BleveIndex(fileN string) (bleve.Index, error) {
 
 	dir := "./blevestorage/"
