@@ -126,7 +126,7 @@ func Indexing(conn *websocket.Conn, fileaddr string) {
 		go logenc.Replication(fileaddr)
 		go func() {
 			conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-			bleveSI.ProcBlev(fileN, fileaddr)
+			bleveSI.ProcBleve(fileN, fileaddr)
 			conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 		}()
 		SearchMap = logenc.ProcMapFile(fileaddr)
@@ -151,7 +151,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 			fileaddr := fileList["FileList"][i]
 			fileN := filepath.Base(fileaddr)
 			go logenc.Replication(fileaddr)
-			bleveSI.ProcBlev(fileN, fileaddr)
+			bleveSI.ProcBleve(fileN, fileaddr)
 			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 
 		}
@@ -164,7 +164,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 			fileaddr := fileList["FileList"][i]
 			fileN := filepath.Base(fileaddr)
 			go logenc.Replication(fileaddr)
-			bleveSI.ProcBlev(fileN, fileaddr)
+			bleveSI.ProcBleve(fileN, fileaddr)
 			if util.TailDir(conn, fileN, search, SearchMap) {
 				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 			}

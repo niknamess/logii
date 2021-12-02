@@ -12,7 +12,7 @@ func BenchmarkProcFileBleve(b *testing.B) {
 		file  string
 	}
 
-	bleveSI.ProcBlev("test4", "./view/22-06-2021")
+	bleveSI.ProcBleve("test4", "./view/22-06-2021")
 
 }
 
@@ -43,7 +43,7 @@ func BenchmarkProcFileBatch(b *testing.B) {
 		file  string
 	}
 
-	bleveSI.ProcBlev("test87", "./view/22-06-2021")
+	bleveSI.ProcBleve("test87", "./view/22-06-2021")
 	//generator.Remove("/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193","test")
 
 }
@@ -53,6 +53,6 @@ func TestProcBleveS(t *testing.T) {
 		file  string
 	}
 
-	bleveSI.ProcBlev("test7", "./view/22-06-2021")
+	bleveSI.ProcBleve("test7", "./view/22-06-2021")
 
 }

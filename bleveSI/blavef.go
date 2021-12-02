@@ -31,7 +31,7 @@ func BleveIndex(fileN string) (bleve.Index, error) {
 
 	return index, err
 }
-func ProcBlev(fileN string, file string) {
+func ProcBleve(fileN string, file string) {
 	var count int = 0
 	if logenc.CheckFileSum(file, "") == false {
 		return
