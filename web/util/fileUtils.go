@@ -201,12 +201,17 @@ func GetFiles(address string, port string) {
 		segments := strings.Split(path, "/")
 		fileName := segments[len(segments)-1]
 
-		// FIXME file descriptor leaks
-
+		//FIXME:
 		file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			log.Fatal(err)
 		}
+		func() {
+			file.Close()
+		}()
+
+		defer file.Close()
+
 		client := http.Client{
 			CheckRedirect: func(r *http.Request, via []*http.Request) error {
 				r.URL.Opaque = r.URL.Path
@@ -221,10 +226,11 @@ func GetFiles(address string, port string) {
 		defer resp.Body.Close()
 
 		_, err = io.Copy(file, resp.Body)
-		// FIXME err != nil
+		if err != nil {
+			log.Println(err)
+		}
 		logenc.Replication("./testsave/" + fileName)
 		fmt.Println("Merge", fileName)
-		defer file.Close()
 		logenc.DeleteOldsFiles("./testsave/", fileName, "")
 		//fmt.Printf("Downloaded a file %s with size %d", fileName, size)
 	}

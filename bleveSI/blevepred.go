@@ -195,7 +195,7 @@ func ProcBleveScorch(fileN string, file string) {
 		return
 	}
 	var wg sync.WaitGroup
-	index, err := BleveIndex(fileN)
+	index, err := bleveIndex(fileN)
 	if err != nil {
 		fmt.Println(err)
 		return
