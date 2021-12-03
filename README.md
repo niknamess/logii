@@ -33,8 +33,10 @@
 - [x] add disign in web interface (table)
 - [x] add disign in web interface (colors for type message) 
 - [x] add merge (local)
-- [ ] add merge from server
+- [x] add merge from server
 - [x] check disk and if disk full(80%) delete olds file
+- [x] problem with refused connection on other server
+- [ ] check with md5 integrity file  
 
 
 
