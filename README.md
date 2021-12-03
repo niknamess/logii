@@ -36,7 +36,9 @@
 - [x] add merge from server
 - [x] check disk and if disk full(80%) delete olds file
 - [x] problem with refused connection on other server
-- [ ] check with md5 integrity file  
+- [ ] check with md5 integrity file
+- [ ] check with hash sum signature file 
+
 
 
 
