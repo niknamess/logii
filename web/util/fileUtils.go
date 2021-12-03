@@ -184,10 +184,14 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 }
 
-func GetFiles(address string, port string) {
+func GetFiles(address string, port string) error {
 	resp, err := http.Get("http://" + address + ":" + port + "/vfs/data/")
 	if err != nil {
-		log.Fatal(err)
+		log.Println("GetFiles1", err)
+
+		return err
+		//log.Fatal(err)
+
 	}
 	for _, v := range logenc.GetLinks(resp.Body) {
 
@@ -195,6 +199,7 @@ func GetFiles(address string, port string) {
 
 		fileURL, err := url.Parse(fullURLFile)
 		if err != nil {
+			log.Println("GetFiles2", err)
 			log.Fatal(err)
 		}
 		path := fileURL.Path
@@ -204,7 +209,10 @@ func GetFiles(address string, port string) {
 		func() { // lambda for defer file.Close()
 			file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 			if err != nil {
+				log.Println("GetFiles3", err)
 				log.Fatal(err)
+				//file.Close()
+				//return
 			}
 
 			defer file.Close()
@@ -218,12 +226,16 @@ func GetFiles(address string, port string) {
 			// Put content on file
 			resp, err := client.Get(fullURLFile)
 			if err != nil {
-				log.Fatal(err)
+				log.Println("GetFiles4", err)
+				logenc.DeleteOldsFiles("./testsave/", fileName, "")
+				return
+				//log.Fatal(err)
 			}
 			defer resp.Body.Close()
 
 			_, err = io.Copy(file, resp.Body)
 			if err != nil {
+				log.Println("GetFiles5", err)
 				log.Println(err)
 			}
 			logenc.Replication("./testsave/" + fileName)
@@ -231,7 +243,7 @@ func GetFiles(address string, port string) {
 			logenc.DeleteOldsFiles("./testsave/", fileName, "")
 		}()
 	}
-
+	return nil
 }
 
 //Disk Check
@@ -278,7 +290,7 @@ func DiskInfo(dir string) {
 		}
 		//fmt.Printf("All: %.2f GB\n", float64(disk.All)/float64(GB))
 		//fmt.Printf("Used: %.2f GB\n", float64(disk.Used)/float64(GB))
-		fmt.Printf("Free: %.2f GB\n", float64(disk.Free)/float64(GB))
+		//fmt.Printf("Free: %.2f GB\n", float64(disk.Free)/float64(GB))
 	}
 
 }

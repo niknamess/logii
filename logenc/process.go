@@ -376,7 +376,7 @@ func GetLinks(body io.Reader) []string {
 
 		switch tt {
 		case html.ErrorToken:
-			//todo: links list shoudn't contain duplicates
+			//: links list shoudn't contain duplicates
 			return links
 		case html.StartTagToken, html.EndTagToken:
 			token := z.Token()

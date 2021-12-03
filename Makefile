@@ -43,3 +43,6 @@ doc:
 	xdg-open http://localhost:6060/pkg/gitlab.topaz-atcs.com/tmcs/logi2/
 	godoc -http=:6060
 
+.PHONY: all
+all: build vfc dev
+	@$(MEPATH)/logi2 -r Foxtrot Uniform Charlie Kilo
