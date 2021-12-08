@@ -239,7 +239,7 @@ func GetFiles(address string, port string) error {
 			}
 			//logenc.WriteFileSum("./genrlogs./"+fileName, "check1")
 			logenc.Replication("./testsave/" + fileName)
-			logenc.WriteFileSum("./testsave/"+fileName, "rep")
+			logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 			fmt.Println("Merge", fileName)
 			//logenc.WriteFileSum("./repdata/"+fileName, "check2")
 			logenc.DeleteOldsFiles("./testsave/", fileName, "")
@@ -247,6 +247,77 @@ func GetFiles(address string, port string) error {
 	}
 	return nil
 }
+
+/*
+	contain := strings.Contains(fileName, "md5")
+	if contain == true {
+		signature = true
+
+	} else if contain == false && signature == true {
+		last3 := fileName[len(fileName)-3:]
+		files, err := ioutil.ReadDir("./testsave")
+		if err != nil {
+
+			log.Fatal(err)
+		}
+
+		for _, f := range files {
+			if f.Name() == "md5"+last3 {
+				if logenc.CheckFileSum("./testsave/"+fileName, last3, "./testsave/") == false {
+
+					logenc.Replication("./testsave/" + fileName)
+					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
+					fmt.Println("Merge", fileName)
+					logenc.DeleteOldsFiles("./testsave/", fileName, "")
+
+				} else {
+
+					logenc.DeleteOldsFiles("./repdata/", fileName, "")
+					fileS, err := os.OpenFile("./repdata/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+					if err != nil {
+
+						log.Fatal(err)
+						//file.Close()
+						//return
+					}
+					defer fileS.Close()
+					_, err = io.Copy(fileS, file)
+					if err != nil {
+
+						log.Println("Copy", err)
+					}
+
+				}
+			}
+		}
+
+	} else {
+
+		logenc.Replication("./testsave/" + fileName)
+		logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
+		fmt.Println("Merge", fileName)
+		logenc.DeleteOldsFiles("./testsave/", fileName, "")
+	}
+	/*
+			//check file signature
+			//find file3true and md5true
+			//last3file check last3md5file
+			//if true =>
+			if signature == true {
+
+			} else {
+				////chiil
+				//else
+				//delete file from repdata
+				//copy file from testsave
+				//delete file from testsave
+			}
+		} else {
+			signature = true
+		}
+
+
+*/
 
 //Disk Check
 type DiskStatus struct {
