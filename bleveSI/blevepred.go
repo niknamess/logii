@@ -22,7 +22,7 @@ func ProcFileBreve(fileN string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension
-	if logenc.CheckFileSum(file, "") == false {
+	if logenc.CheckFileSum(file, "", "") == false {
 		return
 	}
 
@@ -71,7 +71,7 @@ func ProcFileBreve(fileN string, file string) {
 	close(ch)
 	wg.Wait()
 	index.Close()
-	logenc.WriteFileSum(file, "")
+	logenc.WriteFileSum(file, "", "")
 }
 
 func ProcBleveSearchv1(fileN string, word string) []string {
@@ -116,7 +116,7 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileName + extension
-	if logenc.CheckFileSum(file, "") == false {
+	if logenc.CheckFileSum(file, "", "") == false {
 		return
 	}
 
@@ -184,14 +184,14 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 	}
 
 	wg.Wait()
-	logenc.WriteFileSum(file, "")
+	logenc.WriteFileSum(file, "", "")
 
 }
 
 //example Speed
 
 func ProcBleveScorch(fileN string, file string) {
-	if logenc.CheckFileSum(file, "") == false {
+	if logenc.CheckFileSum(file, "", "") == false {
 		return
 	}
 	var wg sync.WaitGroup
@@ -234,6 +234,6 @@ func ProcBleveScorch(fileN string, file string) {
 	close(ch)
 	wg.Wait()
 	index.Close()
-	logenc.WriteFileSum(file, "")
+	logenc.WriteFileSum(file, "", "")
 
 }

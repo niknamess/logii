@@ -32,7 +32,7 @@ func bleveIndex(fileN string) (bleve.Index, error) {
 }
 func ProcBleve(fileN string, file string) {
 	var count int = 0
-	if logenc.CheckFileSum(file, "") == false {
+	if logenc.CheckFileSum(file, "", "") == false {
 		return
 	}
 	var wg sync.WaitGroup
@@ -94,7 +94,7 @@ func ProcBleve(fileN string, file string) {
 	close(ch)
 	wg.Wait()
 	index.Close()
-	logenc.WriteFileSum(file, "")
+	logenc.WriteFileSum(file, "", "")
 }
 
 func ProcBleveSearchv2(fileN string, word string) []string {
@@ -119,7 +119,8 @@ func ProcBleveSearchv2(fileN string, word string) []string {
 		//	log.Println(id)
 		docs = append(docs, id)
 	}
-	//log.Println(docs)
+	log.Println(word)
+	log.Println(docs)
 	//fmt.Println(docs)
 	index.Close()
 	return docs

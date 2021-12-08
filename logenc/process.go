@@ -257,12 +257,12 @@ func ProcMapFileREZERV(file string) {
 	}
 }
 
-func CheckFileSum(file string, typeS string) bool {
+func CheckFileSum(file string, typeS string, path string) bool {
 	ind = true
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
 	hashFileName := "md5" + typeS
-	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(path+hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
@@ -281,7 +281,7 @@ func CheckFileSum(file string, typeS string) bool {
 	return ind
 }
 
-func WriteFileSum(file string, typeS string) {
+func WriteFileSum(file string, typeS string, path string) {
 
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
@@ -289,7 +289,7 @@ func WriteFileSum(file string, typeS string) {
 	//fmt.Println("Getwd")
 	fmt.Println(os.Getwd())
 	//fmt.Println("Getwd")
-	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(path+hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
 	defer f.Close()
 	scanner := bufio.NewScanner(f)

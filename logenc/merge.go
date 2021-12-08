@@ -219,7 +219,7 @@ func Merge(dirpath string, path string) {
 		log.Println(err)
 	}
 	defer original.Close()
-	if CheckFileSum(path, "rep") == false {
+	if CheckFileSum(path, "rep", "") == false {
 		return
 	} else {
 		RenameFile(dirpath, path, "old")
@@ -324,13 +324,13 @@ func Replication(path string) {
 	if ok {
 		//CreateDir(path)
 		CopyFile(dirpath, path, "", original)
-		WriteFileSum(dirpath+fileN, "rep")
+		WriteFileSum(dirpath+fileN, "rep", "")
 	} else {
 		for _, f := range files {
 			//fmt.Println(f.Name())
 			if f.Name() == fileN {
 				Merge(dirpath, path)
-				WriteFileSum(dirpath+fileN, "rep")
+				WriteFileSum(dirpath+fileN, "rep", "")
 
 				return
 			}
@@ -339,7 +339,7 @@ func Replication(path string) {
 	if !ok {
 		//CreateDir(path)
 		CopyFile(dirpath, path, "", original)
-		WriteFileSum(path, "rep")
+		WriteFileSum(path, "rep", "")
 	}
 
 }
