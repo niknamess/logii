@@ -45,6 +45,7 @@ func ProcWeb(dir1 string) {
 		time.Sleep(time.Second * 55)
 		util.DiskInfo("./repdata")
 	}()
+
 	go Loop("192.168.0.193", "10015")
 	go Loop("192.168.0.214", "10015")
 	go Loop("192.168.0.213", "10015")
@@ -90,6 +91,7 @@ func Loop(address string, port string) {
 		} else {
 			fmt.Println(missadr)
 			go reconect()
+			time.Sleep(time.Second * 10)
 			continue
 
 		}
@@ -97,9 +99,9 @@ func Loop(address string, port string) {
 	}
 }
 func reconect() {
-	for {
+	for range time.Tick(time.Second * 1) {
 		missadr = "nope"
-		time.Sleep(10 * time.Second) //time reconect
+		//time.Sleep(100 * time.Second) //time reconect
 	}
 
 }

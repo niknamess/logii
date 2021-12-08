@@ -219,15 +219,16 @@ func Merge(dirpath string, path string) {
 		log.Println(err)
 	}
 	defer original.Close()
-
-	if CheckFileSum(path, "rep") == true {
+	if CheckFileSum(path, "rep") == false {
+		return
+	} else {
 		RenameFile(dirpath, path, "old")
 		CopyFile(dirpath, path, "new", original)
 		OpenCreateFile(dirpath, path, "old", original)
 		fileNew, err := os.OpenFile(dirpath+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Open in Merge", err)
 		}
 		FC, _ := os.Open(dirpath + fileN + "new")
 		defer FC.Close()
@@ -317,13 +318,13 @@ func Replication(path string) {
 
 	ok, err := IsDirEmpty(dirpath)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("DirEmpty", err)
 
 	}
 	if ok {
 		//CreateDir(path)
 		CopyFile(dirpath, path, "", original)
-		WriteFileSum(path, "rep")
+		WriteFileSum(dirpath+fileN, "rep")
 	} else {
 		for _, f := range files {
 			//fmt.Println(f.Name())

@@ -78,26 +78,12 @@ func StructFile() string {
 }
 
 func ProcGenN() {
-	Example()
+	//Example()
 
 	filesFrom := string(util.GetOutboundIP()[len(util.GetOutboundIP())-3:])
 	//	last3  := string(s[len(s)-3:])
 	logenc.CreateDir("./genrlogs", "")
-	//line1 := "<loglist><log module_name=\"TMCS Monitor\" app_path=\"/usr/local/Lemz/tmcs/monitor/tmcs_monitor\" app_pid=\"4913\" thread_id=\"\" time=\"29052021000147040\"ulid=\"0001GB313BF4HPFYCDY3QTZ6A6\" type=\"3\" message=\"Состояние '[192.168.1.120] Cервер КС_RLI/КСВ Топаз' изменилось на 'Ошибка'\" ext_message=\"Context:  -- void tmcs::AbstractMonitor::onComponentStateChanged(QUuid); ../../../../src/libs/tmcs_plugin/src/AbstractMonitor.cpp:686\"/></loglist>"
-	/*
-		infof := func(info string) {
-			InfoLogger.Output(2, logenc.EncodeLine(info))
-		}
-		//warnof := func(info string) {
-		//	WarningLogger.Output(2, logenc.EncodeLine(info))
-		//}
-		erorof := func(info string) {
-			ErrorLogger.Output(2, logenc.EncodeLine(info))
-		}
-		//decode := func(info string) {
-		//	Logger.Output(2, (info))
-		//}
-	*/
+
 	for true {
 
 		LINE := StructFile()
@@ -109,34 +95,13 @@ func ProcGenN() {
 			log.Fatal(err)
 		}
 
-		//fileT, err := os.OpenFile("./test_/genrlogs./gen_logs_coded"+filesFrom+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		//if err != nil {
-		//	log.Fatal(err)
-		//}
-
 		InfoLogger := log.New(file, "", 0)
 
-		//ErrorLogger := log.New(file, "", 0)
-
-		//InfoLogger = log.New(fileT, "", 0)
-
-		//ErrorLogger = log.New(fileT, "", 0)
-
-		//fiT, err := fileT.Stat()
-		//if err != nil {
-
-		//}
-		//if fiT.Size() >= 20000 {
-		//	countFile++
-		//	fmt.Println(fiT.Size())
-		//	label = strconv.Itoa(countFile)
-
-		//}
 		fi, err := file.Stat()
 		if err != nil {
 
 		}
-		if fi.Size() >= 20000000 {
+		if fi.Size() >= 200000 {
 			countFile++
 			fmt.Println(fi.Size())
 			label = strconv.Itoa(countFile)
@@ -147,14 +112,10 @@ func ProcGenN() {
 			InfoLogger.Output(2, logenc.EncodeLine(info))
 		}
 
-		//erorof := func(info string) {
-		//	ErrorLogger.Output(2, logenc.EncodeLine(info))
-		//}
-
 		infof(LINE)
 
-		//erorof(line1)
-		//<-timer4.C
+		time.Sleep(time.Nanosecond * 1000000)
+
 		if countFile >= 10 {
 			return
 		}

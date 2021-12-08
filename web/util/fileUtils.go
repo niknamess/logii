@@ -187,7 +187,6 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 func GetFiles(address string, port string) error {
 	resp, err := http.Get("http://" + address + ":" + port + "/vfs/data/")
 	if err != nil {
-		log.Println("GetFiles1", err)
 
 		return err
 		//log.Fatal(err)
@@ -199,8 +198,8 @@ func GetFiles(address string, port string) error {
 
 		fileURL, err := url.Parse(fullURLFile)
 		if err != nil {
-			log.Println("GetFiles2", err)
-			log.Fatal(err)
+
+			log.Fatal("Parse", err)
 		}
 		path := fileURL.Path
 		segments := strings.Split(path, "/")
@@ -209,7 +208,7 @@ func GetFiles(address string, port string) error {
 		func() { // lambda for defer file.Close()
 			file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 			if err != nil {
-				log.Println("GetFiles3", err)
+
 				log.Fatal(err)
 				//file.Close()
 				//return
@@ -226,7 +225,7 @@ func GetFiles(address string, port string) error {
 			// Put content on file
 			resp, err := client.Get(fullURLFile)
 			if err != nil {
-				log.Println("GetFiles4", err)
+
 				logenc.DeleteOldsFiles("./testsave/", fileName, "")
 				return
 				//log.Fatal(err)
@@ -235,11 +234,14 @@ func GetFiles(address string, port string) error {
 
 			_, err = io.Copy(file, resp.Body)
 			if err != nil {
-				log.Println("GetFiles5", err)
-				log.Println(err)
+
+				log.Println("Copy", err)
 			}
+			//logenc.WriteFileSum("./genrlogs./"+fileName, "check1")
 			logenc.Replication("./testsave/" + fileName)
+			logenc.WriteFileSum("./testsave/"+fileName, "rep")
 			fmt.Println("Merge", fileName)
+			//logenc.WriteFileSum("./repdata/"+fileName, "check2")
 			logenc.DeleteOldsFiles("./testsave/", fileName, "")
 		}()
 	}

@@ -68,3 +68,13 @@ func TestReplication(t *testing.T) {
 		})
 	}
 }
+
+func ATestMerge(t *testing.T) {
+	type args struct {
+		dirpath string
+		path    string
+	}
+
+	Merge("./testmerge/", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193")
+
+}
