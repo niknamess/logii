@@ -237,12 +237,37 @@ func GetFiles(address string, port string) error {
 
 				log.Println("Copy", err)
 			}
-			//logenc.WriteFileSum("./genrlogs./"+fileName, "check1")
-			logenc.Replication("./testsave/" + fileName)
-			logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
-			fmt.Println("Merge", fileName)
-			//logenc.WriteFileSum("./repdata/"+fileName, "check2")
-			logenc.DeleteOldsFiles("./testsave/", fileName, "")
+			contain := strings.Contains(fileName, "md5")
+			if contain == true {
+				filemd, err := os.OpenFile("./"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+				if err != nil {
+
+					log.Fatal(err)
+					//file.Close()
+					//return
+				}
+				if logenc.CheckFileSum("./testsave/"+fileName, "rep", "") == false {
+
+				} else {
+					_, err = io.Copy(filemd, file)
+					if err != nil {
+
+						log.Println("Copymd5", err)
+					}
+					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
+				}
+				defer filemd.Close()
+				//log.Fatal("Copymd5")
+				//logenc.CopyFile("./","./testsave/" + fileName)
+				logenc.DeleteOldsFiles("./testsave/", fileName, "")
+
+			} else {
+
+				logenc.Replication("./testsave/" + fileName)
+				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
+				fmt.Println("Merge", fileName)
+				logenc.DeleteOldsFiles("./testsave/", fileName, "")
+			}
 		}()
 	}
 	return nil
