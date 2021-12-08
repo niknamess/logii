@@ -47,8 +47,8 @@ func ProcWeb(dir1 string) {
 	}()
 
 	go Loop("192.168.0.193", "10015")
-	go Loop("192.168.0.214", "10015")
-	go Loop("192.168.0.213", "10015")
+	//go Loop("192.168.0.214", "10015")
+	//go Loop("192.168.0.213", "10015")
 
 	router := mux.NewRouter()
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler)).Methods("GET")

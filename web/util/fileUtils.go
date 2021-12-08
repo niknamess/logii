@@ -30,6 +30,7 @@ var (
 	// subsequent indexing attempts in cron trigger
 	indexMap = make(map[string]bool)
 	//SearchMap map[string]string
+	signature bool = false
 )
 
 type FileStruct struct {
@@ -185,6 +186,7 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 }
 
 func GetFiles(address string, port string) error {
+	//var signature bool = false
 	resp, err := http.Get("http://" + address + ":" + port + "/vfs/data/")
 	if err != nil {
 
@@ -231,43 +233,46 @@ func GetFiles(address string, port string) error {
 				//log.Fatal(err)
 			}
 			defer resp.Body.Close()
-
-			_, err = io.Copy(file, resp.Body)
-			if err != nil {
-
-				log.Println("Copy", err)
-			}
 			contain := strings.Contains(fileName, "md5")
-			if contain == true {
-				filemd, err := os.OpenFile("./"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+			if contain == true && logenc.CheckFileSum("./testsave/"+fileName, "rep", "") != false {
+				signature = true
+
+				fileS, _ := os.OpenFile("./"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+
+				defer fileS.Close()
+				_, err = io.Copy(fileS, resp.Body)
 				if err != nil {
 
-					log.Fatal(err)
-					//file.Close()
-					//return
+					log.Println("Copy", err)
 				}
-				if logenc.CheckFileSum("./testsave/"+fileName, "rep", "") == false {
-
-				} else {
-					_, err = io.Copy(filemd, file)
-					if err != nil {
-
-						log.Println("Copymd5", err)
-					}
-					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
-				}
-				defer filemd.Close()
-				//log.Fatal("Copymd5")
-				//logenc.CopyFile("./","./testsave/" + fileName)
-				logenc.DeleteOldsFiles("./testsave/", fileName, "")
+				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 
 			} else {
+				_, err = io.Copy(file, resp.Body)
+				if err != nil {
 
+					log.Println("Copy", err)
+				}
+			}
+
+			if signature == true && contain == false {
+				last3 := fileName[len(fileName)-3:]
+				if logenc.CheckFileSum("./testsave/"+fileName, last3, "") == true {
+					logenc.DeleteOldsFiles("./repdata", fileName, "")
+					logenc.Replication("./testsave" + fileName)
+					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
+					fmt.Println("Merge", fileName)
+					logenc.DeleteOldsFiles("./testsave/", fileName, "")
+
+				}
+
+			} else if signature == false {
 				logenc.Replication("./testsave/" + fileName)
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 				fmt.Println("Merge", fileName)
 				logenc.DeleteOldsFiles("./testsave/", fileName, "")
 			}
+
 		}()
 	}
 	return nil
