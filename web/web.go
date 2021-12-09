@@ -47,8 +47,11 @@ func ProcWeb(dir1 string) {
 	}()
 
 	go Loop("192.168.0.193", "10015")
-	//go Loop("192.168.0.214", "10015")
-	//go Loop("192.168.0.213", "10015")
+	time.Sleep(time.Second * 10)
+	go Loop("192.168.0.214", "10015")
+	time.Sleep(time.Second * 10)
+	go Loop("192.168.0.213", "10015")
+	//time.Sleep(time.Second * 10)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler)).Methods("GET")
@@ -60,7 +63,8 @@ func ProcWeb(dir1 string) {
 	})
 
 	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", *port), Handler: router}
-	panic(server.ListenAndServe())
+	//panic(server.ListenAndServe())
+	fmt.Println(server.ListenAndServe())
 }
 
 // Use - Stacking middlewares
@@ -73,7 +77,7 @@ func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) h
 
 func Loop(address string, port string) {
 
-	for {
+	for range time.Tick(time.Second * 3) {
 		if missadr != address {
 			err := util.GetFiles(address, port)
 			if err != nil {

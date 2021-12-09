@@ -246,8 +246,9 @@ func GetFiles(address string, port string) error {
 					log.Println("Copy", err)
 				}
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
+				logenc.DeleteOldsFiles("./testsave/", fileName, "")
 
-			} else {
+			} else if contain == false {
 				_, err = io.Copy(file, resp.Body)
 				if err != nil {
 
@@ -258,15 +259,20 @@ func GetFiles(address string, port string) error {
 			if signature == true && contain == false {
 				last3 := fileName[len(fileName)-3:]
 				if logenc.CheckFileSum("./testsave/"+fileName, last3, "") == true {
-					logenc.DeleteOldsFiles("./repdata", fileName, "")
-					logenc.Replication("./testsave" + fileName)
+					logenc.DeleteOldsFiles("./repdata/", fileName, "")
+					logenc.Replication("./testsave/" + fileName)
 					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 					fmt.Println("Merge", fileName)
 					logenc.DeleteOldsFiles("./testsave/", fileName, "")
 
+				} else {
+					logenc.Replication("./testsave/" + fileName)
+					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
+					fmt.Println("Merge", fileName)
+					logenc.DeleteOldsFiles("./testsave/", fileName, "")
 				}
 
-			} else if signature == false {
+			} else if signature == false && contain == false {
 				logenc.Replication("./testsave/" + fileName)
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 				fmt.Println("Merge", fileName)
@@ -277,77 +283,6 @@ func GetFiles(address string, port string) error {
 	}
 	return nil
 }
-
-/*
-	contain := strings.Contains(fileName, "md5")
-	if contain == true {
-		signature = true
-
-	} else if contain == false && signature == true {
-		last3 := fileName[len(fileName)-3:]
-		files, err := ioutil.ReadDir("./testsave")
-		if err != nil {
-
-			log.Fatal(err)
-		}
-
-		for _, f := range files {
-			if f.Name() == "md5"+last3 {
-				if logenc.CheckFileSum("./testsave/"+fileName, last3, "./testsave/") == false {
-
-					logenc.Replication("./testsave/" + fileName)
-					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
-					fmt.Println("Merge", fileName)
-					logenc.DeleteOldsFiles("./testsave/", fileName, "")
-
-				} else {
-
-					logenc.DeleteOldsFiles("./repdata/", fileName, "")
-					fileS, err := os.OpenFile("./repdata/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-					if err != nil {
-
-						log.Fatal(err)
-						//file.Close()
-						//return
-					}
-					defer fileS.Close()
-					_, err = io.Copy(fileS, file)
-					if err != nil {
-
-						log.Println("Copy", err)
-					}
-
-				}
-			}
-		}
-
-	} else {
-
-		logenc.Replication("./testsave/" + fileName)
-		logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
-		fmt.Println("Merge", fileName)
-		logenc.DeleteOldsFiles("./testsave/", fileName, "")
-	}
-	/*
-			//check file signature
-			//find file3true and md5true
-			//last3file check last3md5file
-			//if true =>
-			if signature == true {
-
-			} else {
-				////chiil
-				//else
-				//delete file from repdata
-				//copy file from testsave
-				//delete file from testsave
-			}
-		} else {
-			signature = true
-		}
-
-
-*/
 
 //Disk Check
 type DiskStatus struct {
