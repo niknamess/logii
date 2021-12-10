@@ -24,9 +24,13 @@ var (
 	cron           = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
 	cert           = kingpin.Flag("Test", "Test").Short('c').Default("").String()
 	missadr string = "nope"
+	limit   string
+	ipaddr  []string
 )
 
 func ProcWeb(dir1 string) {
+
+	//ipaddr := make([]string, 0, 5)
 	generate_logs.Remove("./testsave/", "gen_logs_coded")
 
 	//util.GetFiles("localhost", "10015")
@@ -45,12 +49,16 @@ func ProcWeb(dir1 string) {
 		time.Sleep(time.Second * 55)
 		util.DiskInfo("./repdata")
 	}()
+	//for loop[ip]
+	EnterIp()
 
-	go Loop("192.168.0.193", "10015")
+	//fmt.Scanln(limit)
+
+	go Loop("localhost", "10015")
 	time.Sleep(time.Second * 10)
-	go Loop("192.168.0.214", "10015")
-	time.Sleep(time.Second * 10)
-	go Loop("192.168.0.213", "10015")
+	//go Loop("192.168.0.214", "10015")
+	//time.Sleep(time.Second * 10)
+	//go Loop("192.168.0.213", "10015")
 	//time.Sleep(time.Second * 10)
 
 	router := mux.NewRouter()
@@ -108,4 +116,23 @@ func reconect() {
 		//time.Sleep(100 * time.Second) //time reconect
 	}
 
+}
+
+func EnterIp() {
+	fmt.Print("Enter ip to connect or enter \"stop\": ")
+	for true {
+		fmt.Scanln(&limit)
+		//fmt.Print(&limit)
+
+		if limit == "stop" {
+			break
+		}
+		ipaddr = append(ipaddr, limit)
+	}
+	fmt.Print(ipaddr)
+	//fmt.Scanln(limit)
+	for i := 0; i < len(ipaddr); i++ {
+		go Loop(ipaddr[i], "10015")
+		time.Sleep(time.Second * 10)
+	}
 }
