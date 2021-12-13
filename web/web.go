@@ -2,11 +2,13 @@ package web
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
 
 	"gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
+	"gopkg.in/yaml.v2"
 
 	"github.com/alecthomas/kingpin"
 	"github.com/gorilla/mux"
@@ -27,6 +29,15 @@ var (
 	limit   string
 	ipaddr  []string
 )
+
+type Record struct {
+	PORT string   `yaml:"port"`
+	IP   []string `yaml:"ip"`
+}
+
+type Config struct {
+	Record Record `yaml:"Settings"`
+}
 
 func ProcWeb(dir1 string) {
 
@@ -128,6 +139,21 @@ func EnterIp() {
 			break
 		}
 		ipaddr = append(ipaddr, limit)
+		config := Config{Record: Record{PORT: "10015", IP: ipaddr}}
+		data, err := yaml.Marshal(&config)
+
+		if err != nil {
+
+			log.Fatal(err)
+		}
+
+		err2 := ioutil.WriteFile("config.yaml", data, 0666)
+
+		if err2 != nil {
+
+			log.Fatal(err2)
+		}
+		fmt.Println("Written")
 	}
 	fmt.Print(ipaddr)
 	//fmt.Scanln(limit)

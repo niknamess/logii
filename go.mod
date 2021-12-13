@@ -9,6 +9,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a // indirect
 	github.com/blevesearch/bleve v1.0.14
 	github.com/blevesearch/mmap-go v1.0.3 // indirect
+	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/hpcloud/tail v1.0.0
@@ -16,7 +17,7 @@ require (
 	github.com/prometheus/client_golang v1.11.0
 	github.com/shurcooL/httpfs v0.0.0-20190707220628-8d4bc4ba7749
 	github.com/spf13/afero v1.6.0
-	github.com/stretchr/testify v1.6.1 // indirect
+	github.com/spf13/viper v1.10.0
 	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8
-	golang.org/x/sys v0.0.0-20211117180635-dee7805ff2e1 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
