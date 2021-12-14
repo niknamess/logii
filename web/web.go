@@ -5,13 +5,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"time"
-
-	"gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
-	"gopkg.in/yaml.v2"
 
 	"github.com/alecthomas/kingpin"
 	"github.com/gorilla/mux"
+	"github.com/pelletier/go-toml"
+	"github.com/spf13/viper"
+	"gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/util"
@@ -30,13 +31,15 @@ var (
 	ipaddr  []string
 )
 
-type Record struct {
-	PORT string   `yaml:"port"`
-	IP   []string `yaml:"ip"`
+type DatabaseConfig struct {
+	Host  []string `mapstructure:"hostname"`
+	Hostt []string `toml:"hostname"`
+	Port  string
 }
 
 type Config struct {
-	Record Record `yaml:"Settings"`
+	Db  DatabaseConfig `mapstructure:"database"`
+	Ddd DatabaseConfig `toml:"database"`
 }
 
 func ProcWeb(dir1 string) {
@@ -130,35 +133,54 @@ func reconect() {
 }
 
 func EnterIp() {
-	fmt.Print("Enter ip to connect or enter \"stop\": ")
 	for true {
 		fmt.Scanln(&limit)
+
 		//fmt.Print(&limit)
 
 		if limit == "stop" {
 			break
+		} else if util.CheckIPAddress(limit) == true {
+			ipaddr = append(ipaddr, limit)
+			config := Config{Ddd: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
+			data, err := toml.Marshal(&config)
+
+			if err != nil {
+
+				log.Fatal(err)
+			}
+
+			err2 := ioutil.WriteFile("config.toml", data, 0666)
+
+			if err2 != nil {
+
+				log.Fatal(err2)
+			}
+			fmt.Println("Written")
 		}
-		ipaddr = append(ipaddr, limit)
-		config := Config{Record: Record{PORT: "10015", IP: ipaddr}}
-		data, err := yaml.Marshal(&config)
-
-		if err != nil {
-
-			log.Fatal(err)
-		}
-
-		err2 := ioutil.WriteFile("config.yaml", data, 0666)
-
-		if err2 != nil {
-
-			log.Fatal(err2)
-		}
-		fmt.Println("Written")
 	}
-	fmt.Print(ipaddr)
-	//fmt.Scanln(limit)
-	for i := 0; i < len(ipaddr); i++ {
-		go Loop(ipaddr[i], "10015")
+	CheckConfig()
+}
+func CheckConfig() {
+	v := viper.New()
+	v.SetConfigName("config")
+	v.AddConfigPath(".")
+	if err := v.ReadInConfig(); err != nil {
+		fmt.Println("couldn't load config: %s", err)
+		os.Exit(1)
+	}
+	var c Config
+	if err := v.Unmarshal(&c); err != nil {
+		fmt.Printf("couldn't read config: %s", err)
+	}
+	//fmt.Println("host=%s port=%s", c.Db.Host, c.Db.Port)
+	//fmt.Println("output=%s\n", c.Out.File)
+	//fmt.Println("%#v", c)
+	Ip := c.Db.Host
+	Port := c.Db.Port
+	//fmt.Println("host=%s port=%s", Ip, Port)
+	for i := 0; i < len(Ip); i++ {
+		go Loop(Ip[i], Port)
 		time.Sleep(time.Second * 10)
 	}
 }

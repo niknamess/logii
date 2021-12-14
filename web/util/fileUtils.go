@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/big"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -368,6 +369,19 @@ func DeleteFile90(dir string) {
 			logenc.DeleteOldsFiles(dir, info.Name(), "")
 
 		}
+	}
+
+}
+func CheckIPAddress(ip string) bool {
+	if ip == "localhost" {
+		fmt.Printf("IP Address: %s - Valid\n", ip)
+		return true
+	} else if net.ParseIP(ip) == nil {
+		fmt.Printf("IP Address: %s - Invalid\n", ip)
+		return false
+	} else {
+		fmt.Printf("IP Address: %s - Valid\n", ip)
+		return true
 	}
 
 }
