@@ -71,7 +71,7 @@ func ProcWeb(dir1 string) {
 	CheckConfig()
 	//fmt.Scanln(limit)
 
-	go Loop("localhost", "10015")
+	go CheckFiles("localhost", "10015")
 	time.Sleep(time.Second * 10)
 
 	router := mux.NewRouter()
@@ -96,7 +96,7 @@ func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) h
 	return handler
 }
 
-func Loop(address string, port string) {
+func CheckFiles(address string, port string) {
 
 	for range time.Tick(time.Second * 3) {
 		if len(missadr) == 0 {
@@ -149,6 +149,7 @@ func reconect(address string) {
 }
 
 func EnterIp() {
+	var data []byte
 	for true {
 		fmt.Print("Enter IP:  ")
 		fmt.Scanln(&limit)
@@ -157,23 +158,24 @@ func EnterIp() {
 			break
 		} else if util.CheckIPAddress(limit) == true {
 			ipaddr = append(ipaddr, limit)
+			ipaddr = removeDuplicateStr(ipaddr)
 			config := Config{DataBase: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
-			data, err := toml.Marshal(&config)
-
-			if err != nil {
-
-				log.Fatal(err)
-			}
-
-			err2 := ioutil.WriteFile("config.toml", data, 0666)
-
-			if err2 != nil {
-
-				log.Fatal(err2)
-			}
-			fmt.Println("Written")
+			data, _ = toml.Marshal(&config)
 		}
 	}
+	//TODO
+	file, err2 := os.OpenFile("config.toml", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+	file.Write(data)
+	err3 := ioutil.WriteFile("config.toml", data, 0666)
+
+	if err3 != nil {
+
+		log.Fatal(err2)
+	}
+	fmt.Println("Written")
 	CheckConfig()
 }
 func CheckConfig() {
@@ -190,8 +192,23 @@ func CheckConfig() {
 	}
 	Ip := c.Db.Host
 	Port := c.Db.Port
+	Ip = removeDuplicateStr(Ip)
+	fmt.Println("Dusdfk", Ip)
 	for i := 0; i < len(Ip); i++ {
-		go Loop(Ip[i], Port)
+		//TODO
+		go CheckFiles(Ip[i], Port)
 		time.Sleep(time.Second * 2)
 	}
+}
+
+func removeDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
 }
