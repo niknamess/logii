@@ -287,7 +287,7 @@ func WriteFileSum(file string, typeS string, path string) {
 	fileN := filepath.Base(file)
 	hashFileName := "md5" + typeS
 	//fmt.Println("Getwd")
-	fmt.Println(os.Getwd())
+	//fmt.Println(os.Getwd())
 	//fmt.Println("Getwd")
 	f, err := os.OpenFile(path+hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
