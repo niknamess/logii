@@ -68,7 +68,13 @@ func ProcWeb(dir1 string) {
 	}()
 
 	EnterIp()
-	CheckConfig()
+	Ip, Port := CheckConfig()
+	for i := 0; i < len(Ip); i++ {
+		//TODO
+		go CheckFiles(Ip[i], Port)
+		time.Sleep(time.Second * 2)
+	}
+
 	//fmt.Scanln(limit)
 
 	go CheckFiles("localhost", "10015")
@@ -134,16 +140,13 @@ func CheckFiles(address string, port string) {
 func reconect(address string) {
 	defer wg.Done()
 
-	//for range time.Tick(time.Second * 3) {
 	for i := range missadr {
 		if missadr[i] == address {
 			copy(missadr[i:], missadr[i+1:]) // Shift a[i+1:] left one index.
 			missadr[len(missadr)-1] = ""     // Erase last element (write zero value).
 			missadr = missadr[:len(missadr)-1]
 		}
-		//	}
 
-		//time.Sleep(100 * time.Second) //time reconect
 	}
 
 }
@@ -158,27 +161,25 @@ func EnterIp() {
 			break
 		} else if util.CheckIPAddress(limit) == true {
 			ipaddr = append(ipaddr, limit)
+			limitSlice, _ := CheckConfig()
+			ipaddr = append(ipaddr, limitSlice...)
 			ipaddr = removeDuplicateStr(ipaddr)
 			config := Config{DataBase: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
 			data, _ = toml.Marshal(&config)
 		}
 	}
 	//TODO
-	file, err2 := os.OpenFile("config.toml", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err2 != nil {
-		log.Fatal(err2)
-	}
-	file.Write(data)
 	err3 := ioutil.WriteFile("config.toml", data, 0666)
 
 	if err3 != nil {
 
-		log.Fatal(err2)
+		log.Fatal(err3)
 	}
 	fmt.Println("Written")
-	CheckConfig()
+
 }
-func CheckConfig() {
+
+func CheckConfig() ([]string, string) {
 	v := viper.New()
 	v.SetConfigName("config")
 	v.AddConfigPath(".")
@@ -193,12 +194,8 @@ func CheckConfig() {
 	Ip := c.Db.Host
 	Port := c.Db.Port
 	Ip = removeDuplicateStr(Ip)
-	fmt.Println("Dusdfk", Ip)
-	for i := 0; i < len(Ip); i++ {
-		//TODO
-		go CheckFiles(Ip[i], Port)
-		time.Sleep(time.Second * 2)
-	}
+
+	return Ip, Port
 }
 
 func removeDuplicateStr(strSlice []string) []string {
