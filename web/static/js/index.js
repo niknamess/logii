@@ -150,6 +150,14 @@ function initWS(file) {
                 "</table>";
             container.append(str);
             // container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
+        } else if (str.indexOf("DEBUG") == 0) {
+            str = str.replace("DEBUG", "");
+            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#00ff00\" ><tr >" +
+                str.replace(/,\n/g, "<tr >")
+                .replace(/,/g, "<td width=\"550\" height=\"100\">")
+                .replace(/<tr>$/, "") +
+                "</table>";
+            container.append(str);
         } else {
             container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
 

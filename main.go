@@ -1,22 +1,28 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 
-	"sort"
-
+	"github.com/SCU-SJL/menuscreen"
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
+var content string
+
 func main() {
+	//content := "nope"
 	flagFile := flag.String("f", "", "parse log file")
 	//flagFile := kingpin.Arg("f", "Directory path(s) to look for files").Default("./logtest/test/22-06-2021").String()
 	flagDir := flag.String("d", "", "parse dir")
-	flagSearch := flag.String("s", "", "search")
+	//flagSearch := flag.String("s", "", "search")
 	flagServ := flag.String("z", "", "server")
 	flagWrite := flag.String("w", "", "write_logs")
 	flagGen := flag.String("g", "", "generate_logs")
@@ -24,6 +30,7 @@ func main() {
 	flagProm := flag.String("m", "", "prometheus")
 	flagVFC := flag.String("v", "", "vfc")
 	flagR := flag.String("r", "", "remove")
+	flagMenu := flag.String("x", "", "menu")
 	//flagInfo := flag.String("i", "", "info")
 	//flagDD := flag.String("o", "", "dd")
 
@@ -58,6 +65,7 @@ func main() {
 	}
 
 	if len(*flagWeb) > 0 {
+		print(*flagWeb)
 		web.ProcWeb(*flagWeb)
 
 	}
@@ -75,45 +83,89 @@ func main() {
 		generator.Example()
 	}
 
-	if len(*flagSearch) > 0 {
-		var text string
-		var limit int
+	if len(*flagMenu) > 0 {
 
-		var MassStr []logenc.Data
+		Menu()
 
-		fmt.Print("Enter limit: ")
-		fmt.Scanln(&limit)
-		fmt.Print("Enter text: ")
-		fmt.Scanln(&text)
+	}
 
-		chRes := make(chan logenc.Data, 100)
-		go func() {
-			scan := &logenc.Scan{}
-			scan.Find = *flagSearch
-			scan.Text = text
-			scan.ChRes = chRes
-			scan.LimitResLines = limit
-			scan.Search()
-			close(scan.ChRes)
-		}()
+}
 
-	ext:
-		for i := 0; i < limit; i++ {
+func Menu() {
+	menu, err := menuscreen.NewMenuScreen()
+	if err != nil {
+		panic(err)
+	}
+	defer menu.Fini()
+	menu.SetTitle("Menu").
+		SetLine(0, "Decode file with logs").
+		SetLine(1, "Decode dir with file logs").
+		SetLine(2, "Write decoded logs").
+		SetLine(3, "Gen logs").
+		SetLine(4, "Run Web").
+		SetLine(5, "Run Ptometheus").
+		SetLine(6, "running VFC").
+		SetLine(7, "clear genlogs").
+		SetLine(8, "Search word or collocation").
+		Start()
+	idx, ln, _ := menu.ChosenLine()
 
-			select {
-
-			case data, ok := <-chRes:
-				if !ok {
-					break ext
-				}
-				MassStr = append(MassStr, data)
-
-			}
+	fmt.Printf("you've chosen %d line, content is: %s\n", idx, ln)
+	switch choose := idx; choose {
+	case 0:
+		files, err := ioutil.ReadDir("./repdata/")
+		if err != nil {
+			log.Fatal(err)
 		}
-		sort.Slice(MassStr, func(i, j int) (less bool) {
-			return MassStr[i].ID < MassStr[j].ID
-		})
-		fmt.Printf("%+v\n", MassStr)
-		return
+		//menu, err := menuscreen.NewMenuScreen()
+		//if err != nil {
+		//	panic(err)
+		//}
+		//defer menu.Fini()
+		//menu.SetTitle("Menu").
+
+		for i, file := range files {
+			//	menu.SetTitle("").
+			//		SetLine(i, "Decode file with logs").
+			fmt.Println(i, file)
+
+		}
+		//Start()
+		//idx, ln, _ := menu.ChosenLine()
+		fmt.Print("Enter content for ProcFile:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.ProcFile(text)
+	case 1:
+		//fmt.Print("Enter content for flag ProcDir:")
+		//reader := bufio.NewReader(os.Stdin)
+		//text, _ := reader.ReadString('\n')
+		logenc.ProcDir("./repdata/")
+	case 2:
+		fmt.Print("Enter content for flag:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.ProcWrite(text)
+	case 3:
+		generator.ProcGenN()
+	case 4:
+		fmt.Print("Enter port for run Web:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		web.ProcWeb(text)
+	case 5:
+		fmt.Print("Enter content for Prometheus:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.Promrun(text)
+	case 6:
+		controllers.VFC("10015")
+	case 7:
+		generator.Example()
+	case 8:
+		fmt.Print("Enter content for Search:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.SearchT(text)
 	}
 }

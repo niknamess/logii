@@ -21,6 +21,10 @@ dev2: tst build
 vfc: tst build
 	@$(MEPATH)/logi2 -v 10015
 
+.PHONY: menu
+menu: tst build
+	@$(MEPATH)/logi2 -x 15000	
+
 .PHONY: gen
 gen: tst build
 	@$(MEPATH)/logi2 -g Foxtrot Uniform Charlie Kilo

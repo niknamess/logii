@@ -23,8 +23,10 @@ var (
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./view").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/logi2/repdata/").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/tmcs-log-agent-storage/").ExistingFilesOrDirs()
-	dir     = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
-	port    = kingpin.Flag("port", "Port number to host the server").Short('p').Default("15000").Int()
+	dir  = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
+	port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
+	//port2 = kingpin.Flag("port", "Port number to host the server").Short('p').Default("15000").Int()
+
 	cron    = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
 	cert    = kingpin.Flag("Test", "Test").Short('c').Default("").String()
 	missadr []string

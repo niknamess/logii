@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"sync"
 
@@ -127,8 +128,10 @@ func ProcWrite(dir string) {
 }
 
 func procFileWrite(file string) {
+	CreateDir("./writedeclog", "")
+	fileN := filepath.Base(file)
 
-	filew, err1 := os.OpenFile("./logs/r/mainlogs1.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	filew, err1 := os.OpenFile("./writedeclog/"+fileN+".log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err1 != nil {
 		log.Fatal(err1)
 	}
@@ -393,4 +396,46 @@ func GetLinks(body io.Reader) []string {
 
 		}
 	}
+}
+
+func SearchT(dir string) {
+	var text string
+	var limit int
+
+	var MassStr []Data
+
+	fmt.Print("Enter limit: ")
+	fmt.Scanln(&limit)
+	fmt.Print("Enter text: ")
+	fmt.Scanln(&text)
+
+	chRes := make(chan Data, 100)
+	go func() {
+		scan := &Scan{}
+		scan.Find = dir
+		scan.Text = text
+		scan.ChRes = chRes
+		scan.LimitResLines = limit
+		scan.Search()
+		close(scan.ChRes)
+	}()
+
+ext:
+	for i := 0; i < limit; i++ {
+
+		select {
+
+		case data, ok := <-chRes:
+			if !ok {
+				break ext
+			}
+			MassStr = append(MassStr, data)
+
+		}
+	}
+	sort.Slice(MassStr, func(i, j int) (less bool) {
+		return MassStr[i].ID < MassStr[j].ID
+	})
+	fmt.Printf("%+v\n", MassStr)
+	return
 }
