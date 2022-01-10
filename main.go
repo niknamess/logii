@@ -9,13 +9,23 @@ import (
 	"os"
 
 	"github.com/SCU-SJL/menuscreen"
+	tea "github.com/charmbracelet/bubbletea"
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
+	"gitlab.topaz-atcs.com/tmcs/logi2/terminal"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
 var content string
+
+// playType indicates how to play a gauge.
+type playType int
+
+const (
+	playTypePercent playType = iota
+	playTypeAbsolute
+)
 
 func main() {
 	//content := "nope"
@@ -85,10 +95,18 @@ func main() {
 
 	if len(*flagMenu) > 0 {
 
-		Menu()
+		TerminalUi()
 
 	}
 
+}
+
+func TerminalUi() {
+	initialModel := terminal.Model{0, false, 100, 0, 0, false, false}
+	p := tea.NewProgram(initialModel)
+	if err := p.Start(); err != nil {
+		fmt.Println("could not start program:", err)
+	}
 }
 
 func Menu() {

@@ -17,7 +17,7 @@ var (
 )
 
 // RunHTTP run http api
-func VFC(port string) {
+func VFC(port string) string {
 	//strconv.Itoa(port)
 	addr := ":" + port
 
@@ -46,7 +46,7 @@ func VFC(port string) {
 		}
 	}
 
-	fmt.Println("listen ok: ", addr)
+	//fmt.Println("listen ok: ", addr)
 
 	fsbase := afero.NewBasePathFs(afero.NewOsFs(), dir)
 	fsInput := afero.NewReadOnlyFs(fsbase)
@@ -58,7 +58,8 @@ func VFC(port string) {
 
 	fileserver := http.FileServer(fsRoot)
 	router.PathPrefix("/vfs/").Handler(http.StripPrefix("/vfs/", fileserver))
-	fmt.Println("running /vfs")
+	fmt.Println("running VFC" + " port: " + addr)
+	fmt.Println("Run new terminal for use service")
 
 	srv := &http.Server{
 		Handler:      router,
@@ -69,4 +70,5 @@ func VFC(port string) {
 	if err := srv.Serve(listener); err != nil {
 		fmt.Println("Http serve error", err)
 	}
+	return "running VFC" + " port: " + addr
 }

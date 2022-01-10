@@ -2,7 +2,6 @@ package generate_logs
 
 import (
 	"encoding/xml"
-	"fmt"
 	"log"
 	"math/rand"
 	"os"
@@ -77,7 +76,7 @@ func StructFile() string {
 	return LINE
 }
 
-func ProcGenN() {
+func ProcGenN() int {
 	//Example()
 
 	filesFrom := string(util.GetOutboundIP()[len(util.GetOutboundIP())-3:])
@@ -103,7 +102,7 @@ func ProcGenN() {
 		}
 		if fi.Size() >= 200000 {
 			countFile++
-			fmt.Println(fi.Size())
+			//fmt.Println(fi.Size())
 			logenc.WriteFileSum("./genrlogs./gen_logs_coded"+label+filesFrom, filesFrom, "./genrlogs./")
 			label = strconv.Itoa(countFile)
 
@@ -118,8 +117,11 @@ func ProcGenN() {
 		time.Sleep(time.Nanosecond * 1000000)
 
 		if countFile >= 10 {
-			return
+			//fmt.Println("done")
+			return 0
 		}
 
 	}
+	//fmt.Println("done")
+	return 1
 }

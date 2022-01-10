@@ -11,9 +11,10 @@ require (
 	github.com/blevesearch/bleve v1.0.14
 	github.com/blevesearch/mmap-go v1.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/charmbracelet/bubbles v0.9.0
+	github.com/charmbracelet/bubbletea v0.19.3
+	github.com/fogleman/ease v0.0.0-20170301025033-8da417bf1776
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
-	github.com/gdamore/tcell v1.4.0
-	github.com/gdamore/tcell/v2 v2.4.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
@@ -21,6 +22,9 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/hpcloud/tail v1.0.0
 	github.com/kr/pretty v0.2.0 // indirect
+	github.com/lucasb-eyer/go-colorful v1.2.0
+	github.com/muesli/reflow v0.3.0
+	github.com/muesli/termenv v0.9.0
 	github.com/oklog/ulid/v2 v2.0.2
 	github.com/pelletier/go-toml v1.9.4
 	github.com/prometheus/client_golang v1.11.0
@@ -30,7 +34,6 @@ require (
 	github.com/stretchr/testify v1.7.0 // indirect
 	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8
 	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
-	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.5 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
