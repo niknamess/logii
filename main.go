@@ -1,15 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
-	"io/ioutil"
-	"log"
-	"os"
 	"strconv"
 
-	"github.com/SCU-SJL/menuscreen"
 	tea "github.com/charmbracelet/bubbletea"
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
@@ -18,7 +13,10 @@ import (
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
-var content string
+var (
+	content string
+	timeout = terminal.Model{0, false, 0, 0, 0, false, true}
+)
 
 // playType indicates how to play a gauge.
 type playType int
@@ -96,100 +94,27 @@ func main() {
 
 	if len(*flagMenu) > 0 {
 
-		TerminalUi()
+		MainUi()
 
 	}
 
 }
 
-func TerminalUi() {
-	/* tty, err := os.Open("/dev/tty")
-	if err != nil {
-		fmt.Println("Could not open TTY:", err)
-		os.Exit(1)
-	} */
-
-	initialModel := terminal.Model{0, false, 100, 0, 0, false, false}
-	p := tea.NewProgram(initialModel)
-	model, err := p.StartReturningModel()
-	if err != nil {
-		fmt.Println("could not start program:", err)
+func MainUi() {
+	var test tea.Model
+	str, model := terminal.TerminalUi()
+	idx, _ := strconv.Atoi(str)
+	if model == timeout {
+		test = terminal.Screensaver()
+	} else if model != timeout {
+		terminal.SwitchMenu(idx)
 	}
-	fmt.Print(model)
-	model.Init()
-	str := model.View()
-	fmt.Println(str)
-	idx, err := strconv.Atoi(str)
-	switch choose := idx; choose {
-	case 0:
-		files, err := ioutil.ReadDir("./repdata/")
-		if err != nil {
-			log.Fatal(err)
-		}
-		//menu, err := menuscreen.NewMenuScreen()
-		//if err != nil {
-		//	panic(err)
-		//}
-		//defer menu.Fini()
-		//menu.SetTitle("Menu").
-
-		for i, file := range files {
-			//	menu.SetTitle("").
-			//		SetLine(i, "Decode file with logs").
-			fmt.Println(i, file)
-
-		}
-		//Start()
-		//idx, ln, _ := menu.ChosenLine()
-		fmt.Print("Enter content for ProcFile:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.ProcFile(text)
-	case 1:
-		//fmt.Print("Enter content for flag ProcDir:")
-		//reader := bufio.NewReader(os.Stdin)
-		//text, _ := reader.ReadString('\n')
-		logenc.ProcDir("./repdata/")
-	case 2:
-		fmt.Print("Enter content for flag:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.ProcWrite(text)
-	case 3:
-		generator.ProcGenN()
-	case 4:
-		fmt.Print("Enter port for run Web:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		web.ProcWeb(text)
-	case 5:
-		fmt.Print("Enter content for Prometheus:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.Promrun(text)
-	case 6:
-		controllers.VFC("10015")
-	case 7:
-		generator.Example()
-	case 8:
-		fmt.Print("Enter content for Search:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.SearchT(text)
+	if test != nil {
+		MainUi()
 	}
-	//model.Update()
-	//tty.Close()
-
-	/* reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Now type something: ")
-	text, err := reader.ReadString('\n')
-	if err != nil {
-		fmt.Println("Error reading input:", err)
-		os.Exit(1)
-	}
-	fmt.Printf("You entered: %s\n", strings.TrimSpace(text)) */
 }
 
+/*
 func Menu() {
 	menu, err := menuscreen.NewMenuScreen()
 	if err != nil {
@@ -268,3 +193,4 @@ func Menu() {
 		logenc.SearchT(text)
 	}
 }
+*/

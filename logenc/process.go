@@ -112,6 +112,7 @@ func ProcDir(dir string) {
 		})
 }
 
+//Write Decode logs (it is not working(may be))
 func ProcWrite(dir string) {
 
 	filepath.Walk(dir,

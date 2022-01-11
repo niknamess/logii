@@ -9,6 +9,8 @@ package terminal
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"math"
 	"os"
 	"strconv"
@@ -22,6 +24,8 @@ import (
 	"github.com/muesli/termenv"
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
+	"gitlab.topaz-atcs.com/tmcs/logi2/web"
+	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
 const (
@@ -183,7 +187,7 @@ func choicesView(m Model) string {
 
 	tpl := "Control panel\n\n"
 	tpl += "%s\n\n"
-	tpl += "Program quits in %s seconds\n\n"
+	tpl += "Program in wait mode %s seconds\n\n"
 	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("q, esc: quit")
 
 	choices := fmt.Sprintf(
@@ -209,37 +213,23 @@ func chosenView(m Model) string {
 	switch m.Choice {
 	case 0:
 		msg = fmt.Sprintf("Decode file with logs\n\n Run ProcDir in %s...", keyword("filename"))
-		//end = 0
 	case 1:
 		msg = fmt.Sprintf("Decode dir with file logs %s...", keyword("dirname"))
-		//end = 0
 	case 2:
 		msg = fmt.Sprintf("Write decoded logs\n\n Okay, cool\n Enter filename -  %s.", keyword("filename"))
-		//end = 0
 	case 3:
 		msg = fmt.Sprintf("GenLogs\n\nCool, we generate logs %s and %s...", keyword("size generate logs"), keyword("Count generate logs"))
-		//end = generator.ProcGenN()
+
 	case 4:
 		port := "15000"
-		//web.ProcWeb(text)
 		msg = fmt.Sprintf("Run Web\n\n Start web interface ...%s.", keyword(port))
-
-		//Добавить таймер и выход из bubbltea
-		//go web.ProcWeb(port)
 	case 5:
 		msg = fmt.Sprintf("Run Ptometheus\n\nOkay, cool, then we’ll need a start new service.")
 	case 6:
-		//controllers.VFC("10015")
-		//controllers.VFC("10015")
 		msg = fmt.Sprintf("running VFC\n\n We start VFC service  %s ...", keyword("OK"))
-		//controllers.VFC("10015")
-		//end = 0
 	case 7:
-		//generator.Example()
 		msg = fmt.Sprintf("Clear genlogs\n\n Please wait, we clear generated...")
 		generator.Example()
-		//end = 0
-
 	case 8:
 		fmt.Print("Enter content for Search:")
 		reader := bufio.NewReader(os.Stdin)
@@ -326,4 +316,87 @@ func colorFloatToHex(f float64) (s string) {
 		s = "0" + s
 	}
 	return
+}
+func SwitchMenu(idx int) {
+
+	switch choose := idx; choose {
+	case 0:
+		//Ui for chooose file
+		files, err := ioutil.ReadDir("./repdata/")
+		if err != nil {
+			log.Fatal(err)
+		}
+		for i, file := range files {
+			fmt.Println(i, file)
+		}
+		fmt.Print("Enter content for ProcFile:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.ProcFile(text)
+	case 1:
+		//??? animation reload
+		logenc.ProcDir("./repdata/")
+	case 2:
+		//UI for ProcWrite
+		//
+		fmt.Print("Enter content for flag:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.ProcWrite(text)
+	case 3:
+		//TODO: add size file and count file
+		//UI for gerator animation when logs generated
+		generator.ProcGenN()
+	case 4:
+		//UI for run web and main server
+		//add in config file
+		//????
+		fmt.Print("Enter port for run Web:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		web.ProcWeb(text)
+	case 5:
+		//????
+		fmt.Print("Enter content for Prometheus:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.Promrun(text)
+	case 6:
+		//UI for run VFC animation
+		controllers.VFC("10015")
+	case 7:
+		//UI for example animation
+		//add case for clear reddata
+		generator.Example()
+	case 8:
+		//add UI for search in terminal
+		fmt.Print("Enter content for Search:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.SearchT(text)
+	}
+}
+
+func TerminalUi() (string, tea.Model) {
+
+	initialModel := Model{0, false, 10, 0, 0, false, false}
+	p := tea.NewProgram(initialModel, tea.WithAltScreen())
+	model, err := p.StartReturningModel()
+	if err != nil {
+		fmt.Println("could not start program:", err)
+	}
+
+	str := model.View()
+
+	return str, model
+}
+
+func VfcUiTerm() {
+
+}
+func WebUiTerm() {
+
+}
+func ProcFileUiTerm() {
+
 }

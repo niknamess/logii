@@ -5,7 +5,6 @@ go 1.15
 require (
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/RoaringBitmap/roaring v0.9.4 // indirect
-	github.com/SCU-SJL/menuscreen v1.0.3
 	github.com/alecthomas/kingpin v2.2.6+incompatible
 	github.com/alecthomas/units v0.0.0-20210927113745-59d0afb8317a // indirect
 	github.com/blevesearch/bleve v1.0.14
@@ -13,6 +12,7 @@ require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/charmbracelet/bubbles v0.9.0
 	github.com/charmbracelet/bubbletea v0.19.3
+	github.com/charmbracelet/lipgloss v0.3.0
 	github.com/fogleman/ease v0.0.0-20170301025033-8da417bf1776
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -23,6 +23,7 @@ require (
 	github.com/hpcloud/tail v1.0.0
 	github.com/kr/pretty v0.2.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0
+	github.com/mattn/go-isatty v0.0.13
 	github.com/muesli/reflow v0.3.0
 	github.com/muesli/termenv v0.9.0
 	github.com/oklog/ulid/v2 v2.0.2
@@ -34,6 +35,8 @@ require (
 	github.com/stretchr/testify v1.7.0 // indirect
 	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8
 	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
+	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
+	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.5 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
