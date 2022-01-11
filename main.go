@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/SCU-SJL/menuscreen"
 	tea "github.com/charmbracelet/bubbletea"
@@ -102,11 +103,91 @@ func main() {
 }
 
 func TerminalUi() {
+	/* tty, err := os.Open("/dev/tty")
+	if err != nil {
+		fmt.Println("Could not open TTY:", err)
+		os.Exit(1)
+	} */
+
 	initialModel := terminal.Model{0, false, 100, 0, 0, false, false}
 	p := tea.NewProgram(initialModel)
-	if err := p.Start(); err != nil {
+	model, err := p.StartReturningModel()
+	if err != nil {
 		fmt.Println("could not start program:", err)
 	}
+	fmt.Print(model)
+	model.Init()
+	str := model.View()
+	fmt.Println(str)
+	idx, err := strconv.Atoi(str)
+	switch choose := idx; choose {
+	case 0:
+		files, err := ioutil.ReadDir("./repdata/")
+		if err != nil {
+			log.Fatal(err)
+		}
+		//menu, err := menuscreen.NewMenuScreen()
+		//if err != nil {
+		//	panic(err)
+		//}
+		//defer menu.Fini()
+		//menu.SetTitle("Menu").
+
+		for i, file := range files {
+			//	menu.SetTitle("").
+			//		SetLine(i, "Decode file with logs").
+			fmt.Println(i, file)
+
+		}
+		//Start()
+		//idx, ln, _ := menu.ChosenLine()
+		fmt.Print("Enter content for ProcFile:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.ProcFile(text)
+	case 1:
+		//fmt.Print("Enter content for flag ProcDir:")
+		//reader := bufio.NewReader(os.Stdin)
+		//text, _ := reader.ReadString('\n')
+		logenc.ProcDir("./repdata/")
+	case 2:
+		fmt.Print("Enter content for flag:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.ProcWrite(text)
+	case 3:
+		generator.ProcGenN()
+	case 4:
+		fmt.Print("Enter port for run Web:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		web.ProcWeb(text)
+	case 5:
+		fmt.Print("Enter content for Prometheus:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.Promrun(text)
+	case 6:
+		controllers.VFC("10015")
+	case 7:
+		generator.Example()
+	case 8:
+		fmt.Print("Enter content for Search:")
+		reader := bufio.NewReader(os.Stdin)
+		text, _ := reader.ReadString('\n')
+		logenc.SearchT(text)
+	}
+	//model.Update()
+	//tty.Close()
+
+	/* reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Now type something: ")
+	text, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("You entered: %s\n", strings.TrimSpace(text)) */
 }
 
 func Menu() {

@@ -22,8 +22,6 @@ import (
 	"github.com/muesli/termenv"
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
-	"gitlab.topaz-atcs.com/tmcs/logi2/web"
-	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
 const (
@@ -97,7 +95,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() string {
 	var s string
 	if m.Quitting {
-		return "\n  See you later!\n\n"
+		//return m, tea.Quit
+		str := strconv.Itoa(m.Choice)
+		return str
 	}
 	if !m.Chosen {
 		s = choicesView(m)
@@ -209,34 +209,36 @@ func chosenView(m Model) string {
 	switch m.Choice {
 	case 0:
 		msg = fmt.Sprintf("Decode file with logs\n\n Run ProcDir in %s...", keyword("filename"))
-		end = 0
+		//end = 0
 	case 1:
 		msg = fmt.Sprintf("Decode dir with file logs %s...", keyword("dirname"))
-		end = 0
+		//end = 0
 	case 2:
 		msg = fmt.Sprintf("Write decoded logs\n\n Okay, cool\n Enter filename -  %s.", keyword("filename"))
-		end = 0
+		//end = 0
 	case 3:
 		msg = fmt.Sprintf("GenLogs\n\nCool, we generate logs %s and %s...", keyword("size generate logs"), keyword("Count generate logs"))
-		end = generator.ProcGenN()
+		//end = generator.ProcGenN()
 	case 4:
 		port := "15000"
 		//web.ProcWeb(text)
-		msg = fmt.Sprintf("Run Web\n\n Start web interface ...%s.", keyword("text"))
-		web.ProcWeb(port)
+		msg = fmt.Sprintf("Run Web\n\n Start web interface ...%s.", keyword(port))
+
+		//Добавить таймер и выход из bubbltea
+		//go web.ProcWeb(port)
 	case 5:
 		msg = fmt.Sprintf("Run Ptometheus\n\nOkay, cool, then we’ll need a start new service.")
 	case 6:
 		//controllers.VFC("10015")
-		controllers.VFC("10015")
+		//controllers.VFC("10015")
 		msg = fmt.Sprintf("running VFC\n\n We start VFC service  %s ...", keyword("OK"))
 		//controllers.VFC("10015")
-		end = 0
+		//end = 0
 	case 7:
 		//generator.Example()
 		msg = fmt.Sprintf("Clear genlogs\n\n Please wait, we clear generated...")
 		generator.Example()
-		end = 0
+		//end = 0
 
 	case 8:
 		fmt.Print("Enter content for Search:")
@@ -250,7 +252,7 @@ func chosenView(m Model) string {
 	}
 
 	label := "Loading..."
-	if m.Loaded && end == 0 {
+	if m.Loaded {
 		label = fmt.Sprintf("Loaded. Following a %s seconds...", colorFg(strconv.Itoa(m.Ticks), "79"))
 	}
 

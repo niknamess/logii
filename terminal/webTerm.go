@@ -1,70 +1,52 @@
 package terminal
 
 import (
+	"bufio"
 	"fmt"
-	"log"
+	"os"
+	"strings"
 
-	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 func main() {
-	p := tea.NewProgram(initialModel())
-
-	if err := p.Start(); err != nil {
-		log.Fatal(err)
+	tty, err := os.Open("/dev/tty")
+	if err != nil {
+		fmt.Println("Enter IP:", err)
+		os.Exit(1)
 	}
-}
 
-//type tickMsg struct{}
-type errMsg error
-
-type model struct {
-	textInput textinput.Model
-	err       error
-}
-
-func initialModel() model {
-	ti := textinput.NewModel()
-	ti.Placeholder = "Pikachu"
-	ti.Focus()
-	ti.CharLimit = 156
-	ti.Width = 20
-
-	return model{
-		textInput: ti,
-		err:       nil,
+	if err := tea.NewProgram(model{}, tea.WithInput(tty)).Start(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
 	}
+
+	tty.Close()
+
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Now type something: ")
+	text, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading input:", err)
+		os.Exit(1)
+	}
+	fmt.Printf("You entered: %s\n", strings.TrimSpace(text))
 }
+
+type model struct{}
 
 func (m model) Init() tea.Cmd {
-	return textinput.Blink
+	return nil
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	var cmd tea.Cmd
-
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
-			return m, tea.Quit
-		}
-
-	// We handle errors just like any other message
-	case errMsg:
-		m.err = msg
-		return m, nil
+	if _, ok := msg.(tea.KeyMsg); ok {
+		return m, tea.Quit
 	}
 
-	m.textInput, cmd = m.textInput.Update(msg)
-	return m, cmd
+	return m, nil
 }
 
 func (m model) View() string {
-	return fmt.Sprintf(
-		"What’s your favorite Pokémon?\n\n%s\n\n%s",
-		m.textInput.View(),
-		"(esc to quit)",
-	) + "\n"
+	return "Bubble Tea running. Press any key to exit...\n"
 }
