@@ -317,7 +317,7 @@ func colorFloatToHex(f float64) (s string) {
 	}
 	return
 }
-func SwitchMenu(idx int) {
+func SwitchMenu(idx int) int {
 
 	switch choose := idx; choose {
 	case 0:
@@ -363,7 +363,10 @@ func SwitchMenu(idx int) {
 		logenc.Promrun(text)
 	case 6:
 		//UI for run VFC animation
+		go VFCTerm()
 		controllers.VFC("10015")
+
+		//go VFCTerm()
 	case 7:
 		//UI for example animation
 		//add case for clear reddata
@@ -375,6 +378,7 @@ func SwitchMenu(idx int) {
 		text, _ := reader.ReadString('\n')
 		logenc.SearchT(text)
 	}
+	return idx
 }
 
 func TerminalUi() (string, tea.Model) {

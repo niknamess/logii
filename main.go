@@ -16,6 +16,7 @@ import (
 var (
 	content string
 	timeout = terminal.Model{0, false, 0, 0, 0, false, true}
+	status  tea.Model
 )
 
 // playType indicates how to play a gauge.
@@ -104,12 +105,18 @@ func MainUi() {
 	var test tea.Model
 	str, model := terminal.TerminalUi()
 	idx, _ := strconv.Atoi(str)
-	if model == timeout {
+	if model == timeout && idx == 0 {
 		test = terminal.Screensaver()
 	} else if model != timeout {
 		terminal.SwitchMenu(idx)
+		/* switch choose := idx; choose {
+		case 6:
+			status = terminal.VFCTerm()
+		} */
 	}
-	if test != nil {
+	if test != nil || status != nil {
+		status = nil
+		test = nil
 		MainUi()
 	}
 }

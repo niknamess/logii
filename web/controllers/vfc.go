@@ -58,8 +58,8 @@ func VFC(port string) string {
 
 	fileserver := http.FileServer(fsRoot)
 	router.PathPrefix("/vfs/").Handler(http.StripPrefix("/vfs/", fileserver))
-	fmt.Println("running VFC" + " port: " + addr)
-	fmt.Println("Run new terminal for use service")
+	//fmt.Println("running VFC" + " port: " + addr)
+	//fmt.Println("Run new terminal for use service")
 
 	srv := &http.Server{
 		Handler:      router,
