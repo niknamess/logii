@@ -13,6 +13,8 @@ import (
 	"log"
 	"math"
 	"os"
+	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -317,7 +319,7 @@ func colorFloatToHex(f float64) (s string) {
 	}
 	return
 }
-func SwitchMenu(idx int) int {
+func SwitchMenu(idx int) (exit bool) {
 
 	switch choose := idx; choose {
 	case 0:
@@ -333,9 +335,11 @@ func SwitchMenu(idx int) int {
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
 		logenc.ProcFile(text)
+		exit = true
 	case 1:
-		//??? animation reload
+		//??? animation reload//
 		logenc.ProcDir("./repdata/")
+		exit = true
 	case 2:
 		//UI for ProcWrite
 		//
@@ -343,42 +347,50 @@ func SwitchMenu(idx int) int {
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
 		logenc.ProcWrite(text)
+		exit = true
 	case 3:
 		//TODO: add size file and count file
 		//UI for gerator animation when logs generated
-		generator.ProcGenN()
+		generator.ProcGenN(10, 200000)
+		exit = true
 	case 4:
 		//UI for run web and main server
 		//add in config file
 		//????
-		fmt.Print("Enter port for run Web:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		web.ProcWeb(text)
+		//fmt.Print("Enter port for run Web:")
+		//reader := bufio.NewReader(os.Stdin)
+		//text, _ := reader.ReadString('\n')
+		CallClear()
+		web.ProcWeb("15000")
+		exit = true
 	case 5:
 		//????
 		fmt.Print("Enter content for Prometheus:")
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
 		logenc.Promrun(text)
+		exit = true
 	case 6:
 		//UI for run VFC animation
 		go VFCTerm()
 		controllers.VFC("10015")
+		exit = true
 
 		//go VFCTerm()
 	case 7:
 		//UI for example animation
 		//add case for clear reddata
 		generator.Example()
+		exit = true
 	case 8:
 		//add UI for search in terminal
 		fmt.Print("Enter content for Search:")
 		reader := bufio.NewReader(os.Stdin)
 		text, _ := reader.ReadString('\n')
 		logenc.SearchT(text)
+		exit = true
 	}
-	return idx
+	return exit
 }
 
 func TerminalUi() (string, tea.Model) {
@@ -403,4 +415,29 @@ func WebUiTerm() {
 }
 func ProcFileUiTerm() {
 
+}
+
+var clear map[string]func() //create a map for storing clear funcs
+
+func CallClear() {
+	value, ok := clear[runtime.GOOS] //runtime.GOOS -> linux, windows, darwin etc.
+	if ok {                          //if we defined a clear func for that platform:
+		value() //we execute it
+	} else { //unsupported platform
+		panic("Your platform is unsupported! I can't clear terminal screen :(")
+	}
+}
+
+func init() {
+	clear = make(map[string]func()) //Initialize it
+	clear["linux"] = func() {
+		cmd := exec.Command("clear") //Linux example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+	clear["windows"] = func() {
+		cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
 }

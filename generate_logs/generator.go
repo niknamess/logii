@@ -76,7 +76,7 @@ func StructFile() string {
 	return LINE
 }
 
-func ProcGenN() int {
+func ProcGenN(count int, FileSize int64) int {
 	//Example()
 
 	filesFrom := string(util.GetOutboundIP()[len(util.GetOutboundIP())-3:])
@@ -100,7 +100,7 @@ func ProcGenN() int {
 		if err != nil {
 
 		}
-		if fi.Size() >= 200000 {
+		if fi.Size() >= FileSize {
 			countFile++
 			//fmt.Println(fi.Size())
 			logenc.WriteFileSum("./genrlogs./gen_logs_coded"+label+filesFrom, filesFrom, "./genrlogs./")
@@ -116,7 +116,7 @@ func ProcGenN() int {
 
 		time.Sleep(time.Nanosecond * 1000000)
 
-		if countFile >= 10 {
+		if countFile >= count {
 			//fmt.Println("done")
 			return 0
 		}

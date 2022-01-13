@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -16,9 +19,13 @@ var (
 	fullURLFile string
 )
 
+var reader = bufio.NewReader(os.Stdin)
+
 // RunHTTP run http api
-func VFC(port string) string {
+func VFC(port string) {
 	//strconv.Itoa(port)
+	input := make(chan rune, 1)
+	go stop(input)
 	addr := ":" + port
 
 	//dir := "/home/maxxant/Documents/log"
@@ -44,6 +51,7 @@ func VFC(port string) string {
 		if ok {
 			defer listener.Close()
 		}
+		//bufio.NewReader(os.Stdin).ReadBytes('\n')
 	}
 
 	//fmt.Println("listen ok: ", addr)
@@ -70,5 +78,16 @@ func VFC(port string) string {
 	if err := srv.Serve(listener); err != nil {
 		fmt.Println("Http serve error", err)
 	}
-	return "running VFC" + " port: " + addr
+	fmt.Printf("Input : %v\n", input)
+	if input != nil {
+		return
+	}
+}
+
+func stop(input chan rune) {
+	char, _, err := reader.ReadRune()
+	if err != nil {
+		log.Fatal(err)
+	}
+	input <- char
 }

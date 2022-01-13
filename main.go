@@ -71,7 +71,7 @@ func main() {
 
 	if len(*flagGen) > 0 {
 
-		generator.ProcGenN()
+		generator.ProcGenN(10, 200000)
 	}
 
 	if len(*flagWeb) > 0 {
@@ -103,18 +103,16 @@ func main() {
 
 func MainUi() {
 	var test tea.Model
+	var st bool
 	str, model := terminal.TerminalUi()
 	idx, _ := strconv.Atoi(str)
 	if model == timeout && idx == 0 {
 		test = terminal.Screensaver()
 	} else if model != timeout {
-		terminal.SwitchMenu(idx)
-		/* switch choose := idx; choose {
-		case 6:
-			status = terminal.VFCTerm()
-		} */
+		st = terminal.SwitchMenu(idx)
+
 	}
-	if test != nil || status != nil {
+	if test != nil || status != nil || st != false {
 		status = nil
 		test = nil
 		MainUi()
