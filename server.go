@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net"
 )
 
 // требуется только ниже для обработки примера
@@ -12,10 +11,10 @@ func Server() {
 	fmt.Println("Launching server...")
 
 	// Устанавливаем прослушивание порта
-	ln, _ := net.Listen("tcp", ":8081")
+	//ln, _ := net.Listen("tcp", ":8081")
 
 	// Открываем порт
-	conn, _ := ln.Accept()
+	//conn, _ := ln.Accept()
 
 	// Запускаем цикл
 	for {
