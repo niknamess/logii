@@ -35,13 +35,14 @@ func main() {
 	//flagSearch := flag.String("s", "", "search")
 	flagServ := flag.String("z", "", "server")
 	flagWrite := flag.String("w", "", "write_logs")
-	flagGen := flag.String("g", "", "generate_logs")
+	flagGen := flag.Bool("g", false, "generate_logs")
 	flagWeb := flag.String("p", "", "web_interface")
 	flagProm := flag.String("m", "", "prometheus")
 	flagVFC := flag.String("v", "", "vfc")
 	flagR := flag.String("r", "", "remove")
 	flagMenu := flag.String("x", "", "menu")
-	flagControl := flag.String("s", "", "menu")
+	flagServer := flag.Bool("s", false, "server")
+	flagClient := flag.Bool("c", false, "client")
 	//flagInfo := flag.String("i", "", "info")
 	//flagDD := flag.String("o", "", "dd")
 
@@ -52,56 +53,61 @@ func main() {
 	if len(*flagServ) > 0 {
 		fmt.Println("flagServ:", *flagServ)
 		RunRPC(*flagServ)
-
+		return
 	}
 
 	if len(*flagFile) > 0 {
-
 		logenc.ProcFile(*flagFile)
+		return
 	}
 
 	if len(*flagDir) > 0 {
-
 		logenc.ProcDir(*flagDir)
+		return
 	}
 
 	if len(*flagWrite) > 0 {
-
 		logenc.ProcWrite(*flagWrite)
+		return
 	}
 
-	if len(*flagGen) > 0 {
-
+	if *flagGen {
 		generator.ProcGenN(10, 200000)
+		return
 	}
 
 	if len(*flagWeb) > 0 {
 		print(*flagWeb)
 		web.ProcWeb(*flagWeb)
-
+		return
 	}
 
 	if len(*flagProm) > 0 {
 		logenc.Promrun(*flagProm)
-
+		return
 	}
 	if len(*flagVFC) > 0 {
 		controllers.VFC(*flagVFC)
-
+		return
 	}
 	if len(*flagR) > 0 {
-
 		generator.Example()
+		return
 	}
 
 	if len(*flagMenu) > 0 {
-
 		MainUi()
-
+		return
 	}
-	if len(*flagControl) > 0 {
 
+	if *flagServer {
 		Server()
+		return
+	}
+
+	if *flagClient {
+		Client()
+		return
 	}
 
 }

@@ -23,9 +23,9 @@ var (
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./view").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/logi2/repdata/").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/tmcs-log-agent-storage/").ExistingFilesOrDirs()
-	dir  = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
-	port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
-	//port2 = kingpin.Flag("port", "Port number to host the server").Short('p').Default("15000").Int()
+	dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
+	//port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
+	port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
 
 	cron    = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
 	cert    = kingpin.Flag("Test", "Test").Short('c').Default("").String()
@@ -47,6 +47,9 @@ type Config struct {
 }
 
 func ProcWeb(dir1 string) {
+
+	fmt.Println(dir1)
+	fmt.Println("web", port)
 
 	//ipaddr := make([]string, 0, 5)
 	generate_logs.Remove("./testsave/", "gen_logs_coded")
@@ -91,9 +94,10 @@ func ProcWeb(dir1 string) {
 		http.ServeFile(w, r, "index.tmpl")
 	})
 
-	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", *port), Handler: router}
+	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", port), Handler: router}
 	//panic(server.ListenAndServe())
-	fmt.Println(server.ListenAndServe())
+	fmt.Println("WEB", server.ListenAndServe())
+
 }
 
 // Use - Stacking middlewares

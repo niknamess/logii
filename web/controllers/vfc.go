@@ -23,6 +23,7 @@ var reader = bufio.NewReader(os.Stdin)
 
 // RunHTTP run http api
 func VFC(port string) {
+	fmt.Println("Start VFC")
 	//strconv.Itoa(port)
 	input := make(chan rune, 1)
 	go stop(input)

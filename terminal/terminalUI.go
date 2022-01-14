@@ -361,7 +361,7 @@ func SwitchMenu(idx int) (exit bool) {
 		//reader := bufio.NewReader(os.Stdin)
 		//text, _ := reader.ReadString('\n')
 		CallClear()
-		web.ProcWeb("15000")
+		web.ProcWeb("-p")
 		exit = true
 	case 5:
 		//????

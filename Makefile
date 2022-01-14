@@ -27,12 +27,16 @@ menu: tst build
 
 .PHONY: server
 server: tst build
-	@$(MEPATH)/logi2 -s Foxtrot Uniform Charlie Kilo
+	@$(MEPATH)/logi2 -s
+
+.PHONY: client
+client: tst build
+	@$(MEPATH)/logi2 -c
 
 .PHONY: gen
 gen: tst build
-	@$(MEPATH)/logi2 -g Foxtrot Uniform Charlie Kilo
-
+	@$(MEPATH)/logi2 -g
+	
 .PHONY: rm
 rm: build
 	@$(MEPATH)/logi2 -r Foxtrot Uniform Charlie Kilo
