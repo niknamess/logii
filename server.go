@@ -38,7 +38,7 @@ func Server() {
 		}
 		if s == "WEB" {
 			terminal.CallClear()
-			go web.ProcWeb("-p")
+			go web.ProcWeb("")
 		}
 
 		fmt.Print("Message Received:", string(message))

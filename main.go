@@ -41,7 +41,7 @@ func main() {
 	flagVFC := flag.String("v", "", "vfc")
 	flagR := flag.String("r", "", "remove")
 	flagMenu := flag.String("x", "", "menu")
-	flagServer := flag.Bool("s", false, "server")
+	flagServer := flag.String("s", "", "server")
 	flagClient := flag.Bool("c", false, "client")
 	//flagInfo := flag.String("i", "", "info")
 	//flagDD := flag.String("o", "", "dd")
@@ -100,7 +100,7 @@ func main() {
 		return
 	}
 
-	if *flagServer {
+	if len(*flagServer) > 0 {
 		Server()
 		return
 	}

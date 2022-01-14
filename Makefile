@@ -27,7 +27,7 @@ menu: tst build
 
 .PHONY: server
 server: tst build
-	@$(MEPATH)/logi2 -s
+	@$(MEPATH)/logi2 -s 15000
 
 .PHONY: client
 client: tst build
@@ -36,7 +36,7 @@ client: tst build
 .PHONY: gen
 gen: tst build
 	@$(MEPATH)/logi2 -g
-	
+
 .PHONY: rm
 rm: build
 	@$(MEPATH)/logi2 -r Foxtrot Uniform Charlie Kilo
