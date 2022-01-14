@@ -40,7 +40,7 @@
 - [x] check with hash sum signature file 
 - [ ] stable terminal ui interface
 - [ ] client server architecture (control services from terminal)
-- [ ] fix bugs with serch web
+- [ ] fix bugs with search web
 - [ ] interface in web 
 
 
@@ -63,4 +63,6 @@
 # RUN
 - make dev (http://localhost:15000/)
 (http://localhost:10015/vfs/data/)
+- make menu "run munu for control service)
+(on default Web :15000; VFC :10015)
 
