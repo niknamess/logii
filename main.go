@@ -41,6 +41,7 @@ func main() {
 	flagVFC := flag.String("v", "", "vfc")
 	flagR := flag.String("r", "", "remove")
 	flagMenu := flag.String("x", "", "menu")
+	flagControl := flag.String("s", "", "menu")
 	//flagInfo := flag.String("i", "", "info")
 	//flagDD := flag.String("o", "", "dd")
 
@@ -98,6 +99,10 @@ func main() {
 		MainUi()
 
 	}
+	if len(*flagControl) > 0 {
+
+		Server()
+	}
 
 }
 
@@ -118,84 +123,3 @@ func MainUi() {
 		MainUi()
 	}
 }
-
-/*
-func Menu() {
-	menu, err := menuscreen.NewMenuScreen()
-	if err != nil {
-		panic(err)
-	}
-	defer menu.Fini()
-	menu.SetTitle("Menu").
-		SetLine(0, "Decode file with logs").
-		SetLine(1, "Decode dir with file logs").
-		SetLine(2, "Write decoded logs").
-		SetLine(3, "Gen logs").
-		SetLine(4, "Run Web").
-		SetLine(5, "Run Ptometheus").
-		SetLine(6, "running VFC").
-		SetLine(7, "clear genlogs").
-		SetLine(8, "Search word or collocation").
-		Start()
-	idx, ln, _ := menu.ChosenLine()
-
-	fmt.Printf("you've chosen %d line, content is: %s\n", idx, ln)
-	switch choose := idx; choose {
-	case 0:
-		files, err := ioutil.ReadDir("./repdata/")
-		if err != nil {
-			log.Fatal(err)
-		}
-		//menu, err := menuscreen.NewMenuScreen()
-		//if err != nil {
-		//	panic(err)
-		//}
-		//defer menu.Fini()
-		//menu.SetTitle("Menu").
-
-		for i, file := range files {
-			//	menu.SetTitle("").
-			//		SetLine(i, "Decode file with logs").
-			fmt.Println(i, file)
-
-		}
-		//Start()
-		//idx, ln, _ := menu.ChosenLine()
-		fmt.Print("Enter content for ProcFile:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.ProcFile(text)
-	case 1:
-		//fmt.Print("Enter content for flag ProcDir:")
-		//reader := bufio.NewReader(os.Stdin)
-		//text, _ := reader.ReadString('\n')
-		logenc.ProcDir("./repdata/")
-	case 2:
-		fmt.Print("Enter content for flag:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.ProcWrite(text)
-	case 3:
-		generator.ProcGenN()
-	case 4:
-		fmt.Print("Enter port for run Web:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		web.ProcWeb(text)
-	case 5:
-		fmt.Print("Enter content for Prometheus:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.Promrun(text)
-	case 6:
-		controllers.VFC("10015")
-	case 7:
-		generator.Example()
-	case 8:
-		fmt.Print("Enter content for Search:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.SearchT(text)
-	}
-}
-*/

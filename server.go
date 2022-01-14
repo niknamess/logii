@@ -1,30 +1,40 @@
+// Very basic socket server
+// https://golangr.com/
+
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"net"
+
+	"gitlab.topaz-atcs.com/tmcs/logi2/web"
+	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
-// требуется только ниже для обработки примера
-
 func Server() {
+	fmt.Println("Start server...")
+	fmt.Println("Pres \"VFC\" or \"WEB\"")
 
-	fmt.Println("Launching server...")
+	// listen on port 8000
+	ln, _ := net.Listen("tcp", ":8008")
 
-	// Устанавливаем прослушивание порта
-	//ln, _ := net.Listen("tcp", ":8081")
+	// accept connection
+	conn, _ := ln.Accept()
 
-	// Открываем порт
-	//conn, _ := ln.Accept()
-
-	// Запускаем цикл
+	// run loop forever (or until ctrl-c)
 	for {
-		// Будем прослушивать все сообщения разделенные \n
-		//message, _ := bufio.NewReader(conn).ReadString('\n')
-		// Распечатываем полученое сообщение
-		//fmt.Print("Message Received:", string(message))
-		// Процесс выборки для полученной строки
-		//newmessage := strings.ToUpper(message)
-		// Отправить новую строку обратно клиенту
-		//conn.Write([]byte(newmessage + "\n"))
+		// get message, output
+		message, _ := bufio.NewReader(conn).ReadString('\n')
+		fmt.Print(message)
+		if message == "VFC" {
+			fmt.Print("VFC")
+			controllers.VFC("10015")
+		}
+		if string(message) == "WEB" {
+			web.ProcWeb("15000")
+		}
+
+		fmt.Print("Message Received:", string(message))
 	}
 }

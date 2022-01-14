@@ -63,6 +63,6 @@
 # RUN
 - make dev (http://localhost:15000/)
 (http://localhost:10015/vfs/data/)
-- make menu "run munu for control service)
+- make menu "run munu for control service"
 (on default Web :15000; VFC :10015)
 

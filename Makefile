@@ -25,6 +25,10 @@ vfc: tst build
 menu: tst build
 	@$(MEPATH)/logi2 -x 15000	
 
+.PHONY: server
+server: tst build
+	@$(MEPATH)/logi2 -s Foxtrot Uniform Charlie Kilo
+
 .PHONY: gen
 gen: tst build
 	@$(MEPATH)/logi2 -g Foxtrot Uniform Charlie Kilo
