@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net"
 	"os"
+
+	"gitlab.topaz-atcs.com/tmcs/logi2/terminal"
 )
 
 var (
@@ -13,13 +15,20 @@ var (
 )
 
 func Client() {
-
+	//reader := bufio.NewReader(os.Stdin)
+	//ipaddress, _ := reader.ReadString('\n')
+	//util.CheckIPAddress(ipaddress)
 	// Подключаемся к сокету
 	conn, _ := net.Dial("tcp", "127.0.0.1:8888")
+	terminal.CallClear()
+	fmt.Println("Now you can use only VFC(stable) and WEB(in work)")
 	for {
+		//message, _ := bufio.NewReader(conn).ReadString('\n')
+		//fmt.Print("Message from server: " + message)
+		//terminal.CallClear()
 		// Чтение входных данных от stdin
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Now you can use only VFC(stable) and WEB(in work): ")
+		//mt.Println("Now you can use only VFC(stable) and WEB(in work)")
 		fmt.Print("Text to send: ")
 		text, _ := reader.ReadString('\n')
 		// Отправляем в socket

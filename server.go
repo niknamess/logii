@@ -34,22 +34,29 @@ func Server() {
 		//fmt.Print(message)
 		s := strings.TrimSpace(message)
 		if s == str {
-			fmt.Print("VFC")
+			conn.Write([]byte("VFC: "))
 			go controllers.VFC("10015")
 			conn.Write([]byte("Выбрана служба vfc" + "\n"))
 		}
 		if s == "WEB" {
 			terminal.CallClear()
-			conn.Write([]byte("Выбрана функция web" + "\n"))
-			conn.Write([]byte("Enter IP or enter \"stop\": " + "\n"))
+			conn.Write([]byte("WEB: "))
+			//conn.Write([]byte("Enter IP or enter \"stop\": " + "\n"))
 			//отдeльная функция для   Web  отправки
 			allip := enterIp(conn)
 
 			go web.ProcWeb("-x", allip) //ща че нить придумаем
 			//conn.Write([]byte("Выбрана функция web" + "\n"))
 		}
+		if s == "stopW" {
+			terminal.CallClear()
+			var stop []string
+
+			go web.ProcWeb("-x", stop) //ща че нить придумаем
+			//conn.Write([]byte("Выбрана функция web" + "\n"))
+		}
 		conn.Write([]byte(message + "\n"))
-		fmt.Print("Message Received:", string(message))
+		//fmt.Print("Message Received:", string(message))
 	}
 }
 
@@ -64,12 +71,15 @@ func enterIp(conn net.Conn) []string {
 		if limit == "stop" {
 			break
 		} else if util.CheckIPAddress(limit) {
+			conn.Write([]byte("Valid: " + "\n"))
 			ipaddr = append(ipaddr, limit)
 			//limitSlice, _ := web.CheckConfig()
 			//ipaddr = append(ipaddr, limitSlice...)
 			ipaddr = removeDuplicateStr(ipaddr)
 			//config := Config{DataBase: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
 			//data, _ = toml.Marshal(&config)
+		} else {
+			conn.Write([]byte("Invalid: " + "\n"))
 		}
 	}
 	return ipaddr
