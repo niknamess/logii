@@ -4,18 +4,85 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
+	"log"
 	"net"
+	"os"
 	"strings"
 
-	"gitlab.topaz-atcs.com/tmcs/logi2/terminal"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/util"
 )
 
-var str string = "VFC"
+var mail string = "Succes"
+
+func echoServer(c net.Conn) {
+	for {
+		buf := make([]byte, 512)
+		nr, err := c.Read(buf)
+		if err != nil {
+			return
+		}
+
+		data := buf[0:nr]
+		println("Server got:", string(data))
+		s := strings.TrimSpace(string(data))
+		if s == "VFC" {
+			//conn.Write([]byte("VFC: "))
+			data = []byte("Выбрана служба vfc") //Send Client
+			_, err = c.Write(data)
+			if err != nil {
+				log.Fatal("Write: ", err)
+			}
+			go controllers.VFC("10015")
+			//conn.Write([]byte("Выбрана служба vfc" + "\n"))
+		}
+		if s == "WEB" {
+			data = []byte("Выбрана служба web") //Send Client
+			_, err = c.Write(data)
+			if err != nil {
+				log.Fatal("Write: ", err)
+			}
+			//conn.Write([]byte("WEB: "))
+			//conn.Write([]byte("Enter IP or enter \"stop\": " + "\n"))
+			//отдeльная функция для   Web  отправки
+			allip := enterIp(c)
+
+			go web.ProcWeb("-x", allip) //ща че нить придумаем
+
+			//conn.Write([]byte("Выбрана функция web" + "\n"))
+		}
+		//
+		data = []byte(mail) //Send Client
+		_, err = c.Write(data)
+		if err != nil {
+			log.Fatal("Write: ", err)
+		}
+		//
+	}
+}
+
+func Server() {
+	e := os.Remove("/tmp/echo.sock")
+	if e != nil {
+		log.Fatal(e)
+	}
+	l, err := net.Listen("unix", "/tmp/echo.sock")
+	if err != nil {
+		log.Fatal("listen error:", err)
+	}
+
+	for {
+		fd, err := l.Accept()
+		if err != nil {
+			log.Fatal("accept error:", err)
+		}
+
+		go echoServer(fd)
+	}
+}
+
+/* var str string = "VFC"
 
 func Server() {
 	fmt.Println("Start server...")
@@ -58,20 +125,27 @@ func Server() {
 		conn.Write([]byte(message + "\n"))
 		//fmt.Print("Message Received:", string(message))
 	}
-}
+} */
 
-func enterIp(conn net.Conn) []string {
+func enterIp(c net.Conn) []string {
 
 	for {
-		//fmt.Print("Enter IP:  ")
-		//fmt.Scanln(&limit)
-		conn.Write([]byte("Enter IP or enter \"stop\": " + "\n"))
-		limit, _ := bufio.NewReader(conn).ReadString('\n')
+		buf := make([]byte, 512)
+		nr, _ := c.Read(buf)
+		data := buf[0:nr]
+
+		//data = []byte("В") //Send Client
+
+		limit := string(data)
 		limit = strings.TrimSpace(limit)
 		if limit == "stop" {
 			break
 		} else if util.CheckIPAddress(limit) {
-			conn.Write([]byte("Valid: " + "\n"))
+			data = []byte("Valid") //Send Client
+			_, err := c.Write(data)
+			if err != nil {
+				log.Fatal("Write: ", err)
+			}
 			ipaddr = append(ipaddr, limit)
 			//limitSlice, _ := web.CheckConfig()
 			//ipaddr = append(ipaddr, limitSlice...)
@@ -79,7 +153,11 @@ func enterIp(conn net.Conn) []string {
 			//config := Config{DataBase: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
 			//data, _ = toml.Marshal(&config)
 		} else {
-			conn.Write([]byte("Invalid: " + "\n"))
+			data = []byte("Invalid") //Send Client
+			_, err := c.Write(data)
+			if err != nil {
+				log.Fatal("Write: ", err)
+			}
 		}
 	}
 	return ipaddr

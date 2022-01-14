@@ -3,8 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"log"
 	"net"
 	"os"
+	"time"
 
 	"gitlab.topaz-atcs.com/tmcs/logi2/terminal"
 )
@@ -14,7 +17,43 @@ var (
 	ipaddr []string
 )
 
+func reader(r io.Reader) {
+	buf := make([]byte, 1024)
+	for {
+		n, err := r.Read(buf[:])
+		if err != nil {
+			return
+		}
+		println("From server:", string(buf[0:n])) //From server
+	}
+}
+
 func Client() {
+
+	terminal.CallClear()
+	fmt.Println("Now you can use only VFC(stable) and WEB(in work)")
+	c, err := net.Dial("unix", "/tmp/echo.sock")
+	if err != nil {
+		panic(err)
+	}
+	defer c.Close()
+
+	go reader(c)
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Text to send: ")
+		text, _ := reader.ReadString('\n') //Send server
+
+		_, err := c.Write([]byte(text))
+		if err != nil {
+			log.Fatal("write error:", err)
+			break
+		}
+		time.Sleep(1e9)
+	}
+}
+
+/* func Client() {
 	//reader := bufio.NewReader(os.Stdin)
 	//ipaddress, _ := reader.ReadString('\n')
 	//util.CheckIPAddress(ipaddress)
@@ -38,3 +77,4 @@ func Client() {
 		fmt.Print("Message from server: " + message)
 	}
 }
+*/
