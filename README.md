@@ -41,7 +41,8 @@
 - [ ] stable terminal ui interface
 - [ ] client server architecture (control services from terminal)
 - [ ] fix bugs with search web
-- [ ] interface in web 
+- [ ] interface in web
+- [ ] split web and server  
 
 
 

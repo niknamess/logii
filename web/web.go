@@ -25,14 +25,15 @@ var (
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/tmcs-log-agent-storage/").ExistingFilesOrDirs()
 	dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
 	//port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
-	port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
-
+	//port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
+	port    *int
 	cron    = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
 	cert    = kingpin.Flag("Test", "Test").Short('c').Default("").String()
 	missadr []string
 	limit   string
 	ipaddr  []string
 	wg      sync.WaitGroup
+	status  bool = false
 )
 
 type DatabaseConfig struct {
@@ -46,10 +47,22 @@ type Config struct {
 	DataBase DatabaseConfig `toml:"database"`
 }
 
-func ProcWeb(dir1 string) {
+func ProcWeb(dir1 string, slice []string) {
+	if dir1 == "-x" {
+		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
+		status = true
+	}
+	if dir1 == "-s" {
+		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
+		//status = true
+	}
+	if dir1 == "-p" {
+		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
+		//status = true
+	}
 
 	fmt.Println(dir1)
-	fmt.Println("web", port)
+	fmt.Println("web", *port)
 
 	//ipaddr := make([]string, 0, 5)
 	generate_logs.Remove("./testsave/", "gen_logs_coded")
@@ -71,8 +84,12 @@ func ProcWeb(dir1 string) {
 		time.Sleep(time.Second * 55)
 		util.DiskInfo("./repdata")
 	}()
+	if status == true {
+		EnterIpReady(slice)
+	} else {
+		EnterIp()
+	}
 
-	EnterIp()
 	Ip, Port := CheckConfig()
 	for i := 0; i < len(Ip); i++ {
 		//TODO
@@ -159,13 +176,13 @@ func reconect(address string) {
 
 func EnterIp() {
 	var data []byte
-	for true {
+	for {
 		fmt.Print("Enter IP:  ")
 		fmt.Scanln(&limit)
 
 		if limit == "stop" {
 			break
-		} else if util.CheckIPAddress(limit) == true {
+		} else if util.CheckIPAddress(limit) {
 			ipaddr = append(ipaddr, limit)
 			limitSlice, _ := CheckConfig()
 			ipaddr = append(ipaddr, limitSlice...)
@@ -214,4 +231,24 @@ func removeDuplicateStr(strSlice []string) []string {
 		}
 	}
 	return list
+}
+
+func EnterIpReady(ipmas []string) {
+	var data []byte
+	ipaddr = ipmas
+	limitSlice, _ := CheckConfig()
+	ipaddr = append(ipaddr, limitSlice...)
+	ipaddr = removeDuplicateStr(ipaddr)
+	config := Config{DataBase: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
+	data, _ = toml.Marshal(&config)
+
+	//TODO
+	err3 := ioutil.WriteFile("config.toml", data, 0666)
+
+	if err3 != nil {
+
+		log.Fatal(err3)
+	}
+	fmt.Println("Written")
+
 }

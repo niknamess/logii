@@ -7,6 +7,11 @@ import (
 	"os"
 )
 
+var (
+	limit  string
+	ipaddr []string
+)
+
 func Client() {
 
 	// Подключаемся к сокету
@@ -14,6 +19,7 @@ func Client() {
 	for {
 		// Чтение входных данных от stdin
 		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Now you can use only VFC(stable) and WEB(in work): ")
 		fmt.Print("Text to send: ")
 		text, _ := reader.ReadString('\n')
 		// Отправляем в socket

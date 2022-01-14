@@ -14,18 +14,12 @@ import (
 )
 
 var (
-	content string
 	timeout = terminal.Model{0, false, 0, 0, 0, false, true}
 	status  tea.Model
+	test    []string
 )
 
 // playType indicates how to play a gauge.
-type playType int
-
-const (
-	playTypePercent playType = iota
-	playTypeAbsolute
-)
 
 func main() {
 	//content := "nope"
@@ -78,7 +72,7 @@ func main() {
 
 	if len(*flagWeb) > 0 {
 		print(*flagWeb)
-		web.ProcWeb(*flagWeb)
+		web.ProcWeb(*flagWeb, test)
 		return
 	}
 
@@ -123,7 +117,7 @@ func MainUi() {
 		st = terminal.SwitchMenu(idx)
 
 	}
-	if test != nil || status != nil || st != false {
+	if test != nil || status != nil || st {
 		status = nil
 		test = nil
 		MainUi()
