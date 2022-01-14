@@ -384,10 +384,10 @@ func SwitchMenu(idx int) (exit bool) {
 		exit = true
 	case 8:
 		//add UI for search in terminal
-		fmt.Print("Enter content for Search:")
-		reader := bufio.NewReader(os.Stdin)
-		text, _ := reader.ReadString('\n')
-		logenc.SearchT(text)
+		//fmt.Print("Enter content for Search:")
+		//reader := bufio.NewReader(os.Stdin)
+		//text, _ := reader.ReadString('\n')
+		logenc.SearchT("./repdata/")
 		exit = true
 	}
 	return exit

@@ -38,7 +38,10 @@
 - [x] problem with refused connection on other server
 - [x] check with md5 integrity file
 - [x] check with hash sum signature file 
-
+- [ ] stable terminal ui interface
+- [ ] client server architecture (control services from terminal)
+- [ ] fix bugs with serch web
+- [ ] interface in web 
 
 
 
