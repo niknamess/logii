@@ -94,3 +94,26 @@ func stop(input chan rune) {
 	}
 	input <- char
 }
+
+/*
+
+ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer func() {
+		cancel()
+	}()
+
+	if err = srv.Shutdown(ctxShutDown); err != nil {
+		log.Fatalf("server Shutdown Failed:%+s", err)
+	} */
+
+/* 	go func() {
+    for range time.Tick(time.Second) {
+        select {
+        case <- request.Context().Done():
+            fmt.Println("request is outgoing")
+            return
+        default:
+            fmt.Println("Current request is in progress")
+        }
+    }
+}() */
