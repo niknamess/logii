@@ -14,9 +14,18 @@ import (
 )
 
 var (
-	timeout = terminal.Model{0, false, 0, 0, 0, false, true}
-	status  tea.Model
-	test    []string
+	timeout0 = terminal.Model{0, false, 0, 0, 0, false, true}
+	timeout1 = terminal.Model{1, false, 0, 0, 0, false, true}
+	timeout2 = terminal.Model{2, false, 0, 0, 0, false, true}
+	timeout3 = terminal.Model{3, false, 0, 0, 0, false, true}
+	timeout4 = terminal.Model{4, false, 0, 0, 0, false, true}
+	timeout5 = terminal.Model{5, false, 0, 0, 0, false, true}
+	timeout6 = terminal.Model{6, false, 0, 0, 0, false, true}
+	timeout7 = terminal.Model{7, false, 0, 0, 0, false, true}
+	timeout8 = terminal.Model{9, false, 0, 0, 0, false, true}
+
+	status tea.Model
+	test   []string
 )
 
 // playType indicates how to play a gauge.
@@ -111,9 +120,9 @@ func MainUi() {
 	var st bool
 	str, model := terminal.TerminalUi()
 	idx, _ := strconv.Atoi(str)
-	if model == timeout && idx == 0 {
+	if (model == timeout0 || model == timeout1 || model == timeout2 || model == timeout3 || model == timeout4 || model == timeout5 || model == timeout6 || model == timeout7 || model == timeout8) && idx == 0 {
 		test = terminal.Screensaver()
-	} else if model != timeout {
+	} else if model != timeout0 || model != timeout1 || model != timeout2 || model != timeout3 || model != timeout4 || model != timeout5 || model != timeout6 || model != timeout7 || model != timeout8 {
 		st = terminal.SwitchMenu(idx)
 
 	}

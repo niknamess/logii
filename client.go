@@ -13,7 +13,6 @@ import (
 )
 
 var (
-	limit  string
 	ipaddr []string
 )
 

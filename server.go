@@ -4,7 +4,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -21,7 +20,7 @@ import (
 var mail string = "Succes"
 var wg sync.WaitGroup
 
-var c1, cancel = context.WithCancel(context.Background())
+//var c1, cancel = context.WithCancel(context.Background())
 
 func echoServer(c net.Conn) {
 	for {

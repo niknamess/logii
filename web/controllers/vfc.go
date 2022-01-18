@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -22,7 +23,7 @@ var (
 var reader = bufio.NewReader(os.Stdin)
 
 // RunHTTP run http api
-func VFC(port string) {
+func VFC(port string) error {
 
 	fmt.Println("Start VFC")
 	//strconv.Itoa(port)
@@ -83,8 +84,18 @@ func VFC(port string) {
 	}
 	fmt.Printf("Input : %v\n", input)
 	if input != nil {
-		return
+		return srv.Shutdown(context.Background())
 	}
+
+	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer func() {
+		cancel()
+	}()
+
+	if err = srv.Shutdown(ctxShutDown); err != nil {
+		log.Fatalf("server Shutdown Failed:%+s", err)
+	}
+	return srv.Shutdown(context.Background())
 }
 
 func stop(input chan rune) {

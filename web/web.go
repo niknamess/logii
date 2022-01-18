@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -47,7 +48,7 @@ type Config struct {
 	DataBase DatabaseConfig `toml:"database"`
 }
 
-func ProcWeb(dir1 string, slice []string) {
+func ProcWeb(dir1 string, slice []string) error {
 	if dir1 == "-x" {
 		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
 		status = true
@@ -78,13 +79,14 @@ func ProcWeb(dir1 string, slice []string) {
 
 	if err != nil {
 		panic(err)
+
 	}
 	//go util.DeleteFile90("./repdata")
 	go func() {
 		time.Sleep(time.Second * 55)
 		util.DiskInfo("./repdata")
 	}()
-	if status == true {
+	if status {
 		EnterIpReady(slice)
 	} else {
 		EnterIp()
@@ -114,6 +116,8 @@ func ProcWeb(dir1 string, slice []string) {
 	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", port), Handler: router}
 	//panic(server.ListenAndServe())
 	fmt.Println("WEB", server.ListenAndServe())
+
+	return server.Shutdown(context.Background())
 
 }
 
