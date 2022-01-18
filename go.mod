@@ -33,7 +33,6 @@ require (
 	github.com/spf13/afero v1.6.0
 	github.com/spf13/viper v1.3.2
 	github.com/stretchr/testify v1.7.0 // indirect
-	github.com/ztrue/shutdown v0.1.1
 	golang.org/x/net v0.0.0-20210916014120-12bc252f5db8
 	golang.org/x/sys v0.0.0-20211205182925-97ca703d548d // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect

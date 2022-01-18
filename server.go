@@ -4,13 +4,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net"
 	"os"
 	"strings"
-	"sync"
 
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
@@ -18,9 +18,8 @@ import (
 )
 
 var mail string = "Succes"
-var wg sync.WaitGroup
 
-//var c1, cancel = context.WithCancel(context.Background())
+var ctxVFC, cancelVFC = context.WithCancel(context.Background())
 
 func echoServer(c net.Conn) {
 	for {
@@ -35,17 +34,12 @@ func echoServer(c net.Conn) {
 		s := strings.TrimSpace(string(data))
 		if s == "VFC" {
 			MesToClient(c, "Выбрана служба vfc\n")
-			wg.Add(1)
 			go controllers.VFC("10015")
-			defer wg.Done()
-
 		}
 		if s == "WEB" {
 			MesToClient(c, "Выбрана служба web\n")
 			allip := enterIp(c)
-			wg.Add(1)
 			go web.ProcWeb("-x", allip)
-			defer wg.Done()
 		}
 		if s == "STOP WEB" {
 			MesToClient(c, "Остановыка службы web\n")

@@ -15,15 +15,10 @@ import (
 	"github.com/spf13/afero"
 )
 
-var (
-	fileName    string
-	fullURLFile string
-)
-
 var reader = bufio.NewReader(os.Stdin)
 
 // RunHTTP run http api
-func VFC(port string) error {
+func VFC(port string) {
 
 	fmt.Println("Start VFC")
 	//strconv.Itoa(port)
@@ -82,12 +77,8 @@ func VFC(port string) error {
 	if err := srv.Serve(listener); err != nil {
 		fmt.Println("Http serve error", err)
 	}
-	fmt.Printf("Input : %v\n", input)
-	if input != nil {
-		return srv.Shutdown(context.Background())
-	}
 
-	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctxShutDown, cancel := context.WithCancel(context.Background())
 	defer func() {
 		cancel()
 	}()
@@ -95,7 +86,7 @@ func VFC(port string) error {
 	if err = srv.Shutdown(ctxShutDown); err != nil {
 		log.Fatalf("server Shutdown Failed:%+s", err)
 	}
-	return srv.Shutdown(context.Background())
+
 }
 
 func stop(input chan rune) {
