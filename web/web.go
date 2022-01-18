@@ -57,7 +57,7 @@ func ProcWeb(dir1 string, slice []string) {
 		//status = true
 	}
 	if dir1 == "-p" {
-		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
+		port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
 		//status = true
 	}
 

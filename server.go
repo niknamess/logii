@@ -6,7 +6,6 @@ package main
 import (
 	"log"
 	"net"
-	"os"
 	"strings"
 
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
@@ -63,10 +62,11 @@ func echoServer(c net.Conn) {
 }
 
 func Server() {
-	e := os.Remove("/tmp/echo.sock")
-	if e != nil {
-		log.Fatal(e)
-	}
+	//logenc.DeleteOldsFiles()
+	//e := os.Remove("/tmp/echo.sock")
+	//if e != nil {
+	//	log.Fatal(e)
+	//s}
 	l, err := net.Listen("unix", "/tmp/echo.sock")
 	if err != nil {
 		log.Fatal("listen error:", err)
