@@ -20,6 +20,7 @@ import (
 var mail string = "Succes"
 
 var ctxVFC, cancelVFC = context.WithCancel(context.Background())
+var ctxWEB, cancelWEB = context.WithCancel(context.Background())
 
 func echoServer(c net.Conn) {
 	for {
@@ -39,14 +40,21 @@ func echoServer(c net.Conn) {
 		if s == "WEB" {
 			MesToClient(c, "Выбрана служба web\n")
 			allip := enterIp(c)
-			go web.ProcWeb("-x", allip)
+			go web.ProcWeb("-x", allip, ctxWEB)
 		}
-		if s == "STOP WEB" {
+		if s == "STOPWEB" {
 			MesToClient(c, "Остановыка службы web\n")
-			//cancel()
+			go func() {
+				cancelWEB()
+				fmt.Println("stop WEB")
+			}()
 		}
-		if s == "STOP VFC" {
+		if s == "STOPVFC" {
 			MesToClient(c, "Остановыка службы vfc\n")
+			go func() {
+				cancelVFC()
+				fmt.Println("stop VFC")
+			}()
 			//cancel()
 		}
 		//

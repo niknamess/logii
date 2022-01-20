@@ -21,11 +21,7 @@ var reader = bufio.NewReader(os.Stdin)
 func VFC(port string, ctx context.Context) (err error) {
 
 	fmt.Println("Start VFC")
-	//strconv.Itoa(port)
-	input := make(chan rune, 1)
-	go stop(input)
 	addr := ":" + port
-
 	//dir := "/home/maxxant/Documents/log"
 	dir := "./genrlogs./"
 	//dir := "/home/nik/projects/Course/tmcs-log-agent-storage/"
@@ -73,13 +69,12 @@ func VFC(port string, ctx context.Context) (err error) {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-
-	if err := srv.Serve(listener); err != nil {
-		fmt.Println("Http serve error", err)
-	}
-
+	go func() {
+		if err := srv.Serve(listener); err != nil {
+			fmt.Println("Http serve error", err)
+		}
+	}()
 	<-ctx.Done()
-
 	log.Printf("server stopped")
 
 	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -99,20 +94,11 @@ func VFC(port string, ctx context.Context) (err error) {
 	return err
 }
 
-func stop(input chan rune) {
-	char, _, err := reader.ReadRune()
-	if err != nil {
-		log.Fatal(err)
-	}
-	input <- char
-}
-
-/*
-func Tmain() {
+/* func Tmain() {
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
-		log.Print("system call:%+v")
 		cancel()
+		fmt.Println("stop VFC")
 	}()
 	if err := VFC("10015", ctx); err != nil {
 		log.Printf("failed to serve:+%v\n", err)

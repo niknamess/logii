@@ -35,6 +35,7 @@ var (
 	ipaddr  []string
 	wg      sync.WaitGroup
 	status  bool = false
+	//ctxVFC, cancelVFC      = context.WithCancel(context.Background())
 )
 
 type DatabaseConfig struct {
@@ -48,7 +49,7 @@ type Config struct {
 	DataBase DatabaseConfig `toml:"database"`
 }
 
-func ProcWeb(dir1 string, slice []string) error {
+func ProcWeb(dir1 string, slice []string, ctx context.Context) error {
 	if dir1 == "-x" {
 		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
 		status = true
@@ -113,11 +114,34 @@ func ProcWeb(dir1 string, slice []string) error {
 		http.ServeFile(w, r, "index.tmpl")
 	})
 
-	server := &http.Server{Addr: fmt.Sprintf("0.0.0.0:%d", port), Handler: router}
+	server := &http.Server{
+		Addr:    fmt.Sprintf("0.0.0.0:%d", port),
+		Handler: router}
 	//panic(server.ListenAndServe())
-	fmt.Println("WEB", server.ListenAndServe())
+	go func() {
+		if err = server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen:%+s\n", err)
+		}
 
-	return server.Shutdown(context.Background())
+	}()
+	<-ctx.Done()
+	log.Printf("server stopped")
+
+	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer func() {
+		cancel()
+	}()
+
+	if err = server.Shutdown(ctxShutDown); err != nil {
+		log.Fatalf("server Shutdown Failed:%+s", err)
+	}
+
+	log.Printf("server exited properly")
+
+	if err == http.ErrServerClosed {
+		err = nil
+	}
+	return err
 
 }
 

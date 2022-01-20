@@ -361,9 +361,10 @@ func SwitchMenu(idx int) (exit bool) {
 		//fmt.Print("Enter port for run Web:")
 		//reader := bufio.NewReader(os.Stdin)
 		//text, _ := reader.ReadString('\n')
+		ctxWEB, _ := context.WithCancel(context.Background())
 		var test []string
 		CallClear()
-		web.ProcWeb("-p", test)
+		web.ProcWeb("-p", test, ctxWEB)
 		exit = true
 	case 5:
 		//????
