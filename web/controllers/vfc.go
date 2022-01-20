@@ -18,7 +18,7 @@ import (
 var reader = bufio.NewReader(os.Stdin)
 
 // RunHTTP run http api
-func VFC(port string) {
+func VFC(port string, ctx context.Context) (err error) {
 
 	fmt.Println("Start VFC")
 	//strconv.Itoa(port)
@@ -31,7 +31,7 @@ func VFC(port string) {
 	//dir := "/home/nik/projects/Course/tmcs-log-agent-storage/"
 
 	var listener net.Listener
-	var err error
+	//var err error
 	listenErr := 0
 
 	// wait for listening started
@@ -78,7 +78,11 @@ func VFC(port string) {
 		fmt.Println("Http serve error", err)
 	}
 
-	ctxShutDown, cancel := context.WithCancel(context.Background())
+	<-ctx.Done()
+
+	log.Printf("server stopped")
+
+	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer func() {
 		cancel()
 	}()
@@ -87,6 +91,12 @@ func VFC(port string) {
 		log.Fatalf("server Shutdown Failed:%+s", err)
 	}
 
+	log.Printf("server exited properly")
+
+	if err == http.ErrServerClosed {
+		err = nil
+	}
+	return err
 }
 
 func stop(input chan rune) {
@@ -98,7 +108,19 @@ func stop(input chan rune) {
 }
 
 /*
+func Tmain() {
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		log.Print("system call:%+v")
+		cancel()
+	}()
+	if err := VFC("10015", ctx); err != nil {
+		log.Printf("failed to serve:+%v\n", err)
+	}
 
+} */
+
+/*
 ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer func() {
 		cancel()

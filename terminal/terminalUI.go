@@ -8,6 +8,7 @@ package terminal
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -373,8 +374,9 @@ func SwitchMenu(idx int) (exit bool) {
 		exit = true
 	case 6:
 		//UI for run VFC animation
+		ctx, _ := context.WithCancel(context.Background())
 		go VFCTerm()
-		controllers.VFC("10015")
+		controllers.VFC("10015", ctx)
 		exit = true
 
 		//go VFCTerm()

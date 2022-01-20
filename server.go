@@ -34,7 +34,7 @@ func echoServer(c net.Conn) {
 		s := strings.TrimSpace(string(data))
 		if s == "VFC" {
 			MesToClient(c, "Выбрана служба vfc\n")
-			go controllers.VFC("10015")
+			go controllers.VFC("10015", ctxVFC)
 		}
 		if s == "WEB" {
 			MesToClient(c, "Выбрана служба web\n")

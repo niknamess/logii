@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"strconv"
@@ -26,6 +27,7 @@ var (
 
 	status tea.Model
 	test   []string
+	ctx, _ = context.WithCancel(context.Background())
 )
 
 // playType indicates how to play a gauge.
@@ -90,7 +92,7 @@ func main() {
 		return
 	}
 	if len(*flagVFC) > 0 {
-		controllers.VFC(*flagVFC)
+		controllers.VFC(*flagVFC, ctx)
 		return
 	}
 	if len(*flagR) > 0 {
