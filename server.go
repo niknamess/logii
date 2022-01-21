@@ -10,7 +10,9 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
@@ -82,12 +84,12 @@ func Server() string {
 
 		log.Fatal(err)
 	}
+
 	for _, f := range files {
 		if f.Name() == "echo.sock" {
-			e := os.Remove("/tmp/echo.sock")
-			if e != nil {
-				log.Fatal(e)
-			}
+			//e := os.Remove("/tmp/echo.sock")
+			log.Fatal("FIND echo.sock ")
+
 		}
 	}
 
@@ -95,23 +97,17 @@ func Server() string {
 	if err != nil {
 		log.Fatal("listen error:", err)
 	}
-
-	/* shutdown.Add(func() {
-
-		log.Println("Stopping...")
-		log.Println("3")
-		time.Sleep(time.Second)
-		log.Println("2")
-		time.Sleep(time.Second)
-		log.Println("1")
-		time.Sleep(time.Second)
-		//fd, _ := l.Accept()
-		//MesToClient(fd, "Server is stop")
-		log.Println("0, Server is stop")
-
-	}) */
-	//shutdown.Listen()
-
+	sigc := make(chan os.Signal, 1)
+	signal.Notify(sigc, os.Interrupt, os.Kill, syscall.SIGTERM)
+	go func(c chan os.Signal) {
+		// Wait for a SIGINT or SIGKILL:
+		sig := <-c
+		log.Printf("Caught signal %s: shutting down.", sig)
+		// Stop listening (and unlink the socket if unix type):
+		l.Close()
+		// And we're done:
+		os.Exit(0)
+	}(sigc)
 	for {
 		fd, err := l.Accept()
 		if err != nil {

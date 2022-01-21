@@ -20,19 +20,7 @@ func contextDemo(name string, ctx context.Context) {
 			fmt.Println(name, "has no deadline")
 		}
 		time.Sleep(time.Second)
-		go contextDemo1(name)
-		continue
 	}
-}
-
-func contextDemo1(name string) {
-	for {
-
-		fmt.Println(name, "AAAAAAAAAA")
-		time.Sleep(time.Second)
-
-	}
-
 }
 
 func main() {

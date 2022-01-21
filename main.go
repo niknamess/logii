@@ -27,8 +27,6 @@ var (
 
 	status tea.Model
 	test   []string
-	//ctx, _ = context.WithCancel(context.Background())
-	//ctxWEB, _ = context.WithCancel(context.Background())
 )
 
 // playType indicates how to play a gauge.
