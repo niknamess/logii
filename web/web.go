@@ -25,17 +25,17 @@ var (
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/logi2/repdata/").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/tmcs-log-agent-storage/").ExistingFilesOrDirs()
 	dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
+	//port = kingpin.Flag("port", "Port number to host the server").Short('p').Default("1515").Int()
 	//port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
-	//port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
-	port    *int
-	cron    = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
-	cert    = kingpin.Flag("Test", "Test").Short('c').Default("").String()
-	missadr []string
-	limit   string
-	ipaddr  []string
-	wg      sync.WaitGroup
-	status  bool = false
-	//ctxVFC, cancelVFC      = context.WithCancel(context.Background())
+	port            *int
+	cron            = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
+	cert            = kingpin.Flag("Test", "Test").Short('c').Default("").String()
+	missadr         []string
+	limit           string
+	ipaddr          []string
+	wg              sync.WaitGroup
+	status          bool = false
+	ctxCF, cancelCF      = context.WithCancel(context.Background())
 )
 
 type DatabaseConfig struct {
@@ -49,7 +49,12 @@ type Config struct {
 	DataBase DatabaseConfig `toml:"database"`
 }
 
-func ProcWeb(dir1 string, slice []string, ctx context.Context) error {
+func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
+	fmt.Println("Web service", port)
+	status = false
+	//port = new(int)
+	//*port = 15000
+	//port = 15000
 	if dir1 == "-x" {
 		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
 		status = true
@@ -63,7 +68,7 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) error {
 		//status = true
 	}
 
-	fmt.Println(dir1)
+	fmt.Println("dir", dir1)
 	fmt.Println("web", *port)
 
 	//ipaddr := make([]string, 0, 5)
@@ -76,7 +81,7 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) error {
 
 	kingpin.Parse()
 
-	err := util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
+	err = util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
 
 	if err != nil {
 		panic(err)
@@ -93,16 +98,17 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) error {
 		EnterIp()
 	}
 
-	Ip, Port := CheckConfig()
+	Ip, CPort := CheckConfig()
 	for i := 0; i < len(Ip); i++ {
 		//TODO
-		go CheckFiles(Ip[i], Port)
+		go CheckFiles(Ip[i], CPort, ctxCF)
 		time.Sleep(time.Second * 2)
 	}
 
 	//fmt.Scanln(limit)
 
-	go CheckFiles("localhost", "10015")
+	go CheckFiles("localhost", "10015", ctxCF)
+
 	time.Sleep(time.Second * 10)
 
 	router := mux.NewRouter()
@@ -113,36 +119,32 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) error {
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "index.tmpl")
 	})
-
+	fmt.Println(port)
 	server := &http.Server{
-		Addr:    fmt.Sprintf("0.0.0.0:%d", port),
+		Addr:    fmt.Sprintf("0.0.0.0:%d", 15000), //port
 		Handler: router}
 	//panic(server.ListenAndServe())
 	go func() {
-		if err = server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen:%+s\n", err)
+		// fmt.Println("WEB", server.ListenAndServe())
+		if err = server.ListenAndServe(); err != nil {
+			cancelCF()
+			log.Println("listen:", err)
 		}
 
 	}()
 	<-ctx.Done()
+
 	log.Printf("server stopped")
 
-	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer func() {
-		cancel()
-	}()
-
-	if err = server.Shutdown(ctxShutDown); err != nil {
+	if err = server.Shutdown(context.Background()); err != nil {
 		log.Fatalf("server Shutdown Failed:%+s", err)
 	}
 
 	log.Printf("server exited properly")
-
 	if err == http.ErrServerClosed {
 		err = nil
 	}
 	return err
-
 }
 
 // Use - Stacking middlewares
@@ -153,40 +155,50 @@ func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) h
 	return handler
 }
 
-func CheckFiles(address string, port string) {
-
-	for range time.Tick(time.Second * 3) {
-		if len(missadr) == 0 {
-			missadr = append(missadr, "nope")
-			//missadr = append(missadr, "nope")
-		}
-		for i := range missadr {
-			if missadr[i] != address {
-				err := util.GetFiles(address, port)
-				if err != nil {
-					log.Println(err)
-					fmt.Println(address)
-					missadr = append(missadr, address)
+func CheckFiles(address string, port string, ctx context.Context) {
+	//_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("stop")
+			return
+		default:
+			for range time.Tick(time.Second * 3) {
+				if len(missadr) == 0 {
+					missadr = append(missadr, "nope")
+					//missadr = append(missadr, "nope")
 				}
-				err = util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
+				for i := range missadr {
+					if missadr[i] != address {
+						err := util.GetFiles(address, port)
+						if err != nil {
+							log.Println(err)
+							fmt.Println(address)
+							missadr = append(missadr, address)
+						}
+						err = util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
 
-				if err != nil {
-					log.Println("LOOP", err)
-					panic(err)
+						if err != nil {
+							log.Println("LOOP", err)
+							panic(err)
+						}
+
+					}
 				}
+
+				fmt.Println(missadr)
+				wg.Add(1)
+				go reconect(address)
+				wg.Wait()
+				time.Sleep(time.Second * 5)
+				continue
+
 			}
 		}
-
-		fmt.Println(missadr)
-		wg.Add(1)
-		go reconect(address)
-		wg.Wait()
-		time.Sleep(time.Second * 5)
-		continue
-
 	}
-
 }
+
+//FIXME never used
 
 func reconect(address string) {
 	defer wg.Done()

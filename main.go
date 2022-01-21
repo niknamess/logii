@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	"strconv"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -34,6 +35,7 @@ var (
 
 func main() {
 	//content := "nope"
+	fmt.Println(os.Args[:])
 	flagFile := flag.String("f", "", "parse log file")
 	//flagFile := kingpin.Arg("f", "Directory path(s) to look for files").Default("./logtest/test/22-06-2021").String()
 	flagDir := flag.String("d", "", "parse dir")
@@ -82,7 +84,7 @@ func main() {
 	}
 
 	if len(*flagWeb) > 0 {
-		print(*flagWeb)
+		fmt.Println(*flagWeb)
 		web.ProcWeb(*flagWeb, test, ctxWEB)
 		return
 	}

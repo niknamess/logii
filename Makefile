@@ -11,7 +11,7 @@ build: clean
 
 .PHONY: dev
 dev: tst build
-	@$(MEPATH)/logi2 -p 15000
+	@$(MEPATH)/logi2 -p 15
 
 .PHONY: dev2
 dev2: tst build
