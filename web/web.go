@@ -24,10 +24,11 @@ var (
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./view").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/logi2/repdata/").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/tmcs-log-agent-storage/").ExistingFilesOrDirs()
-	dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
-	//port = kingpin.Flag("port", "Port number to host the server").Short('p').Default("1515").Int()
-	//port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
-	port            *int
+	dir   = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
+	port  = kingpin.Flag("port", "Port number to host the server").Short('p').Default("15000").Int()
+	portx = kingpin.Flag("portx", "Port number to host the server").Short('x').Default("15000").Int()
+	ports = kingpin.Flag("ports", "Port number to host the server").Short('s').Default("15000").Int()
+	//port            *int
 	cron            = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
 	cert            = kingpin.Flag("Test", "Test").Short('c').Default("").String()
 	missadr         []string
@@ -50,32 +51,16 @@ type Config struct {
 }
 
 func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
-	fmt.Println("Web service", port)
 	status = false
-	//port = new(int)
-	//*port = 15000
-	//port = 15000
 	if dir1 == "-x" {
-		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
 		status = true
-	}
-	if dir1 == "-s" {
-		port = kingpin.Flag("port", "Port number to host the server").Short('s').Default("15000").Int()
-		//status = true
-	}
-	if dir1 == "-p" {
-		port = kingpin.Flag("port", "Port number to host the server").Short('x').Default("15000").Int()
-		//status = true
 	}
 
 	fmt.Println("dir", dir1)
-	fmt.Println("web", *port)
 
-	//ipaddr := make([]string, 0, 5)
 	generate_logs.Remove("./testsave/", "gen_logs_coded")
 	generate_logs.Remove("./testsave/", "md5")
 
-	//util.GetFiles("localhost", "10015")
 	logenc.CreateDir("./repdata/", "")
 	logenc.CreateDir("./testsave/", "")
 
@@ -105,8 +90,6 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 		time.Sleep(time.Second * 2)
 	}
 
-	//fmt.Scanln(limit)
-
 	go CheckFiles("localhost", "10015", ctxCF)
 
 	time.Sleep(time.Second * 10)
@@ -123,16 +106,17 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 	server := &http.Server{
 		Addr:    fmt.Sprintf("0.0.0.0:%d", 15000), //port
 		Handler: router}
-	//panic(server.ListenAndServe())
 	go func() {
-		// fmt.Println("WEB", server.ListenAndServe())
 		if err = server.ListenAndServe(); err != nil {
-			cancelCF()
 			log.Println("listen:", err)
 		}
 
 	}()
 	<-ctx.Done()
+	go func() {
+		cancelCF()
+		ctxCF, cancelCF = context.WithCancel(context.Background())
+	}()
 
 	log.Printf("server stopped")
 
@@ -156,18 +140,17 @@ func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) h
 }
 
 func CheckFiles(address string, port string, ctx context.Context) {
-	//_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	for {
-		select {
-		case <-ctx.Done():
-			fmt.Println("stop")
-			return
-		default:
-			for range time.Tick(time.Second * 3) {
-				if len(missadr) == 0 {
-					missadr = append(missadr, "nope")
-					//missadr = append(missadr, "nope")
-				}
+
+	for range time.Tick(time.Second * 3) {
+		if len(missadr) == 0 {
+			missadr = append(missadr, "nope")
+		}
+		for {
+			select {
+			case <-ctx.Done():
+				fmt.Println("stop CheckFiles")
+				return
+			default:
 				for i := range missadr {
 					if missadr[i] != address {
 						err := util.GetFiles(address, port)
@@ -195,7 +178,9 @@ func CheckFiles(address string, port string, ctx context.Context) {
 
 			}
 		}
+
 	}
+
 }
 
 //FIXME never used

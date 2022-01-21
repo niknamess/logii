@@ -20,7 +20,19 @@ func contextDemo(name string, ctx context.Context) {
 			fmt.Println(name, "has no deadline")
 		}
 		time.Sleep(time.Second)
+		go contextDemo1(name)
+		continue
 	}
+}
+
+func contextDemo1(name string) {
+	for {
+
+		fmt.Println(name, "AAAAAAAAAA")
+		time.Sleep(time.Second)
+
+	}
+
 }
 
 func main() {
@@ -42,8 +54,12 @@ func main() {
 
 	// This will cancel the deadline context as well as its
 	// child - the cancelContext
-	fmt.Println("Cancelling the cancel context...")
-	cancelFunc()
+
+	go func() {
+		time.Sleep(time.Second * 7)
+		fmt.Println("Cancelling the cancel context...")
+		cancelFunc()
+	}()
 
 	<-cancelContext.Done()
 	fmt.Println("The cancel context has been cancelled...")

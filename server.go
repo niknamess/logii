@@ -47,13 +47,16 @@ func echoServer(c net.Conn) {
 			go func() {
 				cancelWEB()
 				fmt.Println("stop WEB")
+				ctxWEB, cancelWEB = context.WithCancel(context.Background())
 			}()
+
 		}
 		if s == "STOPVFC" {
 			MesToClient(c, "Остановыка службы vfc\n")
 			go func() {
 				cancelVFC()
 				fmt.Println("stop VFC")
+				ctxVFC, cancelVFC = context.WithCancel(context.Background())
 			}()
 			//cancel()
 		}
