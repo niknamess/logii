@@ -1,7 +1,7 @@
 // Very basic socket server
 // https://golangr.com/
 
-package main
+package server
 
 import (
 	"context"
@@ -16,13 +16,16 @@ import (
 
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
-	"gitlab.topaz-atcs.com/tmcs/logi2/web/util"
 )
 
-var mail string = "Succes"
+var (
+	ipaddr []string
 
-var ctxVFC, cancelVFC = context.WithCancel(context.Background())
-var ctxWEB, cancelWEB = context.WithCancel(context.Background())
+	mail string = "Succes"
+
+	ctxVFC, cancelVFC = context.WithCancel(context.Background())
+	ctxWEB, cancelWEB = context.WithCancel(context.Background())
+)
 
 func echoServer(c net.Conn) {
 	for {
@@ -118,56 +121,6 @@ func Server() string {
 
 	}
 
-}
-
-func enterIp(c net.Conn) []string {
-
-	data := []byte("Input ip address for running service:\n Enter \"stop\" to run service") //Send Client
-	_, err := c.Write(data)
-	if err != nil {
-		log.Fatal("Write: ", err)
-	}
-	for {
-		buf := make([]byte, 512)
-		nr, _ := c.Read(buf)
-		data := buf[0:nr]
-
-		//data = []byte("В") //Send Client
-
-		limit := string(data)
-		limit = strings.TrimSpace(limit)
-		if limit == "stop" {
-			break
-		} else if util.CheckIPAddress(limit) {
-			data = []byte("Valid") //Send Client
-			_, err := c.Write(data)
-			if err != nil {
-				log.Fatal("Write: ", err)
-			}
-			ipaddr = append(ipaddr, limit)
-			ipaddr = removeDuplicateStr(ipaddr)
-
-		} else {
-			data = []byte("Invalid") //Send Client
-			_, err := c.Write(data)
-			if err != nil {
-				log.Fatal("Write: ", err)
-			}
-		}
-	}
-	return ipaddr
-}
-
-func removeDuplicateStr(strSlice []string) []string {
-	allKeys := make(map[string]bool)
-	list := []string{}
-	for _, item := range strSlice {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
-			list = append(list, item)
-		}
-	}
-	return list
 }
 
 func MesToClient(c net.Conn, message string) {

@@ -39,10 +39,11 @@
 - [x] check with md5 integrity file
 - [x] check with hash sum signature file 
 - [ ] stable terminal ui interface
-- [ ] client server architecture (control services from terminal)
+- [x] client server architecture (control services from terminal)
 - [ ] fix bugs with search web
 - [ ] interface in web
-- [ ] split web and server  
+- [ ] split web and server
+- [x] stable unix socket connection   
 
 
 

@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
 	"strconv"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"gitlab.topaz-atcs.com/tmcs/logi2/client"
 	generator "gitlab.topaz-atcs.com/tmcs/logi2/generate_logs"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
+	"gitlab.topaz-atcs.com/tmcs/logi2/server"
 	"gitlab.topaz-atcs.com/tmcs/logi2/terminal"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web"
 	"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
@@ -27,6 +30,7 @@ var (
 
 	status tea.Model
 	test   []string
+	ctx, _ = context.WithCancel(context.Background())
 )
 
 // playType indicates how to play a gauge.
@@ -83,7 +87,7 @@ func main() {
 
 	if len(*flagWeb) > 0 {
 		fmt.Println(*flagWeb)
-		web.ProcWeb(*flagWeb, test, ctxWEB)
+		web.ProcWeb(*flagWeb, test, ctx)
 		return
 	}
 
@@ -92,7 +96,7 @@ func main() {
 		return
 	}
 	if len(*flagVFC) > 0 {
-		controllers.VFC(*flagVFC, ctxVFC)
+		controllers.VFC(*flagVFC, ctx)
 		return
 	}
 	if len(*flagR) > 0 {
@@ -106,12 +110,12 @@ func main() {
 	}
 
 	if len(*flagServer) > 0 {
-		Server()
+		server.Server()
 		return
 	}
 
 	if *flagClient {
-		Client()
+		client.Client()
 		return
 	}
 
