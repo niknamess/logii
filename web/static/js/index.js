@@ -108,14 +108,24 @@ function initWS(file) {
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\"> <tr > <td width=\"550\" height=\"100\" >" +
-                "APPNAME" + "</td> <td width=\"550px\" height=\"100px\" >" +
-                "APPPATH" + "</td> <td width=\"550px\" height=\"100px\" >" +
-                "APPPID" + "</td><td width=\"550px\" height=\"100px\" >" +
-                "THREAD" + "</td><td width=\"550px\" height=\"100px\" >" +
-                "TIME" + "</td><td width=\"550px\" height=\"100px\" >" +
-                "ULID" + "</td><td width=\"550px\" height=\"100px\" >" +
-                "MESSAGE" + "</td><td width=\"550px\" height=\"100px\" >" +
+            container.append("<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%'> " +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"110px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"110px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr > <td>" +
+                "APPNAME" + "</td> <td>" +
+                "APPPATH" + "</td> <td>" +
+                "APPPID" + "</td><td>" +
+                "THREAD" + "</td><td>" +
+                "TIME" + "</td><td>" +
+                "ULID" + "</td><td>" +
+                "MESSAGE" + "</td><td>" +
                 "DETAILS" + "</td></tr > </table >");
         }
     }
@@ -125,36 +135,88 @@ function initWS(file) {
         if (str.indexOf("INFO") == 0) {
 
             str = str.replace("INFO", "");
-            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' ><tr >" +
-                str.replace(/,\n/g, "<tr  >")
-                .replace(/,/g, "<td width=\"550\" height=\"100\">")
+            // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +
+            str = "<table  class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%'  >" +
+                /* "<col width=\"70%\" />" +
+                "<col width=\"70%\" />" +
+                "<col width=\"35%\" />" +
+                "<col width=\"35%\" />" +
+                "<col width=\"70%\" />" +
+                "<col width=\"100%\" />" +
+                "<col width=\"100%\" />" +
+                "<col width=\"0%\" />" +
+                "<col width=\"200px\" />" + */
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"50px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"100px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr >" +
+                str.replace(/,\n/g, "<tr >")
+                .replace(/,/g, "<td width=\"100\" height=\"100\">")
                 .replace(/<tr>$/, "") +
                 "</table>";
             container.append(str);
 
         } else if (str.indexOf("ERROR") == 0) {
             str = str.replace("ERROR", "");
-            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#dc143c\" ><tr >" +
+            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#dc143c\" >" +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"50px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"100px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr >" +
                 str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"550\" height=\"100\">")
+                .replace(/,/g, "<td width=\"100\" height=\"100\">")
                 .replace(/<tr>$/, "") +
                 "</table>";
             container.append(str);
 
         } else if (str.indexOf("WARNING") == 0) {
             str = str.replace("WARNING", "");
-            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" ><tr >" +
+            // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" >" +
+            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" >" +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"50px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"100px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr >" +
                 str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"550\" height=\"100\">")
+                .replace(/,/g, "<td width=\"100\" height=\"100\">")
                 .replace(/<tr>$/, "") +
                 "</table>";
             container.append(str);
             // container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
         } else if (str.indexOf("DEBUG") == 0) {
             str = str.replace("DEBUG", "");
-            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#00ff00\" ><tr >" +
+            // str = "<table cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#00ff00\" >" +
+            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#00ff00\" >" +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"50px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"100px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr >" +
                 str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"550\" height=\"100\">")
+                .replace(/,/g, "<td width=\"100\" height=\"100\">")
                 .replace(/<tr>$/, "") +
                 "</table>";
             container.append(str);

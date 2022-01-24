@@ -6,8 +6,23 @@ td {
     overflow: hidden;
 }
 
-table {
+
+/* table {
     table-layout: fixed;
     width: 100%;
     height: 70%
+}
+ */
+
+table.fixed {
+    table-layout: fixed;
+}
+
+table.fixed td {
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+td {
+    word-wrap: break-word;
 }

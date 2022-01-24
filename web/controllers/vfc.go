@@ -23,7 +23,7 @@ func VFC(port string, ctx context.Context) (err error) {
 	fmt.Println("Start VFC")
 	addr := ":" + port
 	//dir := "/home/maxxant/Documents/log"
-	dir := "./genrlogs./"
+	dir := "./tmcs-log-agent-storage/"
 	//dir := "/home/nik/projects/Course/tmcs-log-agent-storage/"
 
 	var listener net.Listener
