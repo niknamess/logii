@@ -135,8 +135,8 @@ function initWS(file) {
         if (str.indexOf("INFO") == 0) {
 
             str = str.replace("INFO", "");
-            // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +
-            str = "<table  class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%'  >" +
+            // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
+            str = "<table  class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#b0ffb0\" >" +
                 /* "<col width=\"70%\" />" +
                 "<col width=\"70%\" />" +
                 "<col width=\"35%\" />" +
@@ -164,7 +164,7 @@ function initWS(file) {
 
         } else if (str.indexOf("ERROR") == 0) {
             str = str.replace("ERROR", "");
-            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#dc143c\" >" +
+            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffb0b0\" >" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
                 "<col width=\"50px\" />" +
@@ -184,7 +184,7 @@ function initWS(file) {
         } else if (str.indexOf("WARNING") == 0) {
             str = str.replace("WARNING", "");
             // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" >" +
-            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" >" +
+            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffff90\" >" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
                 "<col width=\"50px\" />" +
@@ -204,7 +204,7 @@ function initWS(file) {
         } else if (str.indexOf("DEBUG") == 0) {
             str = str.replace("DEBUG", "");
             // str = "<table cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#00ff00\" >" +
-            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#00ff00\" >" +
+            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#a0a0a0\" >" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
                 "<col width=\"50px\" />" +
