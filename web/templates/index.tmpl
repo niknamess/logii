@@ -5,6 +5,9 @@
   
     <link rel="stylesheet" href="/css/angular-material.min.css">
     <link rel="stylesheet" href="/css/fonts.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
   </head>
   <body ng-app="logi2">
  
@@ -37,8 +40,20 @@
         <form action="searchproject" method="GET" target="hiddenFrame">
             <label>Search</label><br>
             <input type="text" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs"/><br><br>
-            <button  id="btn" (click)=”handleClick($event)” type=”button” >Find</button> 
-            <button  id="res" (click)=”handleClick($event)” type=”button” >On start page</button> 
+            <input id="scale0" class="scale" name="scale" type="radio" value="0" checked>
+            <button  class="btn" style="border-left:1px solid #0d8bf2" id="res" (click)=”handleClick($event)” type=”button” >On start page</button> 
+            <button class="btn"  style="border-left:1px solid #0d8bf2"  id="view" (click)=”handleClick($event)” type=”button”>Button</button>
+              <div class="dropdown">
+                 <button class="btn">
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a class="error" href="#error" id="btnerr" (click)=”handleClick($event)” type=”button”>ERROR</a>
+                  <a class="warning" href="#warning"id="btnwar" (click)=”handleClick($event)” type=”button”>WARNING</a>
+                  <a class="info" href="#info" id="btninf" (click)=”handleClick($event)” type=”button”>INFO</a>
+                  <a class="debug" href="#debug" id="btndbgs" (click)=”handleClick($event)” type=”button”>DEBUG</a>
+                </div>
+              </div>
           <!--  <button  id="view" (click)=”handleClick($event)” type=”button” >On start page</button> -->
             <md-content class="md-padding">
           <div layout="row" ng-hide="!showCard" class="ng-hide">
@@ -92,10 +107,12 @@
       </div>
     </div>
   </body>
-   <footer>
+   <footer >
     <p style="text-align:center;">©Авторские права  2050. Все права защищены.</p>
     <link rel="stylesheet" href="/css/angular-material.min.css">
     <link rel="stylesheet" href="/css/fonts.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/MaterialIcons.css">
   </footer>
   <script src="/js/angular.min.js"></script>
   <script src="/js/angular-animate.min.js"></script>
