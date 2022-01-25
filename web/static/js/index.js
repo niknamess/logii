@@ -7,6 +7,10 @@ const buttonInf = document.getElementById('btninf');
 const buttonDbgs = document.getElementById('btndbgs');
 const buttonWar = document.getElementById('btnwar');
 const buttonView = document.getElementById('view');
+var countWar = 0
+var countErr = 0
+var countInf = 0
+var countDbg = 0
 
 var lastItem;
 //const input = document.querySelector('input');
@@ -15,24 +19,41 @@ buttonR.addEventListener('click', event => {
     setTimeout(
         () => {
             window.location.reload();
+            Null()
         },
         1 * 200
     );
 });
 
 buttonView.addEventListener('click', event => {
+    /*   setTimeout(
+          () => {
+              //  countWS(lastItem)
+              Null()
+          },
+          1 * 200
+      ); */
     setTimeout(
         () => {
             //window.location.reload();
+            //countWS(lastItem)
+            countWS(lastItem)
             initWS(lastItem)
             setBackColor('view', "#ed6c27")
             quotation('view', "Buttom")
         },
         1 * 200
     );
+
+    /*  countWar = 0
+     countErr = 0
+     countInf = 0
+     countDbg = 0 */
+
 });
 
 buttonErr.addEventListener('click', event => {
+    Null()
     setTimeout(
         () => {
             initWSType(lastItem, "ERROR", "#ffb0b0")
@@ -76,6 +97,12 @@ buttonWar.addEventListener('click', event => {
     );
 });
 
+function Null() {
+    countWar = 0
+    countErr = 0
+    countInf = 0
+    countDbg = 0
+}
 
 function setBackColor(btn, color) {
     var property = document.getElementById(btn);
@@ -100,7 +127,7 @@ function change(identifier, color) {
 }
 
 function mainController($rootScope, $scope, $mdSidenav, $http) {
-
+    Null()
     var vm = this;
     //var lastItem;
 
@@ -145,9 +172,10 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("Your browser does not support WebSockets");
             return;
         } else {
-
-
+            //Null()
+            countWS(file)
             ws = initWS(file);
+
 
         }
 
@@ -182,7 +210,7 @@ function initWS(file) {
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
-                "<col width=\"50px\" />" +
+                "<col width=\"100px\" />" +
                 "<col width=\"130px\" />" +
                 "<col width=\"100px\" />" +
                 "<col width=\"300px\" />" +
@@ -297,6 +325,7 @@ function initWS(file) {
     }
     socket.onclose = function() {
         container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        Null()
     }
     socket.onerror = function(e) {
         container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
@@ -304,10 +333,6 @@ function initWS(file) {
 
     return socket;
 }
-
-
-
-
 
 
 
@@ -388,6 +413,80 @@ function initWSType(file, type, color) {
     }
     socket.onclose = function() {
         container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        Null()
+    }
+    socket.onerror = function(e) {
+        container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
+    }
+
+    return socket;
+}
+
+
+
+function countWS(file) {
+    /* var countWar = 0
+    var countErr = 0
+    var countInf = 0
+    var countDbg = 0 */
+
+    var ws_proto = "ws:"
+    if (window.location.protocol === "https:") {
+        ws_proto = "wss:"
+    }
+
+    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
+    var container = angular.element(document.querySelector("#container"));
+
+
+
+
+    container.html("")
+    socket.onopen = function() {
+        var filename = file.replace(/^.*[\\\/]/, '')
+        container.append("<p><b>Tailing file: " + filename + "</b></p>");
+        strf = file
+        if (strf.indexOf("undefined") != 0) {
+            container.append("<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%'> " +
+                "<col width=\"150px\" />" +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"110px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"110px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"400px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr > <td class=\"info\">" + "INFO:" +
+                countInf + "</td> <td class=\"error\">" + "Error:" +
+                countErr + "</td> <td class=\"warning\">" + "Warning:" +
+                countWar + "</td> <td class=\"debug\">" + "Debug:" +
+                countDbg +
+                "</td></tr > </table >");
+        }
+    }
+
+    socket.onmessage = function(e) {
+        str = e.data.trim();
+        if (str.indexOf("WARNING") == 0) {
+            countWar++
+
+        } else if (str.indexOf("ERROR") == 0) {
+            countErr++
+
+        } else if (str.indexOf("INFO") == 0) {
+            countInf++
+        } else if (str.indexOf("DEBUG") == 0) {
+            countDbg++
+        }
+
+
+
+    }
+    socket.onclose = function() {
+        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        Null()
     }
     socket.onerror = function(e) {
         container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");

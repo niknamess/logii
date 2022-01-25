@@ -183,8 +183,6 @@ func CheckFiles(address string, port string, ctx context.Context) {
 
 }
 
-//FIXME never used
-
 func reconect(address string) {
 	defer wg.Done()
 

@@ -40,7 +40,7 @@
 - [x] check with hash sum signature file 
 - [ ] stable terminal ui interface
 - [x] client server architecture (control services from terminal)
-- [ ] fix bugs with search web
+- [x] fix bugs with search web
 - [ ] interface in web
 - [ ] split web and server
 - [x] stable unix socket connection   

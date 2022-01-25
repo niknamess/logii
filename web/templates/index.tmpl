@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
   </head>
-  <body ng-app="logi2">
+  <body ng-app="logi2" >
  
     <div ng-controller="mainController as mc" layout="column" ng-cloak>
       <md-toolbar class="md-hue-2 md-whiteframe-z3">
@@ -68,22 +68,18 @@
               <p>
                 Logi 2 
               </p>
-                 
                   <md-icon md-svg-icon="/img/ic_launch_black_24px.svg"></md-icon>
-                </md-button>
+                  </md-button>
               </p>
             </md-card>
             <md-content flex></md-content>
           </div>
         </md-content>
-
-
         </form>
         <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
           <!-- Content will be inserted by websocket connection -->
-       
       </md-content>
-      <div>
+      <div class="TEST">
         <section layout="row">
           <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
           <md-toolbar>

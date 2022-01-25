@@ -411,7 +411,7 @@ func TerminalUi() (string, tea.Model) {
 	return str, model
 }
 
-func VfcUiTerm() {
+/* func VfcUiTerm() {
 
 }
 func WebUiTerm() {
@@ -419,7 +419,7 @@ func WebUiTerm() {
 }
 func ProcFileUiTerm() {
 
-}
+} */
 
 var clear map[string]func() //create a map for storing clear funcs
 

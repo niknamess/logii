@@ -90,7 +90,7 @@ func Server() string {
 
 	for _, f := range files {
 		if f.Name() == "echo.sock" {
-			//e := os.Remove("/tmp/echo.sock")
+			os.Remove("/tmp/echo.sock")
 			log.Fatal("FIND echo.sock ")
 
 		}
