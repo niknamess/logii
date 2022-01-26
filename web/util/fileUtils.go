@@ -78,7 +78,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		for i := 0; i < len(UlidC); i++ {
 
 			v, found := SearchMap[UlidC[i]]
-			if found == true {
+			if found {
 
 				conn.WriteMessage(websocket.TextMessage, []byte(v))
 
@@ -109,7 +109,7 @@ func IndexFiles(fileList []string) error {
 
 	// Iterate through the map that contains the filenames
 	for k, v := range indexMap {
-		if v == false {
+		if !v {
 			delete(indexMap, k)
 			continue
 		}
@@ -149,6 +149,7 @@ func dfs(file string) {
 		filelist, _ := ioutil.ReadDir(absPath)
 		for _, f := range filelist {
 			dfs(basepath + string(os.PathSeparator) + f.Name())
+			//dfs(basepath + string(os.PathSeparator) + f.Name())
 		}
 	} else if strings.ContainsAny(s.Mode().String(), "alTLDpSugct") {
 		// skip these files
@@ -235,7 +236,7 @@ func GetFiles(address string, port string) error {
 			}
 			defer resp.Body.Close()
 			contain := strings.Contains(fileName, "md5")
-			if contain == true && logenc.CheckFileSum("./testsave/"+fileName, "rep", "") != false {
+			if contain && logenc.CheckFileSum("./testsave/"+fileName, "rep", "") {
 				signature = true
 
 				fileS, _ := os.OpenFile("./"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
@@ -249,7 +250,7 @@ func GetFiles(address string, port string) error {
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 				logenc.DeleteOldsFiles("./testsave/", fileName, "")
 
-			} else if contain == false {
+			} else if !contain {
 				_, err = io.Copy(file, resp.Body)
 				if err != nil {
 
@@ -257,9 +258,9 @@ func GetFiles(address string, port string) error {
 				}
 			}
 
-			if signature == true && contain == false {
+			if signature && !contain {
 				last3 := fileName[len(fileName)-3:]
-				if logenc.CheckFileSum("./testsave/"+fileName, last3, "") == true {
+				if logenc.CheckFileSum("./testsave/"+fileName, last3, "") {
 					logenc.DeleteOldsFiles("./repdata/", fileName, "")
 					logenc.Replication("./testsave/" + fileName)
 					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
@@ -273,7 +274,7 @@ func GetFiles(address string, port string) error {
 					logenc.DeleteOldsFiles("./testsave/", fileName, "")
 				}
 
-			} else if signature == false && contain == false {
+			} else if !signature && !contain {
 				logenc.Replication("./testsave/" + fileName)
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 				fmt.Println("Merge", fileName)

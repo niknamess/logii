@@ -39,7 +39,6 @@ const (
 
 // General stuff for styling the view
 var (
-	end           = 1
 	term          = termenv.ColorProfile()
 	keyword       = makeFgStyle("211")
 	subtle        = makeFgStyle("241")
@@ -231,7 +230,7 @@ func chosenView(m Model) string {
 	case 6:
 		msg = fmt.Sprintf("running VFC\n\n We start VFC service  %s ...", keyword("OK"))
 	case 7:
-		msg = fmt.Sprintf("Clear genlogs\n\n Please wait, we clear generated...")
+		msg = fmt.Sprintf("clear genlogs\n\n Please wait, we clear generated...")
 		generator.Example()
 	case 8:
 		fmt.Print("Enter content for Search:")
@@ -287,12 +286,12 @@ func makeFgStyle(color string) func(string) string {
 }
 
 // Color a string's foreground and background with the given value.
-func makeFgBgStyle(fg, bg string) func(string) string {
+/* func makeFgBgStyle(fg, bg string) func(string) string {
 	return termenv.Style{}.
 		Foreground(term.Color(fg)).
 		Background(term.Color(bg)).
 		Styled
-}
+} */
 
 // Generate a blend of colors.
 func makeRamp(colorA, colorB string, steps float64) (s []string) {
@@ -361,7 +360,11 @@ func SwitchMenu(idx int) (exit bool) {
 		//fmt.Print("Enter port for run Web:")
 		//reader := bufio.NewReader(os.Stdin)
 		//text, _ := reader.ReadString('\n')
-		ctxWEB, _ := context.WithCancel(context.Background())
+		ctxWEB, err := context.WithCancel(context.Background())
+		if err != nil {
+			log.Print(err)
+
+		}
 		var test []string
 		CallClear()
 		web.ProcWeb("-p", test, ctxWEB)

@@ -17,7 +17,6 @@
 
 table.fixed {
     table-layout: fixed;
-    cellpadding: 4;
     border: 1;
     font-family: "Courier New", Courier, monospace;
     font-size: 90%;

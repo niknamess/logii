@@ -13,7 +13,7 @@ import (
 // pushed, the Cron executes the function passed
 func MakeAndStartCron(repeat time.Duration, run func(...interface{}) error, v ...interface{}) {
 	ticker := time.Tick(repeat)
-	for _ = range ticker {
+	for range ticker {
 		fmt.Fprintf(os.Stderr, "Running cron job @%v\n", time.Now())
 		//fmt.Println("length of arg :", len(v))
 		err := run(v...)
