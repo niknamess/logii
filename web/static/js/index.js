@@ -40,7 +40,7 @@ buttonView.addEventListener('click', event => {
             countWS(lastItem)
             initWS(lastItem)
             setBackColor('view', "#ed6c27")
-            quotation('view', "Buttom")
+            quotation('view', "Find")
         },
         1 * 200
     );
@@ -233,87 +233,19 @@ function initWS(file) {
     socket.onmessage = function(e) {
         str = e.data.trim();
         if (str.indexOf("INFO") == 0) {
-
-            str = str.replace("INFO", ",INFO");
-            // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
-            str = "<table bgcolor=\"#b0ffb0\" >" +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"50px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<tr >" +
-                str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"100\" height=\"100\">")
-                .replace(/<tr>$/, "") +
-                "</table>";
+            str = Maket(str, "INFO", "#b0ffb0")
             container.append(str);
 
         } else if (str.indexOf("ERROR") == 0) {
-            str = str.replace("ERROR", ",ERROR");
-            str = "<table  bgcolor=\"#ffb0b0\" >" +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"50px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<tr >" +
-                str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"100\" height=\"100\">")
-                .replace(/<tr>$/, "") +
-                "</table>";
+            str = Maket(str, "ERROR", "#ffb0b0")
             container.append(str);
 
         } else if (str.indexOf("WARNING") == 0) {
-            str = str.replace("WARNING", ",WARNING");
-            // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" >" +
-            str = "<table  bgcolor=\"#ffff90\" >" +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"50px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<tr >" +
-                str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"100\" height=\"100\">")
-                .replace(/<tr>$/, "") +
-                "</table>";
+            str = Maket(str, "WARNING", "#ffff90")
             container.append(str);
             // container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
         } else if (str.indexOf("DEBUG") == 0) {
-            str = str.replace("DEBUG", ",DEBUG");
-            // str = "<table cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#00ff00\" >" +
-            str = "<table bgcolor=\"#a0a0a0\" >" +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"50px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<tr >" +
-                str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"100\" height=\"100\">")
-                .replace(/<tr>$/, "") +
-                "</table>";
+            str = Maket(str, "DEBUG", "#a0a0a0")
             container.append(str);
         } else {
             container.append("<p style='background-color: #ffff90; color:blue'>" + str + "</p>" + "<hr>");
@@ -375,41 +307,19 @@ function initWSType(file, type, color) {
                 "TIME" + "</td><td>" +
                 "ULID" + "</td><td>" +
                 "MESSAGE" + "</td><td>" +
-                "DETAILS" + "</td></tr > </table >");
+                "DETAILS" + "</td></tr > </table >"
+
+            );
         }
     }
 
     socket.onmessage = function(e) {
         str = e.data.trim();
         if (str.indexOf(type) == 0) {
-
-            str = str.replace(type, "");
-            // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
-            str = "<table bgcolor=" + color + " >" +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"50px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<tr >" +
-                str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"100\" height=\"100\">")
-                .replace(/<tr>$/, "") +
-                "</table>";
+            str = Maket(str, type, color)
             container.append(str);
 
-        } else {
-            //container.append("<p>" + "</p>");
-
         }
-
-        //container.append(str + "<br>" + "<hr>");
-
     }
     socket.onclose = function() {
         container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
@@ -494,7 +404,7 @@ function countWS(file) {
 
     return socket;
 }
-
+/* 
 function Maket(str, type, color) {
 
 
@@ -519,4 +429,28 @@ function Maket(str, type, color) {
         "</table>";
     container.append(str);
 
+}
+ */
+
+//сортировка пузырек
+function Maket(str, type, color) {
+    str = str.replace(type, "," + type);
+    // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
+    str = "<table class=\"table-bordered\" bgcolor=" + color + " >" +
+        "<col width=\"150px\" />" +
+        "<col width=\"150px\" />" +
+        "<col width=\"350px\" />" +
+        "<col width=\"50px\" />" +
+        "<col width=\"130px\" />" +
+        "<col width=\"100px\" />" +
+        "<col width=\"300px\" />" +
+        "<col width=\"400px\" />" +
+        "<col width=\"500px\" />" +
+        "<col width=\"200px\" />" +
+        "<tr >" +
+        str.replace(/,\n/g, "<tr >")
+        .replace(/,/g, "<td width=\"100\" height=\"100\">")
+        .replace(/<tr>$/, "") +
+        "</table>";
+    return str
 }
