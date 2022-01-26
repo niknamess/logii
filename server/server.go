@@ -25,6 +25,7 @@ var (
 
 	ctxVFC, cancelVFC = context.WithCancel(context.Background())
 	ctxWEB, cancelWEB = context.WithCancel(context.Background())
+	sigc              = make(chan os.Signal, 1)
 )
 
 func echoServer(c net.Conn) {
@@ -65,11 +66,16 @@ func echoServer(c net.Conn) {
 			}()
 			//cancel()
 		}
+		if s == "STOP SERVER" {
+			MesToClient(c, "Остановыка сервера\n")
+			//syscall.Kill()
+			os.Exit(0)
+		}
 		//
 		data = []byte(mail) //Send Client
 		_, err = c.Write(data)
 		if err != nil {
-			log.Fatal("Write: ", err)
+			log.Print("Write: ", err)
 		}
 		//
 	}
@@ -100,7 +106,7 @@ func Server() string {
 	if err != nil {
 		log.Fatal("listen error:", err)
 	}
-	sigc := make(chan os.Signal, 1)
+	//sigc := make(chan os.Signal, 1)
 	signal.Notify(sigc, os.Interrupt, os.Kill, syscall.SIGTERM)
 	go func(c chan os.Signal) {
 		// Wait for a SIGINT or SIGKILL:

@@ -13,8 +13,6 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"gitlab.topaz-atcs.com/tmcs/logi2/terminal"
-	"golang.org/x/text/transform"
-	"golang.org/x/text/unicode/norm"
 )
 
 func reader(r io.Reader) {
@@ -67,6 +65,9 @@ func Client() {
 				time.Sleep(1e9)
 			}
 		}
+		if idx == 4 {
+			return
+		}
 
 		time.Sleep(1e9)
 	}
@@ -83,6 +84,8 @@ func menuClientMain() (int, string) {
 		SetLine(1, "VFC").
 		SetLine(2, "STOPWEB").
 		SetLine(3, "STOPVFC").
+		SetLine(4, "STOP CLIENT").
+		SetLine(5, "STOP SERVER").
 		Start()
 	idx, ln, ok := menu.ChosenLine()
 	if !ok {
@@ -109,10 +112,16 @@ func webMenu() string {
 	str = strings.Join(split, " ")
 	split = strings.Split(str, " ")
 	str = strings.Join(split, "")
-	t := transform.Chain(norm.NFD, transform.RemoveFunc(isMn), norm.NFC)
-	result, _, _ := transform.String(t, str)
+	str = normalform8(str)
 	//fmt.Print("Adress:", str)
-	return result
+	return str
+}
+
+func normalform8(s string) string {
+	if last := len(s) - 8; last >= 0 {
+		s = s[:last]
+	}
+	return s
 }
 
 type tickMsg struct{}
@@ -166,29 +175,3 @@ func (m model) View() string {
 		m.textInput.View())
 
 }
-
-/* func Clien{t() {
-	//reader := bufio.NewReader(os.Stdin)
-	//ipaddress, _ := reader.ReadString('\n')
-	//util.CheckIPAddress(ipaddress)
-	// Подключаемся к сокету
-	conn, _ := net.Dial("tcp", "127.0.0.1:8888")
-	terminal.CallClear()
-	fmt.Println("Now you can use only VFC(stable) and WEB(in work)")
-	for {
-		//message, _ := bufio.NewReader(conn).ReadString('\n')
-		//fmt.Print("Message from server: " + message)
-		//terminal.CallClear()
-		// Чтение входных данных от stdin
-		reader := bufio.NewReader(os.Stdin)
-		//mt.Println("Now you can use only VFC(stable) and WEB(in work)")
-		fmt.Print("Text to send: ")
-		text, _ := reader.ReadString('\n')
-		// Отправляем в socket
-		fmt.Fprintf(conn, text+"\n")
-		// Прослушиваем ответ
-		message, _ := bufio.NewReader(conn).ReadString('\n')
-		fmt.Print("Message from server: " + message)
-	}
-}
-*/
