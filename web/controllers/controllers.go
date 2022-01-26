@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"log"
 
 	//"encoding/json"
 
@@ -36,8 +37,34 @@ type MyStruct struct {
 
 // RootHandler - http handler for handling / path
 func RootHandler(w http.ResponseWriter, r *http.Request) {
+
+	files := []string{
+		"web/templates/index.tmpl",
+		"web/templates/footer.tmpl",
+		//"./ui/html/footer.partial.tmpl",
+		"web/templates/header.tmpl",
+		"web/templates/wscontent.tmpl",
+		"web/templates/card.tmpl",
+	}
 	t := template.New("index").Delims("<<", ">>")
-	t, err := t.ParseFiles("web/templates/index.tmpl")
+
+	t, err := t.Parse("footer")
+	if err != nil {
+		log.Fatal("Problem with template \"footer\"")
+	}
+	t, err = t.Parse("header")
+	if err != nil {
+		log.Fatal("Problem with template \"header\"")
+	}
+	t, err = t.Parse("wscontent")
+	if err != nil {
+		log.Fatal("Problem with template \"wscontent\"")
+	}
+	t, err = t.Parse("card")
+	if err != nil {
+		log.Fatal("Problem with template \"card\"")
+	}
+	t, err = t.ParseFiles(files...)
 	t = template.Must(t, err)
 	if err != nil {
 		panic(err)

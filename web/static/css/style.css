@@ -15,9 +15,12 @@
 }
  */
 
-
-/* table.fixed {
+table.fixed {
     table-layout: fixed;
+    cellpadding: 4;
+    border: 1;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 90%;
 }
 
 table.fixed td {
@@ -27,7 +30,7 @@ table.fixed td {
 
 td {
     word-wrap: break-word;
-} */
+}
 
 .btn {
     background-color: #ed6c27;
@@ -91,6 +94,8 @@ td {
     background-color: #ffff90;
 }
 
+
+/* 
 * {
     margin: 0;
     padding: 0;
@@ -107,7 +112,7 @@ footer {
     left: 0;
     right: 0;
     top: 500;
-}
+} */
 
 .wrapper {
     display: flex;

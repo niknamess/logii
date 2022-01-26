@@ -1,14 +1,6 @@
 << define "index" >>
 <html>
-  <head>
-    <title>Logi2</title>
-  
-    <link rel="stylesheet" href="/css/angular-material.min.css">
-    <link rel="stylesheet" href="/css/fonts.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-  </head>
+<<template "header" .>>
   <body ng-app="logi2" >
  
     <div ng-controller="mainController as mc" layout="column" ng-cloak>
@@ -54,62 +46,18 @@
                   <a class="debug" href="#debug" id="btndbgs" (click)=”handleClick($event)” type=”button”>DEBUG</a>
                 </div>
               </div>
+              </form>
           <!--  <button  id="view" (click)=”handleClick($event)” type=”button” >On start page</button> -->
-            <md-content class="md-padding">
-          <div layout="row" ng-hide="!showCard" class="ng-hide">
-            <md-content flex></md-content>
-            <md-card flex layout-align="center center">
-              <md-card-title>
-                <md-card-title-text>
-                  <span class="md-headline">Logi 2 service to view log</span>
-                </md-card-title-text>
-              </md-card-title>
-              <md-card-content>
-              <p>
-                Logi 2 
-              </p>
-                  <md-icon md-svg-icon="/img/ic_launch_black_24px.svg"></md-icon>
-                  </md-button>
-              </p>
-            </md-card>
-            <md-content flex></md-content>
-          </div>
-        </md-content>
-        </form>
-        <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
-          <!-- Content will be inserted by websocket connection -->
-      </md-content>
-      <div class="TEST">
-        <section layout="row">
-          <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
-          <md-toolbar>
-            <h1 class="md-toolbar-tools">Log Directory</h1>
-          </md-toolbar>
-          <md-content>
-            <md-list>
-              <<range .FileList>>
-              <md-list-item class="md-3-line" id="filelist" ng-click="open_connection('<<.>>')">
-                <div class="md-list-item-text">
-                  <<.>>
-                </div>
-              </md-list-item>
-                   
-              <md-divider></md-divider>
-
-              <<end>>
-            </md-list>
-          </md-content>
-        </section>
-      </div>
+            
+        <<template "card" .>>
+        <<template "wscontent" .>>
     </div>
   </body>
-   <footer >
-    <p style="text-align:center;">©Авторские права  2050. Все права защищены.</p>
-    <link rel="stylesheet" href="/css/angular-material.min.css">
+  <link rel="stylesheet" href="/css/angular-material.min.css">
     <link rel="stylesheet" href="/css/fonts.css">
-    <link rel="stylesheet" href="/css/style.css">
+     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/MaterialIcons.css">
-  </footer>
+    <<template "footer" .>>
   <script src="/js/angular.min.js"></script>
   <script src="/js/angular-animate.min.js"></script>
   <script src="/js/angular-messages.min.js"></script>

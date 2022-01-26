@@ -1,0 +1,29 @@
+<<define "wscontent">>
+<!--START -->
+<html>
+        <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
+          <!-- Content will be inserted by websocket connection -->
+      </md-content>
+        <section layout="row">
+          <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+          <md-toolbar>
+            <h1 class="md-toolbar-tools">Log Directory</h1>
+          </md-toolbar>
+          <md-content>
+            <md-list>
+              <<range .FileList>>
+              <md-list-item class="md-3-line" id="filelist" ng-click="open_connection('<<.>>')">
+                <div class="md-list-item-text">
+                  <<.>>
+                </div>
+              </md-list-item>
+                   
+              <md-divider></md-divider>
+
+              <<end>>
+            </md-list>
+          </md-content>
+        </section>
+         <!--STOP -->
+</html>
+<<end>>

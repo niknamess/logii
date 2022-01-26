@@ -206,7 +206,7 @@ function initWS(file) {
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%'> " +
+            container.append("<table class=\"mat-table mat-elevation-z8\" > " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -236,7 +236,7 @@ function initWS(file) {
 
             str = str.replace("INFO", ",INFO");
             // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
-            str = "<table  class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#b0ffb0\" >" +
+            str = "<table bgcolor=\"#b0ffb0\" >" +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -256,7 +256,7 @@ function initWS(file) {
 
         } else if (str.indexOf("ERROR") == 0) {
             str = str.replace("ERROR", ",ERROR");
-            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffb0b0\" >" +
+            str = "<table  bgcolor=\"#ffb0b0\" >" +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -277,7 +277,7 @@ function initWS(file) {
         } else if (str.indexOf("WARNING") == 0) {
             str = str.replace("WARNING", ",WARNING");
             // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" >" +
-            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffff90\" >" +
+            str = "<table  bgcolor=\"#ffff90\" >" +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -298,7 +298,7 @@ function initWS(file) {
         } else if (str.indexOf("DEBUG") == 0) {
             str = str.replace("DEBUG", ",DEBUG");
             // str = "<table cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#00ff00\" >" +
-            str = "<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#a0a0a0\" >" +
+            str = "<table bgcolor=\"#a0a0a0\" >" +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -355,7 +355,7 @@ function initWSType(file, type, color) {
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%'> " +
+            container.append("<table> " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -385,7 +385,7 @@ function initWSType(file, type, color) {
 
             str = str.replace(type, "");
             // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
-            str = "<table  class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%'" + "bgcolor=" + color + " >" +
+            str = "<table bgcolor=" + color + " >" +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -447,7 +447,7 @@ function countWS(file) {
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table class=\"fixed\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%'> " +
+            container.append("<table > " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -493,4 +493,30 @@ function countWS(file) {
     }
 
     return socket;
+}
+
+function Maket(str, type, color) {
+
+
+
+    str = str.replace(type, "," + type);
+    // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
+    str = "<table  bgcolor=" + color + " >" +
+        "<col width=\"150px\" />" +
+        "<col width=\"150px\" />" +
+        "<col width=\"350px\" />" +
+        "<col width=\"50px\" />" +
+        "<col width=\"130px\" />" +
+        "<col width=\"100px\" />" +
+        "<col width=\"300px\" />" +
+        "<col width=\"400px\" />" +
+        "<col width=\"500px\" />" +
+        "<col width=\"200px\" />" +
+        "<tr >" +
+        str.replace(/,\n/g, "<tr >")
+        .replace(/,/g, "<td width=\"100\" height=\"100\">")
+        .replace(/<tr>$/, "") +
+        "</table>";
+    container.append(str);
+
 }
