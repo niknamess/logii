@@ -17,7 +17,7 @@ type Config struct {
 var Conf Config
 
 // ParseConfig - function to manage config
-func ParseConfig(dir []string, cron string, test string) error {
+func ParseConfig(dir []string, cron string) error {
 	// Parse cron
 	// Rules for cron :
 	// the string should be of type [^0](\d*)(h|d) and the integer should be positive

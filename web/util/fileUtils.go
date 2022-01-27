@@ -163,7 +163,7 @@ func dfs(file string) {
 	}
 }
 
-func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]string) bool {
+func TailDir(fileName string, lookFor string, SearchMap map[string]string) bool {
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)

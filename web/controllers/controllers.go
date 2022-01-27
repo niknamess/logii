@@ -108,7 +108,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	if stringF == true {
+	if stringF {
 		Indexing(conn, filename)
 		savefiles = append(savefiles, filename)
 
@@ -192,7 +192,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 			fileN := filepath.Base(fileaddr)
 			go logenc.Replication(fileaddr)
 			bleveSI.ProcBleve(fileN, fileaddr)
-			if util.TailDir(conn, fileN, search, SearchMap) {
+			if util.TailDir(fileN, search, SearchMap) {
 				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
 			}
 			//fmt.Println(fileaddr)

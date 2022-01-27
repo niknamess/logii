@@ -54,7 +54,6 @@ func TestMergeLines(t *testing.T) {
 
 func TestReplication(t *testing.T) {
 	type args struct {
-		path string
 	}
 	tests := []struct {
 		name string
@@ -63,17 +62,13 @@ func TestReplication(t *testing.T) {
 		// TODO: Add test cases.
 	}
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.name, func(_ *testing.T) {
 			Replication("/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193")
 		})
 	}
 }
 
 func ATestMerge(t *testing.T) {
-	type args struct {
-		dirpath string
-		path    string
-	}
 
 	Merge("./testmerge/", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193")
 

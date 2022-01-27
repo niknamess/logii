@@ -24,13 +24,10 @@ var (
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./view").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/logi2/repdata/").ExistingFilesOrDirs()
 	//dir = kingpin.Arg("dir", "Directory path(s) to look for files").Default("/home/nik/projects/Course/tmcs-log-agent-storage/").ExistingFilesOrDirs()
-	dir   = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
-	port  = kingpin.Flag("port", "Port number to host the server").Short('p').Default("15000").Int()
-	portx = kingpin.Flag("portx", "Port number to host the server").Short('x').Default("15000").Int()
-	ports = kingpin.Flag("ports", "Port number to host the server").Short('s').Default("15000").Int()
+	dir  = kingpin.Arg("dir", "Directory path(s) to look for files").Default("./repdata").ExistingFilesOrDirs()
+	port = kingpin.Flag("port", "Port number to host the server").Short('p').Default("15000").Int()
 	//port            *int
 	cron            = kingpin.Flag("cron", "configure cron for re-indexing files, Supported durations:[h -> hours, d -> days]").Short('t').Default("0h").String()
-	cert            = kingpin.Flag("Test", "Test").Short('c').Default("").String()
 	missadr         []string
 	limit           string
 	ipaddr          []string
@@ -66,7 +63,7 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 
 	kingpin.Parse()
 
-	err = util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
+	err = util.ParseConfig(*dir, *cron) //INDEXING FILE
 
 	if err != nil {
 		panic(err)
@@ -159,7 +156,7 @@ func CheckFiles(address string, port string, ctx context.Context) {
 							fmt.Println(address)
 							missadr = append(missadr, address)
 						}
-						err = util.ParseConfig(*dir, *cron, *cert) //INDEXING FILE
+						err = util.ParseConfig(*dir, *cron) //INDEXING FILE
 
 						if err != nil {
 							log.Println("LOOP", err)

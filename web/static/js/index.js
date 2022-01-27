@@ -335,10 +335,6 @@ function initWSType(file, type, color) {
 
 
 function countWS(file) {
-    /* var countWar = 0
-    var countErr = 0
-    var countInf = 0
-    var countDbg = 0 */
 
     var ws_proto = "ws:"
     if (window.location.protocol === "https:") {
@@ -354,7 +350,6 @@ function countWS(file) {
     container.html("")
     socket.onopen = function() {
         var filename = file.replace(/^.*[\\\/]/, '')
-        container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
             container.append("<table > " +
@@ -404,33 +399,7 @@ function countWS(file) {
 
     return socket;
 }
-/* 
-function Maket(str, type, color) {
 
-
-
-    str = str.replace(type, "," + type);
-    // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
-    str = "<table  bgcolor=" + color + " >" +
-        "<col width=\"150px\" />" +
-        "<col width=\"150px\" />" +
-        "<col width=\"350px\" />" +
-        "<col width=\"50px\" />" +
-        "<col width=\"130px\" />" +
-        "<col width=\"100px\" />" +
-        "<col width=\"300px\" />" +
-        "<col width=\"400px\" />" +
-        "<col width=\"500px\" />" +
-        "<col width=\"200px\" />" +
-        "<tr >" +
-        str.replace(/,\n/g, "<tr >")
-        .replace(/,/g, "<td width=\"100\" height=\"100\">")
-        .replace(/<tr>$/, "") +
-        "</table>";
-    container.append(str);
-
-}
- */
 
 //сортировка пузырек
 function Maket(str, type, color) {

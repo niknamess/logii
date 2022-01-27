@@ -74,11 +74,11 @@ func ReadLines(path string, fn func(line string)) error {
 	return scanner.Err()
 }
 
-func checkError(message string, err error) {
+/* func checkError(message string, err error) {
 	if err != nil {
 		log.Fatal(message, err)
 	}
-}
+} */
 
 func DecodeLine(line string) string {
 	//fmt.Println(line)
@@ -192,7 +192,8 @@ func EncodeCSV(val LogList) string {
 	return buf.String()
 }
 
-func DecodeString(val LogList) string {
+/*
+func DecodeString1(val LogList) string {
 	buf := bytes.NewBuffer([]byte{})
 	writer := csv.NewWriter(buf)
 	for _, logstr := range val.XML_RECORD_ROOT {
@@ -221,7 +222,7 @@ func DecodeString(val LogList) string {
 
 	writer.Flush()
 	return buf.String()
-}
+} */
 
 //rune ='symbol'
 func Remove(s string, symbol rune) string {

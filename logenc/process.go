@@ -19,16 +19,17 @@ import (
 )
 
 var (
-	Logger   *log.Logger
-	mu       sync.Mutex
-	ind      bool
-	fileSize int64
+	Logger *log.Logger
+	mu     sync.Mutex
+	ind    bool
+	//fileSize int64
 
 	//true untyped bool = true
 )
-var (
+
+/* var (
 	sliceLoglist []LogList
-)
+) */
 
 func ProcLine(line string) (csvF string) {
 
@@ -39,7 +40,7 @@ func ProcLine(line string) (csvF string) {
 	lookFor := "<loglist>"
 	xmlline := DecodeLine(line)
 	contain := strings.Contains(xmlline, lookFor)
-	if contain == false {
+	if !contain {
 
 		return xmlline
 	}
@@ -79,11 +80,9 @@ func ProcFile(file string) {
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
-				select {
-				case line := <-ch:
+				line := <-ch
 
-					ProcLine(line)
-				}
+				ProcLine(line)
 			}
 
 		}()
@@ -144,11 +143,10 @@ func procFileWrite(file string) {
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
-				select {
-				case line := <-ch:
+				line := <-ch
 
-					Logger.Println(procLineq(line))
-				}
+				Logger.Println(procLineq(line))
+
 			}
 
 		}()
@@ -196,23 +194,22 @@ func ProcMapFile(file string) map[string]string {
 	var datas string
 	go func() {
 		for {
-			select {
-			case line, ok := <-ch:
-				if !ok {
-					break
-				}
-				go func(line string) {
-					wg.Add(1)
-					defer wg.Done()
-					data = ProcLineDecodeXML(line)
-					datas = ProcLine(line)
-					if len(data.XML_RECORD_ROOT) > 0 {
-						mu.Lock()
-						SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
-						mu.Unlock()
-					}
-				}(line)
+			line, ok := <-ch
+			if !ok {
+				break
 			}
+			go func(line string) {
+				wg.Add(1)
+				defer wg.Done()
+				data = ProcLineDecodeXML(line)
+				datas = ProcLine(line)
+				if len(data.XML_RECORD_ROOT) > 0 {
+					mu.Lock()
+					SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
+					mu.Unlock()
+				}
+			}(line)
+
 		}
 	}()
 	err := ReadLines(file, func(line string) {
@@ -243,17 +240,17 @@ func ProcMapFileREZERV(file string) {
 	}
 	fmt.Println("run")
 	for {
-		select {
-		case line, ok := <-ch:
-			if !ok {
-				break
-			}
-			data = ProcLineDecodeXML(line)
-			datas = ProcLine(line)
-			if len(data.XML_RECORD_ROOT) > 0 {
-				SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
-			}
+
+		line, ok := <-ch
+		if !ok {
+			break
 		}
+		data = ProcLineDecodeXML(line)
+		datas = ProcLine(line)
+		if len(data.XML_RECORD_ROOT) > 0 {
+			SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
+		}
+
 		if len(ch) == 0 {
 			break
 		}
@@ -314,7 +311,7 @@ func WriteFileSum(file string, typeS string, path string) {
 	//if ind == true && strings.Contains(scanner.Text(), (fileN)) {
 
 	//	} else
-	if ind == true {
+	if ind {
 
 		f.Write([]byte(checksum2 + " " + fileN + "\n"))
 	}
@@ -386,7 +383,7 @@ func GetLinks(body io.Reader) []string {
 			return links
 		case html.StartTagToken, html.EndTagToken:
 			token := z.Token()
-			if "a" == token.Data {
+			if token.Data == "a" {
 				for _, attr := range token.Attr {
 					if attr.Key == "href" {
 						links = append(links, attr.Val)
@@ -424,19 +421,16 @@ func SearchT(dir string) {
 ext:
 	for i := 0; i < limit; i++ {
 
-		select {
-
-		case data, ok := <-chRes:
-			if !ok {
-				break ext
-			}
-			MassStr = append(MassStr, data)
-
+		data, ok := <-chRes
+		if !ok {
+			break ext
 		}
+		MassStr = append(MassStr, data)
+
 	}
 	sort.Slice(MassStr, func(i, j int) (less bool) {
 		return MassStr[i].ID < MassStr[j].ID
 	})
 	fmt.Printf("%+v\n", MassStr)
-	return
+
 }

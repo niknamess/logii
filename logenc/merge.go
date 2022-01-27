@@ -179,7 +179,7 @@ func RenameFile(dirpath string, path string, label string) {
 	}
 }
 
-func OpenCreateFile(dirpath string, path string, label string, fileOs *os.File) {
+func OpenCreateFile(dirpath string, path string, label string) {
 	fileN := filepath.Base(path)
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
@@ -219,12 +219,12 @@ func Merge(dirpath string, path string) {
 		log.Println(err)
 	}
 	defer original.Close()
-	if CheckFileSum(path, "rep", "") == false {
+	if !CheckFileSum(path, "rep", "") {
 		return
 	} else {
 		RenameFile(dirpath, path, "old")
 		CopyFile(dirpath, path, "new", original)
-		OpenCreateFile(dirpath, path, "old", original)
+		OpenCreateFile(dirpath, path, "old")
 		fileNew, err := os.OpenFile(dirpath+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 		if err != nil {
