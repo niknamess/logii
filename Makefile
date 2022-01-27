@@ -11,7 +11,7 @@ build: clean
 
 .PHONY: dev
 dev: tst build
-	@$(MEPATH)/logi2 -p 15000
+	@$(MEPATH)/logi2 -p 15
 
 .PHONY: dev2
 dev2: tst build
@@ -21,21 +21,25 @@ dev2: tst build
 vfc: tst build
 	@$(MEPATH)/logi2 -v 10015
 
+.PHONY: menu
+menu: tst build
+	@$(MEPATH)/logi2 -x 15000	
+
+.PHONY: server
+server: tst build
+	@$(MEPATH)/logi2 -s 15000
+
+.PHONY: client
+client: tst build
+	@$(MEPATH)/logi2 -c
+
 .PHONY: gen
 gen: tst build
-	@$(MEPATH)/logi2 -g Foxtrot Uniform Charlie Kilo
+	@$(MEPATH)/logi2 -g
 
 .PHONY: rm
 rm: build
 	@$(MEPATH)/logi2 -r Foxtrot Uniform Charlie Kilo
-
-.PHONY: inf
-inf: tst build
-	@$(MEPATH)/logi2 -i Foxtrot Uniform Charlie Kilo
-
-.PHONY: dd
-dd: tst build
-	@$(MEPATH)/logi2 -o Foxtrot Uniform Charlie Kilo
 
 .PHONY: tst
 tst:
@@ -46,3 +50,11 @@ tst:
 clean:
 	@rm -fR logi2
 
+.PHONY: doc
+doc:
+	xdg-open http://localhost:6060/pkg/gitlab.topaz-atcs.com/tmcs/logi2/
+	godoc -http=:6060
+
+.PHONY: all
+all: build vfc dev
+	@$(MEPATH)/logi2 -r Foxtrot Uniform Charlie Kilo

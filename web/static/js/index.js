@@ -1,33 +1,133 @@
 angular.module("logi2").controller("mainController", mainController);
 
 mainController.$inject = ["$rootScope", "$scope", "$mdSidenav", "$http"]
-const button = document.getElementById('btn');
 const buttonR = document.getElementById('res');
+const buttonErr = document.getElementById('btnerr');
+const buttonInf = document.getElementById('btninf');
+const buttonDbgs = document.getElementById('btndbgs');
+const buttonWar = document.getElementById('btnwar');
+const buttonView = document.getElementById('view');
+var countWar = 0
+var countErr = 0
+var countInf = 0
+var countDbg = 0
 
 var lastItem;
 //const input = document.querySelector('input');
-
-
-button.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            initWS(lastItem)
-        },
-        1 * 200
-    );
-});
 
 buttonR.addEventListener('click', event => {
     setTimeout(
         () => {
             window.location.reload();
+            Null()
         },
         1 * 200
     );
 });
 
-function mainController($rootScope, $scope, $mdSidenav, $http) {
+buttonView.addEventListener('click', event => {
+    /*   setTimeout(
+          () => {
+              //  countWS(lastItem)
+              Null()
+          },
+          1 * 200
+      ); */
+    setTimeout(
+        () => {
+            //window.location.reload();
+            //countWS(lastItem)
+            countWS(lastItem)
+            initWS(lastItem)
+            setBackColor('view', "#ed6c27")
+            quotation('view', "Find")
+        },
+        1 * 200
+    );
 
+    /*  countWar = 0
+     countErr = 0
+     countInf = 0
+     countDbg = 0 */
+
+});
+
+buttonErr.addEventListener('click', event => {
+    Null()
+    setTimeout(
+        () => {
+            initWSType(lastItem, "ERROR", "#ffb0b0")
+            setBackColor('view', "#ffb0b0")
+            quotation('view', "ERROR")
+        },
+        1 * 200
+    );
+});
+buttonInf.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            initWSType(lastItem, "INFO", "#b0ffb0")
+            setBackColor('view', "#b0ffb0")
+            quotation('view', "INFO")
+        },
+        1 * 200
+    );
+});
+
+buttonDbgs.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            initWSType(lastItem, "DEBUG", "#a0a0a0")
+            setBackColor('view', "#a0a0a0")
+            quotation('view', "DEBUG")
+        },
+        1 * 200
+    );
+});
+
+buttonWar.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            initWSType(lastItem, "WARNING", "#ffff90")
+            setBackColor('view', "#ffff90")
+            quotation('view', "WARNING")
+                //setFontColor('view ', "black")
+        },
+        1 * 200
+    );
+});
+
+function Null() {
+    countWar = 0
+    countErr = 0
+    countInf = 0
+    countDbg = 0
+}
+
+function setBackColor(btn, color) {
+    var property = document.getElementById(btn);
+    property.style.backgroundColor = color
+
+}
+
+function setFontColor(btn, color) {
+    var property = document.getElementById(btn);
+    property.style.color = color
+
+}
+
+function quotation(id, text) {
+    var q = document.getElementById(id);
+    if (q) q.innerHTML = text;
+}
+
+
+function change(identifier, color) {
+    identifier.style.background = color;
+}
+
+function mainController($rootScope, $scope, $mdSidenav, $http) {
+    Null()
     var vm = this;
     //var lastItem;
 
@@ -72,9 +172,10 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("Your browser does not support WebSockets");
             return;
         } else {
-
-
+            //Null()
+            countWS(file)
             ws = initWS(file);
+
 
         }
 
@@ -87,9 +188,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 }
 
 function initWS(file) {
-    // document.querySelector('button').removeEventListener(initWS(file));
 
-    //window.alert("InitWs Files" + file);
     var ws_proto = "ws:"
     if (window.location.protocol === "https:") {
         ws_proto = "wss:"
@@ -97,8 +196,7 @@ function initWS(file) {
 
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
-    //var output = [],
-    //  i;
+
 
 
 
@@ -108,14 +206,26 @@ function initWS(file) {
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\"> <tr > <td width=\"550\" height=\"100\" >" +
-                "APPNAME" + "</td> <td width=\"550px\" height=\"100px\" >" +
-                "APPPATH" + "</td> <td width=\"550px\" height=\"100px\" >" +
-                "APPPID" + "</td><td width=\"550px\" height=\"100px\" >" +
-                "THREAD" + "</td><td width=\"550px\" height=\"100px\" >" +
-                "TIME" + "</td><td width=\"550px\" height=\"100px\" >" +
-                "ULID" + "</td><td width=\"550px\" height=\"100px\" >" +
-                "MESSAGE" + "</td><td width=\"550px\" height=\"100px\" >" +
+            container.append("<table class=\"mat-table mat-elevation-z8\" > " +
+                "<col width=\"150px\" />" +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"100px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"100px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"400px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr > <td>" +
+                "TYPE" + "</td> <td>" +
+                "APPNAME" + "</td> <td>" +
+                "APPPATH" + "</td> <td>" +
+                "APPPID" + "</td><td>" +
+                "THREAD" + "</td><td>" +
+                "TIME" + "</td><td>" +
+                "ULID" + "</td><td>" +
+                "MESSAGE" + "</td><td>" +
                 "DETAILS" + "</td></tr > </table >");
         }
     }
@@ -123,35 +233,22 @@ function initWS(file) {
     socket.onmessage = function(e) {
         str = e.data.trim();
         if (str.indexOf("INFO") == 0) {
-
-            str = str.replace("INFO", "");
-            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' ><tr >" +
-                str.replace(/,\n/g, "<tr  >")
-                .replace(/,/g, "<td width=\"550\" height=\"100\">")
-                .replace(/<tr>$/, "") +
-                "</table>";
+            str = Maket(str, "INFO", "#b0ffb0")
             container.append(str);
 
         } else if (str.indexOf("ERROR") == 0) {
-            str = str.replace("ERROR", "");
-            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#dc143c\" ><tr >" +
-                str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"550\" height=\"100\">")
-                .replace(/<tr>$/, "") +
-                "</table>";
+            str = Maket(str, "ERROR", "#ffb0b0")
             container.append(str);
 
         } else if (str.indexOf("WARNING") == 0) {
-            str = str.replace("WARNING", "");
-            str = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' bgcolor=\"#ffcc00\" ><tr >" +
-                str.replace(/,\n/g, "<tr >")
-                .replace(/,/g, "<td width=\"550\" height=\"100\">")
-                .replace(/<tr>$/, "") +
-                "</table>";
+            str = Maket(str, "WARNING", "#ffff90")
             container.append(str);
             // container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
+        } else if (str.indexOf("DEBUG") == 0) {
+            str = Maket(str, "DEBUG", "#a0a0a0")
+            container.append(str);
         } else {
-            container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
+            container.append("<p style='background-color: #ffff90; color:blue'>" + str + "</p>" + "<hr>");
 
         }
 
@@ -160,10 +257,169 @@ function initWS(file) {
     }
     socket.onclose = function() {
         container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        Null()
     }
     socket.onerror = function(e) {
         container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
     }
 
     return socket;
+}
+
+
+
+function initWSType(file, type, color) {
+
+    var ws_proto = "ws:"
+    if (window.location.protocol === "https:") {
+        ws_proto = "wss:"
+    }
+
+    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
+    var container = angular.element(document.querySelector("#container"));
+
+
+
+
+    container.html("")
+    socket.onopen = function() {
+        var filename = file.replace(/^.*[\\\/]/, '')
+        container.append("<p><b>Tailing file: " + filename + "</b></p>");
+        strf = file
+        if (strf.indexOf("undefined") != 0) {
+            container.append("<table> " +
+                "<col width=\"150px\" />" +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"110px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"110px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"400px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr > <td>" +
+                "TYPE" + "</td> <td>" +
+                "APPNAME" + "</td> <td>" +
+                "APPPATH" + "</td> <td>" +
+                "APPPID" + "</td><td>" +
+                "THREAD" + "</td><td>" +
+                "TIME" + "</td><td>" +
+                "ULID" + "</td><td>" +
+                "MESSAGE" + "</td><td>" +
+                "DETAILS" + "</td></tr > </table >"
+
+            );
+        }
+    }
+
+    socket.onmessage = function(e) {
+        str = e.data.trim();
+        if (str.indexOf(type) == 0) {
+            str = Maket(str, type, color)
+            container.append(str);
+
+        }
+    }
+    socket.onclose = function() {
+        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        Null()
+    }
+    socket.onerror = function(e) {
+        container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
+    }
+
+    return socket;
+}
+
+
+
+function countWS(file) {
+
+    var ws_proto = "ws:"
+    if (window.location.protocol === "https:") {
+        ws_proto = "wss:"
+    }
+
+    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
+    var container = angular.element(document.querySelector("#container"));
+
+
+
+
+    container.html("")
+    socket.onopen = function() {
+        var filename = file.replace(/^.*[\\\/]/, '')
+        strf = file
+        if (strf.indexOf("undefined") != 0) {
+            container.append("<table > " +
+                "<col width=\"150px\" />" +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"110px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"110px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"400px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tr > <td class=\"info\">" + "INFO:" +
+                countInf + "</td> <td class=\"error\">" + "Error:" +
+                countErr + "</td> <td class=\"warning\">" + "Warning:" +
+                countWar + "</td> <td class=\"debug\">" + "Debug:" +
+                countDbg +
+                "</td></tr > </table >");
+        }
+    }
+
+    socket.onmessage = function(e) {
+        str = e.data.trim();
+        if (str.indexOf("WARNING") == 0) {
+            countWar++
+
+        } else if (str.indexOf("ERROR") == 0) {
+            countErr++
+
+        } else if (str.indexOf("INFO") == 0) {
+            countInf++
+        } else if (str.indexOf("DEBUG") == 0) {
+            countDbg++
+        }
+
+
+
+    }
+    socket.onclose = function() {
+        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        Null()
+    }
+    socket.onerror = function(e) {
+        container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
+    }
+
+    return socket;
+}
+
+
+//сортировка пузырек
+function Maket(str, type, color) {
+    str = str.replace(type, "," + type);
+    // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
+    str = "<table class=\"table-bordered\" bgcolor=" + color + " >" +
+        "<col width=\"150px\" />" +
+        "<col width=\"150px\" />" +
+        "<col width=\"350px\" />" +
+        "<col width=\"50px\" />" +
+        "<col width=\"130px\" />" +
+        "<col width=\"100px\" />" +
+        "<col width=\"300px\" />" +
+        "<col width=\"400px\" />" +
+        "<col width=\"500px\" />" +
+        "<col width=\"200px\" />" +
+        "<tr >" +
+        str.replace(/,\n/g, "<tr >")
+        .replace(/,/g, "<td width=\"100\" height=\"100\">")
+        .replace(/<tr>$/, "") +
+        "</table>";
+    return str
 }

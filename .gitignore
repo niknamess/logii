@@ -20,3 +20,9 @@ gen_logs_coded
 gen_logs_decoded
 genrlogs./
 testsave/
+testmerge/
+md5193
+md5213
+md5214
+config.yaml
+tmcs-log-agent-storage/

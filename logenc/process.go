@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"sort"
 	"strings"
 	"sync"
 
@@ -18,16 +19,17 @@ import (
 )
 
 var (
-	Logger   *log.Logger
-	mu       sync.Mutex
-	ind      bool
-	fileSize int64
+	Logger *log.Logger
+	mu     sync.Mutex
+	ind    bool
+	//fileSize int64
 
 	//true untyped bool = true
 )
-var (
+
+/* var (
 	sliceLoglist []LogList
-)
+) */
 
 func ProcLine(line string) (csvF string) {
 
@@ -38,7 +40,7 @@ func ProcLine(line string) (csvF string) {
 	lookFor := "<loglist>"
 	xmlline := DecodeLine(line)
 	contain := strings.Contains(xmlline, lookFor)
-	if contain == false {
+	if !contain {
 
 		return xmlline
 	}
@@ -78,11 +80,9 @@ func ProcFile(file string) {
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
-				select {
-				case line := <-ch:
+				line := <-ch
 
-					ProcLine(line)
-				}
+				ProcLine(line)
 			}
 
 		}()
@@ -111,6 +111,7 @@ func ProcDir(dir string) {
 		})
 }
 
+//Write Decode logs (it is not working(may be))
 func ProcWrite(dir string) {
 
 	filepath.Walk(dir,
@@ -127,8 +128,10 @@ func ProcWrite(dir string) {
 }
 
 func procFileWrite(file string) {
+	CreateDir("./writedeclog", "")
+	fileN := filepath.Base(file)
 
-	filew, err1 := os.OpenFile("./logs/r/mainlogs1.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	filew, err1 := os.OpenFile("./writedeclog/"+fileN+".log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err1 != nil {
 		log.Fatal(err1)
 	}
@@ -140,11 +143,10 @@ func procFileWrite(file string) {
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
 		go func() {
 			for {
-				select {
-				case line := <-ch:
+				line := <-ch
 
-					Logger.Println(procLineq(line))
-				}
+				Logger.Println(procLineq(line))
+
 			}
 
 		}()
@@ -192,23 +194,22 @@ func ProcMapFile(file string) map[string]string {
 	var datas string
 	go func() {
 		for {
-			select {
-			case line, ok := <-ch:
-				if !ok {
-					break
-				}
-				go func(line string) {
-					wg.Add(1)
-					defer wg.Done()
-					data = ProcLineDecodeXML(line)
-					datas = ProcLine(line)
-					if len(data.XML_RECORD_ROOT) > 0 {
-						mu.Lock()
-						SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
-						mu.Unlock()
-					}
-				}(line)
+			line, ok := <-ch
+			if !ok {
+				break
 			}
+			go func(line string) {
+				wg.Add(1)
+				defer wg.Done()
+				data = ProcLineDecodeXML(line)
+				datas = ProcLine(line)
+				if len(data.XML_RECORD_ROOT) > 0 {
+					mu.Lock()
+					SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
+					mu.Unlock()
+				}
+			}(line)
+
 		}
 	}()
 	err := ReadLines(file, func(line string) {
@@ -239,17 +240,17 @@ func ProcMapFileREZERV(file string) {
 	}
 	fmt.Println("run")
 	for {
-		select {
-		case line, ok := <-ch:
-			if !ok {
-				break
-			}
-			data = ProcLineDecodeXML(line)
-			datas = ProcLine(line)
-			if len(data.XML_RECORD_ROOT) > 0 {
-				SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
-			}
+
+		line, ok := <-ch
+		if !ok {
+			break
 		}
+		data = ProcLineDecodeXML(line)
+		datas = ProcLine(line)
+		if len(data.XML_RECORD_ROOT) > 0 {
+			SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
+		}
+
 		if len(ch) == 0 {
 			break
 		}
@@ -257,12 +258,12 @@ func ProcMapFileREZERV(file string) {
 	}
 }
 
-func CheckFileSum(file string, typeS string) bool {
-
+func CheckFileSum(file string, typeS string, path string) bool {
+	ind = true
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
 	hashFileName := "md5" + typeS
-	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(path+hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
@@ -281,13 +282,15 @@ func CheckFileSum(file string, typeS string) bool {
 	return ind
 }
 
-func WriteFileSum(file string, typeS string) {
+func WriteFileSum(file string, typeS string, path string) {
 
 	checksum2 := FileMD5(file)
 	fileN := filepath.Base(file)
 	hashFileName := "md5" + typeS
-	fmt.Println(os.Getwd())
-	f, err := os.OpenFile(hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	//fmt.Println("Getwd")
+	//fmt.Println(os.Getwd())
+	//fmt.Println("Getwd")
+	f, err := os.OpenFile(path+hashFileName, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	checke(err)
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
@@ -308,7 +311,7 @@ func WriteFileSum(file string, typeS string) {
 	//if ind == true && strings.Contains(scanner.Text(), (fileN)) {
 
 	//	} else
-	if ind == true {
+	if ind {
 
 		f.Write([]byte(checksum2 + " " + fileN + "\n"))
 	}
@@ -341,52 +344,6 @@ func FileMD5(path string) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
-/*
-func RemoveLine(path string, fileN string, label string) {
-
-	Original_Path := path + label
-	New_Path := path + label + "remove"
-	e := os.Rename(Original_Path, New_Path)
-	if e != nil {
-		log.Fatal(e)
-	}
-
-	fileR, err := os.OpenFile(path+label+"remove", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer fileR.Close()
-
-	file, err := os.OpenFile(path+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	//scanner1 := bufio.NewScanner(file)
-	scanner2 := bufio.NewScanner(fileR)
-	//re := regexp.MustCompile(fileN)
-	line := 1
-	for scanner2.Scan() {
-		//res := re.ReplaceAllString(scanner2.Text(), "")
-		if strings.Contains(scanner2.Text(), fileN) {
-			fmt.Println(scanner2.Text())
-		}
-		fmt.Println(scanner2.Text())
-		line++
-		file.Write([]byte(scanner2.Text() + "\n"))
-
-	}
-
-	//remove
-	err = os.Remove(path + label + "remove")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-*/
 /*
 func DeleteHTMLTeg(s string) (clean string) {
 	doc, err := html.Parse(strings.NewReader(s))
@@ -422,11 +379,11 @@ func GetLinks(body io.Reader) []string {
 
 		switch tt {
 		case html.ErrorToken:
-			//todo: links list shoudn't contain duplicates
+			//: links list shoudn't contain duplicates
 			return links
 		case html.StartTagToken, html.EndTagToken:
 			token := z.Token()
-			if "a" == token.Data {
+			if token.Data == "a" {
 				for _, attr := range token.Attr {
 					if attr.Key == "href" {
 						links = append(links, attr.Val)
@@ -437,4 +394,43 @@ func GetLinks(body io.Reader) []string {
 
 		}
 	}
+}
+
+func SearchT(dir string) {
+	var text string
+	var limit int
+
+	var MassStr []Data
+
+	fmt.Print("Enter limit: ")
+	fmt.Scanln(&limit)
+	fmt.Print("Enter text: ")
+	fmt.Scanln(&text)
+
+	chRes := make(chan Data, 100)
+	go func() {
+		scan := &Scan{}
+		scan.Find = dir
+		scan.Text = text
+		scan.ChRes = chRes
+		scan.LimitResLines = limit
+		scan.Search()
+		close(scan.ChRes)
+	}()
+
+ext:
+	for i := 0; i < limit; i++ {
+
+		data, ok := <-chRes
+		if !ok {
+			break ext
+		}
+		MassStr = append(MassStr, data)
+
+	}
+	sort.Slice(MassStr, func(i, j int) (less bool) {
+		return MassStr[i].ID < MassStr[j].ID
+	})
+	fmt.Printf("%+v\n", MassStr)
+
 }

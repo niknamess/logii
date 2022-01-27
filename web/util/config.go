@@ -17,7 +17,7 @@ type Config struct {
 var Conf Config
 
 // ParseConfig - function to manage config
-func ParseConfig(dir []string, cron string, test string) error {
+func ParseConfig(dir []string, cron string) error {
 	// Parse cron
 	// Rules for cron :
 	// the string should be of type [^0](\d*)(h|d) and the integer should be positive
@@ -25,15 +25,15 @@ func ParseConfig(dir []string, cron string, test string) error {
 
 	timeUnit := cron[len(cron)-1]
 	if timeUnit != 'h' && timeUnit != 'd' {
-		return fmt.Errorf("Invalid time unit in cron arg: %s", cron)
+		return fmt.Errorf("invalid time unit in cron arg: %s", cron)
 	}
 
 	timeValue, err := strconv.ParseInt(cron[:len(cron)-1], 10, 32)
 	if err != nil {
-		return fmt.Errorf("Invalid time value in cron arg: %s", cron)
+		return fmt.Errorf("invalid time value in cron arg: %s", cron)
 	}
 	if timeValue < 0 {
-		return fmt.Errorf("Invalid time value in cron arg: %s", cron)
+		return fmt.Errorf("invalid time value in cron arg: %s", cron)
 	}
 
 	if (timeUnit == 'h' && timeValue >= 10000) || (timeUnit == 'd' && timeValue >= 365) {

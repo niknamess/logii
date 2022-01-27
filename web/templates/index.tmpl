@@ -1,13 +1,8 @@
 << define "index" >>
 <html>
-  <head>
-    <title>Logi2</title>
+<<template "header" .>>
+  <body ng-app="logi2" >
   
-    <link rel="stylesheet" href="/css/angular-material.min.css">
-    <link rel="stylesheet" href="/css/fonts.css">
-  </head>
-  <body ng-app="logi2">
- 
     <div ng-controller="mainController as mc" layout="column" ng-cloak>
       <md-toolbar class="md-hue-2 md-whiteframe-z3">
         <div class="md-toolbar-tools">
@@ -15,12 +10,20 @@
             <div ng-click="mc.toggleSideNav()" layout="column" class="md-padding">
               <h2>Logi2</h2>
             </div>
+      
             <div flex layout-align="center center" layout="column">
               <h3 id="filename"></h3>
-              
+            </div>
+            <div class="bg-light clearfix">
+                <button class="btn btn-primary float-right"
+                        type="button" id="res" (click)=”handleClick($event)”  >
+                     RESET
+                </button>
             </div>
           </section>
         </div>
+          <!-- <button type="button" id="res" (click)=”handleClick($event)” class="btn btn-warning">Reset</button> -->
+          
       </md-toolbar>
       <md-content flex layout-padding layout="column">
         <md-content flex>
@@ -37,61 +40,30 @@
         <form action="searchproject" method="GET" target="hiddenFrame">
             <label>Search</label><br>
             <input type="text" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs"/><br><br>
-            <button  id="btn" (click)=”handleClick($event)” type=”button” >Find</button> 
-            <button  id="res" (click)=”handleClick($event)” type=”button” >On start page</button> 
-          <!--  <button  id="view" (click)=”handleClick($event)” type=”button” >On start page</button> -->
-            <md-content class="md-padding">
-          <div layout="row" ng-hide="!showCard" class="ng-hide">
-            <md-content flex></md-content>
-            <md-card flex layout-align="center center">
-              <md-card-title>
-                <md-card-title-text>
-                  <span class="md-headline">Logi 2 service to view log</span>
-                </md-card-title-text>
-              </md-card-title>
-              <md-card-content>
-              <p>
-                Logi 2 
-              </p>
-                 
-                  <md-icon md-svg-icon="/img/ic_launch_black_24px.svg"></md-icon>
-                </md-button>
-              </p>
-            </md-card>
-            <md-content flex></md-content>
-          </div>
-        </md-content>
-
-
-        </form>
-        <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
-          <!-- Content will be inserted by websocket connection -->
-       
-      </md-content>
-      <div>
-        <section layout="row">
-          <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
-          <md-toolbar>
-            <h1 class="md-toolbar-tools">Log Directory</h1>
-          </md-toolbar>
-          <md-content>
-            <md-list>
-              <<range .FileList>>
-              <md-list-item class="md-3-line" id="filelist" ng-click="open_connection('<<.>>')">
-                <div class="md-list-item-text">
-                  <<.>>
+            <input id="scale0" class="scale" name="scale" type="radio" value="0" checked>
+            <button class="btn btn-primary"  style="border-left:1px solid #0d8bf2"  id="view" (click)=”handleClick($event)” type=”button”>Find</button>
+              <div class="dropdown bg-light clearfix">
+                 <button class="btn btn-primary">
+                    <i class="fa fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a class="error" href="#error" id="btnerr" (click)=”handleClick($event)” type=”button”>ERROR</a>
+                  <a class="warning" href="#warning"id="btnwar" (click)=”handleClick($event)” type=”button”>WARNING</a>
+                  <a class="info" href="#info" id="btninf" (click)=”handleClick($event)” type=”button”>INFO</a>
+                  <a class="debug" href="#debug" id="btndbgs" (click)=”handleClick($event)” type=”button”>DEBUG</a>
                 </div>
-              </md-list-item>
-                   
-              <md-divider></md-divider>
-
-              <<end>>
-            </md-list>
-          </md-content>
-        </section>
-      </div>
-    </div>
+              </div>
+        </form>
+          <!--  <button  id="view" (click)=”handleClick($event)” type=”button” >On start page</button> -->
+        <<template "card" .>>
+        </div>
+        <<template "wscontent" .>>
   </body>
+  <link rel="stylesheet" href="/css/angular-material.min.css">
+    <link rel="stylesheet" href="/css/fonts.css">
+     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/MaterialIcons.css">
+    <<template "footer" .>>
   <script src="/js/angular.min.js"></script>
   <script src="/js/angular-animate.min.js"></script>
   <script src="/js/angular-messages.min.js"></script>

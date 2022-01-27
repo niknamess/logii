@@ -22,7 +22,7 @@ func ProcFileBreve(fileN string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension
-	if logenc.CheckFileSum(file, "") == false {
+	if logenc.CheckFileSum(file, "", "") == false {
 		return
 	}
 
@@ -71,10 +71,10 @@ func ProcFileBreve(fileN string, file string) {
 	close(ch)
 	wg.Wait()
 	index.Close()
-	logenc.WriteFileSum(file, "")
+	logenc.WriteFileSum(file, "", "")
 }
 
-func ProcBleveSearch(fileN string, word string) []string {
+func ProcBleveSearchv1(fileN string, word string) []string {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	filename := fileN
@@ -116,7 +116,7 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileName + extension
-	if logenc.CheckFileSum(file, "") == false {
+	if logenc.CheckFileSum(file, "", "") == false {
 		return
 	}
 
@@ -184,18 +184,18 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 	}
 
 	wg.Wait()
-	logenc.WriteFileSum(file, "")
+	logenc.WriteFileSum(file, "", "")
 
 }
 
 //example Speed
 
 func ProcBleveScorch(fileN string, file string) {
-	if logenc.CheckFileSum(file, "") == false {
+	if logenc.CheckFileSum(file, "", "") == false {
 		return
 	}
 	var wg sync.WaitGroup
-	index, err := BleveIndex(fileN)
+	index, err := bleveIndex(fileN)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -234,19 +234,6 @@ func ProcBleveScorch(fileN string, file string) {
 	close(ch)
 	wg.Wait()
 	index.Close()
-	logenc.WriteFileSum(file, "")
+	logenc.WriteFileSum(file, "", "")
 
 }
-
-/*
-func buildMapping() *mapping.IndexMappingImpl {
-	ruFieldMapping := bleve.NewTextFieldMapping()
-	ruFieldMapping.Analyzer = ru.AnalyzerName
-	eventMapping := bleve.NewDocumentMapping()
-	eventMapping.AddFieldMappingsAt("message", ruFieldMapping)
-	mapping := bleve.NewIndexMapping()
-	mapping.DefaultMapping = eventMapping
-	mapping.DefaultAnalyzer = ru.AnalyzerName
-	return mapping
-}
-*/

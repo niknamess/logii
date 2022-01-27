@@ -33,8 +33,17 @@
 - [x] add disign in web interface (table)
 - [x] add disign in web interface (colors for type message) 
 - [x] add merge (local)
-- [ ] add merge from server
+- [x] add merge from server
 - [x] check disk and if disk full(80%) delete olds file
+- [x] problem with refused connection on other server
+- [x] check with md5 integrity file
+- [x] check with hash sum signature file 
+- [ ] stable terminal ui interface
+- [x] client server architecture (control services from terminal)
+- [x] fix bugs with search web
+- [ ] interface in web
+- [ ] split web and server
+- [x] stable unix socket connection   
 
 
 
@@ -56,4 +65,6 @@
 # RUN
 - make dev (http://localhost:15000/)
 (http://localhost:10015/vfs/data/)
+- make menu "run munu for control service"
+(on default Web :15000; VFC :10015)
 

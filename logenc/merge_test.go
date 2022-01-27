@@ -51,3 +51,25 @@ func TestMergeLines(t *testing.T) {
 	}
 
 }
+
+func TestReplication(t *testing.T) {
+	type args struct {
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(_ *testing.T) {
+			Replication("/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193")
+		})
+	}
+}
+
+func ATestMerge(t *testing.T) {
+
+	Merge("./testmerge/", "/home/nik/projects/Course/logi2/genrlogs./gen_logs_coded193")
+
+}

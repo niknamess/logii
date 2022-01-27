@@ -13,7 +13,7 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-var dlog bool = !!false
+var dlog bool = false
 
 func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	res := make(chan LogList)
@@ -57,7 +57,7 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 					}
 					_, err := ulid.Parse(line1.XML_RECORD_ROOT[0].XML_ULID)
 					if err == nil {
-						//log.Fatal(err)
+
 						ulid1, _ = ulid.ParseStrict(line1.XML_RECORD_ROOT[0].XML_ULID)
 					} //else {
 					//	res <- line1
@@ -151,26 +151,12 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	return res
 }
 
-/*
-func Readln(r *bufio.Reader) (string, error) {
-	var (
-		isPrefix bool  = true
-		err      error = nil
-		line, ln []byte
-	)
-	for isPrefix && err == nil {
-		line, isPrefix, err = r.ReadLine()
-		ln = append(ln, line...)
-	}
-	return string(ln), err
-}
-*/
 func CreateDir(dirpath string, path string) {
 	fileN := filepath.Base(path)
 	//Create a folder/directory at a full qualified path
 	err := os.MkdirAll(dirpath+fileN, os.ModePerm)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("CreateDir:", err)
 	}
 }
 
@@ -178,7 +164,7 @@ func DeleteOldsFiles(dirpath string, path string, labels string) {
 	fileN := filepath.Base(path)
 	err := os.Remove(dirpath + fileN + labels)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("DeleteOldsFiles:", err)
 	}
 
 }
@@ -189,31 +175,36 @@ func RenameFile(dirpath string, path string, label string) {
 	New_Path := dirpath + fileN + label
 	e := os.Rename(Original_Path, New_Path)
 	if e != nil {
-		log.Fatal(e)
+		log.Println("RenameFile:", e)
 	}
 }
 
-func OpenCreateFile(dirpath string, path string, label string, fileOs *os.File) *os.File {
+func OpenCreateFile(dirpath string, path string, label string) {
 	fileN := filepath.Base(path)
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		log.Println(err)
+	}
+	file.Close()
+}
+
+func CopyFile(dirpath string, path string, label string, fileOs *os.File) {
+	fileN := filepath.Base(path)
+	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Println(err)
+		return
 	}
 	defer file.Close()
 
-	return file
-}
-
-func CopyFile(dirpath string, path string, label string, fileOs *os.File) *os.File {
-	fileN := filepath.Base(path)
-	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	bytesWritten, err := io.Copy(file, fileOs)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+	} else {
+		fmt.Printf("Bytes Written: %d\n", bytesWritten)
 	}
-	fmt.Printf("Bytes Written: %d\n", bytesWritten)
-	return file
 }
 
 func Merge(dirpath string, path string) {
@@ -224,18 +215,20 @@ func Merge(dirpath string, path string) {
 	ch2 := make(chan LogList, 100)
 	original, err := os.Open(path)
 	if err != nil {
-		log.Fatal(err)
+		//log.Fatal(err)
+		log.Println(err)
 	}
 	defer original.Close()
-
-	if CheckFileSum(path, "rep") == true {
+	if !CheckFileSum(path, "rep", "") {
+		return
+	} else {
 		RenameFile(dirpath, path, "old")
 		CopyFile(dirpath, path, "new", original)
-		OpenCreateFile(dirpath, path, "old", original)
+		OpenCreateFile(dirpath, path, "old")
 		fileNew, err := os.OpenFile(dirpath+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Open in Merge", err)
 		}
 		FC, _ := os.Open(dirpath + fileN + "new")
 		defer FC.Close()
@@ -305,22 +298,7 @@ func IsDirEmpty(name string) (bool, error) {
 	return false, err
 }
 
-func IsFileEmpty(name string) bool {
-
-	// read in ONLY one file
-	info, err := os.Stat(name)
-	if err != nil {
-
-	}
-	if info.Size() == 0 {
-		return true
-	}
-
-	// and if the file is EOF... well, the dir is empty.
-
-	return false
-}
-
+// TODO test
 func Replication(path string) {
 	var dirpath string = "./repdata/"
 	CreateDir(dirpath, "")
@@ -340,28 +318,28 @@ func Replication(path string) {
 
 	ok, err := IsDirEmpty(dirpath)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("DirEmpty", err)
 
 	}
-	if ok == true {
+	if ok {
 		//CreateDir(path)
 		CopyFile(dirpath, path, "", original)
-		WriteFileSum(path, "rep")
+		WriteFileSum(dirpath+fileN, "rep", "")
 	} else {
 		for _, f := range files {
 			//fmt.Println(f.Name())
 			if f.Name() == fileN {
 				Merge(dirpath, path)
-				WriteFileSum(dirpath+fileN, "rep")
+				WriteFileSum(dirpath+fileN, "rep", "")
 
 				return
 			}
 		}
 	}
-	if ok == false {
+	if !ok {
 		//CreateDir(path)
 		CopyFile(dirpath, path, "", original)
-		WriteFileSum(path, "rep")
+		WriteFileSum(path, "rep", "")
 	}
 
 }

@@ -3,7 +3,6 @@ package bleveSI
 import (
 	"fmt"
 	"log"
-	"os"
 	"runtime"
 	"sync"
 
@@ -18,8 +17,7 @@ var (
 	sliceLoglist []logenc.LogList
 )
 
-//example Speed
-func BleveIndex(fileN string) (bleve.Index, error) {
+func bleveIndex(fileN string) (bleve.Index, error) {
 
 	dir := "./blevestorage/"
 	extension := ".bleve"
@@ -32,16 +30,13 @@ func BleveIndex(fileN string) (bleve.Index, error) {
 
 	return index, err
 }
-func ProcBlev(fileN string, file string) {
+func ProcBleve(fileN string, file string) {
 	var count int = 0
-
-	f, _ := os.OpenFile("./md5", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	f.Write([]byte("start" + "\n"))
-	if logenc.CheckFileSum(file, "") == false {
+	if logenc.CheckFileSum(file, "", "") == false {
 		return
 	}
 	var wg sync.WaitGroup
-	index, err := BleveIndex(fileN)
+	index, err := bleveIndex(fileN)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -99,7 +94,7 @@ func ProcBlev(fileN string, file string) {
 	close(ch)
 	wg.Wait()
 	index.Close()
-	logenc.WriteFileSum(file, "")
+	logenc.WriteFileSum(file, "", "")
 }
 
 func ProcBleveSearchv2(fileN string, word string) []string {
@@ -121,9 +116,12 @@ func ProcBleveSearchv2(fileN string, word string) []string {
 	docs := make([]string, 0)
 	for _, val := range searchResult.Hits {
 		id := val.ID
+		//	log.Println(id)
 		docs = append(docs, id)
 	}
-	fmt.Println(docs)
+	//log.Println(word)
+	//log.Println(docs)
+	//fmt.Println(docs)
 	index.Close()
 	return docs
 
