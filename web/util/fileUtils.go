@@ -63,7 +63,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		for line := range taillog.Lines {
 			//if dir == false {
-			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLine(line.Text)))
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLineCSV(line.Text)))
 			//} else {
 			//	return true
 			//}

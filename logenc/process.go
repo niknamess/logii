@@ -56,6 +56,24 @@ func ProcLine(line string) (csvF string) {
 	return csvline
 }
 
+func ProcLineCSV(line string) (csvF string) {
+
+	if len(line) == 0 {
+
+		return
+	}
+	lookFor := "<loglist>"
+	xmlline := DecodeLine(line)
+	contain := strings.Contains(xmlline, lookFor)
+	if !contain {
+
+		return xmlline
+	}
+
+	//fmt.Print(csvline)
+	return xmlline
+}
+
 func procLineq(line string) (csvF string) {
 
 	if len(line) == 0 {

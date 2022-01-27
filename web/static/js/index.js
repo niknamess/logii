@@ -232,6 +232,7 @@ function initWS(file) {
 
     socket.onmessage = function(e) {
         str = e.data.trim();
+        /*
         if (str.indexOf("INFO") == 0) {
             str = Maket(str, "INFO", "#b0ffb0")
             container.append(str);
@@ -250,9 +251,20 @@ function initWS(file) {
         } else {
             container.append("<p style='background-color: #ffff90; color:blue'>" + str + "</p>" + "<hr>");
 
-        }
+        } */
+        str = ParseXml(str)
 
-        //container.append(str + "<br>" + "<hr>");
+        /*<log module_name="7TMCS TEST" 
+        app_path="/3/TEST/TEST" 
+        app_pid="290" 
+        thread_id="2" 
+        time="29052021000147040" 
+        ulid="01FS9RQYFGZ5VESP3NH5F66S7D" 
+        type="3" 
+        message="Состояние '59.13.144.1Cервер КС_UDP/Пинг'" 
+        ext_message="Context:  -- void tmcs::AbstractMonitor::,Kirkcudbrightshire">
+        </log> */
+        container.append(str + "<br>" + "<hr>");
 
     }
     socket.onclose = function() {
@@ -405,21 +417,47 @@ function countWS(file) {
 function Maket(str, type, color) {
     str = str.replace(type, "," + type);
     // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
-    str = "<table class=\"table-bordered\" bgcolor=" + color + " >" +
-        "<col width=\"150px\" />" +
-        "<col width=\"150px\" />" +
-        "<col width=\"350px\" />" +
-        "<col width=\"50px\" />" +
-        "<col width=\"130px\" />" +
-        "<col width=\"100px\" />" +
-        "<col width=\"300px\" />" +
-        "<col width=\"400px\" />" +
-        "<col width=\"500px\" />" +
-        "<col width=\"200px\" />" +
-        "<tr >" +
-        str.replace(/,\n/g, "<tr >")
-        .replace(/,/g, "<td width=\"100\" height=\"100\">")
-        .replace(/<tr>$/, "") +
-        "</table>";
+    str = e.data.trim();
     return str
+}
+
+
+function ParseXml(xml) {
+    var parser, xmlDoc;
+    //request.responseType = "document";
+    parser = new DOMParser();
+    xmlDoc = parser.parseFromString(xml, "text/xml");
+    /*  table = "<tr><th>TYPE</th><th>APPNAME</th><th>APPPATH</th><th>APPPID</th><th>THREAD</th><th>TIME</th><th>ULID</th><th>MESSAGE</th><th>DETAILS</th></tr>";
+ x = xmlDoc.getElementsByTagName("loglist");
+ for (i = 0; i < x.length; i++) {
+     table += "<tr><td>" +
+         x[i].getElementsByTagName("log")[0].childNodes[0].nodeValue + "</td></tr>";
+     */
+
+    table = xmlDoc.getElementsByTagName("loglist")[0].childNodes[0].nodeValue;
+    /* x[i].getAttribute('module_name') +
+        "</td><td>" +
+        x[i].getAttribute('app_path') +
+        "</td><td>" +
+        x[i].getAttribute('app_pid') +
+        "</td><td>" +
+        x[i].getAttribute('app_path') +
+        "</td><td>" +
+        x[i].getAttribute('thread_id') +
+        "</td><td>" +
+        x[i].getAttribute('time') +
+        "</td><td>" +
+        x[i].getAttribute('ulid') +
+        "</td><td>" +
+        x[i].getAttribute('type') +
+        "</td><td>" +
+        x[i].getAttribute('message') +
+        "</td><td>" +
+        x[i].getAttribute('ext_message') +
+        "</td></tr>"; */
+
+    //}
+
+    return table
+
 }
