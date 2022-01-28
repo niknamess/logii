@@ -15,6 +15,15 @@ var countDbg = 0
 var lastItem;
 //const input = document.querySelector('input');
 
+$('index.tmpl').ready(function() {
+    $('#dtBasicExample').DataTable();
+    $('.dataTables_length').addClass('bs-select');
+});
+
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
+
 buttonR.addEventListener('click', event => {
     setTimeout(
         () => {
@@ -217,54 +226,48 @@ function initWS(file) {
                 "<col width=\"400px\" />" +
                 "<col width=\"500px\" />" +
                 "<col width=\"200px\" />" +
-                "<tr > <td>" +
-                "TYPE" + "</td> <td>" +
-                "APPNAME" + "</td> <td>" +
-                "APPPATH" + "</td> <td>" +
-                "APPPID" + "</td><td>" +
-                "THREAD" + "</td><td>" +
-                "TIME" + "</td><td>" +
-                "ULID" + "</td><td>" +
-                "MESSAGE" + "</td><td>" +
-                "DETAILS" + "</td></tr > </table >");
+                "<thead><tr>" +
+                "<th class = \"th-sm\" > TYPE </th>" +
+                "<th class = \"th-sm\" > APPNAME </th>" +
+                "<th class = \"th-sm\" > APPPATH </th>" +
+                "<th class = \"th-sm\" > APPPID </th>" +
+                "<th class = \"th-sm\" > THREAD </th>" +
+                "<th class = \"th-sm\" > TIME </th>" +
+                "<th class = \"th-sm\" > ULID </th>" +
+                "<th class = \"th-sm\" > MESSAGE </th>" +
+                "<th class = \"th-sm\" > DETAILS </th> </tr>" +
+                "</thead></table>");
+
         }
     }
 
     socket.onmessage = function(e) {
+        var loglist
         str = e.data.trim();
-        /*
-        if (str.indexOf("INFO") == 0) {
-            str = Maket(str, "INFO", "#b0ffb0")
-            container.append(str);
 
-        } else if (str.indexOf("ERROR") == 0) {
-            str = Maket(str, "ERROR", "#ffb0b0")
-            container.append(str);
+        // str = ParseXml(str)
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(str, "text/xml");
+        loglist = xmlDoc.getElementsByTagName("loglist")
+            // print(loglist)
+            // if (loglist) {
+            //str = ParseXml(str)
+            //}
 
-        } else if (str.indexOf("WARNING") == 0) {
-            str = Maket(str, "WARNING", "#ffff90")
-            container.append(str);
-            // container.append("<p style='background-color: yellow; color:blue'>" + str + "</p>" + "<hr>");
-        } else if (str.indexOf("DEBUG") == 0) {
-            str = Maket(str, "DEBUG", "#a0a0a0")
-            container.append(str);
+        k2 = isEmpty(loglist)
+        if (k2 == false) {
+            str = ParseXml(str)
+            container.append(str + "<hr>");
         } else {
-            container.append("<p style='background-color: #ffff90; color:blue'>" + str + "</p>" + "<hr>");
+            container.append("<br>" + str + "</br>" + "<hr>");
+        }
+        /*  var parser, xmlDoc, table;
+         parser = new DOMParser();
+         xmlDoc = parser.parseFromString(xml, "text/xml");
+         loglist = xmlDoc.getElementsByTagName("loglist"); */
 
-        } */
-        str = ParseXml(str)
 
-        /*<log module_name="7TMCS TEST" 
-        app_path="/3/TEST/TEST" 
-        app_pid="290" 
-        thread_id="2" 
-        time="29052021000147040" 
-        ulid="01FS9RQYFGZ5VESP3NH5F66S7D" 
-        type="3" 
-        message="Состояние '59.13.144.1Cервер КС_UDP/Пинг'" 
-        ext_message="Context:  -- void tmcs::AbstractMonitor::,Kirkcudbrightshire">
-        </log> */
-        container.append(str + "<br>" + "<hr>");
+        //   container.append("K1:" + k1 + str + "K2:" + k2 + "<hr>");
 
     }
     socket.onclose = function() {
@@ -412,7 +415,7 @@ function countWS(file) {
     return socket;
 }
 
-
+/* 
 //сортировка пузырек
 function Maket(str, type, color) {
     str = str.replace(type, "," + type);
@@ -421,42 +424,51 @@ function Maket(str, type, color) {
     return str
 }
 
-
+ */
 function ParseXml(xml) {
-    var parser, xmlDoc;
-    //request.responseType = "document";
+    var parser, xmlDoc, table;
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(xml, "text/xml");
-    /*  table = "<tr><th>TYPE</th><th>APPNAME</th><th>APPPATH</th><th>APPPID</th><th>THREAD</th><th>TIME</th><th>ULID</th><th>MESSAGE</th><th>DETAILS</th></tr>";
- x = xmlDoc.getElementsByTagName("loglist");
- for (i = 0; i < x.length; i++) {
-     table += "<tr><td>" +
-         x[i].getElementsByTagName("log")[0].childNodes[0].nodeValue + "</td></tr>";
-     */
+    loglist = xmlDoc.getElementsByTagName("loglist");
+    for (i = 0; i < loglist.length; i++) {
+        log = loglist[i].getElementsByTagName("log");
+        for (i = 0; i < log.length; i++) {
+            table += "<table id=\"dtBasicExample\" class=\"table table-striped table-bordered table-sm\" cellspacing=\"0\" width=\"100%\">" +
+                "<col width=\"150px\" />" +
+                "<col width=\"150px\" />" +
+                "<col width=\"350px\" />" +
+                "<col width=\"100px\" />" +
+                "<col width=\"130px\" />" +
+                "<col width=\"100px\" />" +
+                "<col width=\"300px\" />" +
+                "<col width=\"400px\" />" +
+                "<col width=\"500px\" />" +
+                "<col width=\"200px\" />" +
+                "<tbody>" +
+                "<tr><td>" +
+                log[i].getAttribute('type') + //type
+                "</td><td>" +
+                log[i].getAttribute('module_name') + //module_name
+                "</td><td>" +
+                log[i].getAttribute('app_path') + //app_path
+                "</td><td>" +
+                log[i].getAttribute('app_pid') + //app_pid
+                "</td><td>" +
+                log[i].getAttribute('thread_id') + //thread_id
+                "</td><td>" +
+                log[i].getAttribute('time') +
+                "</td><td>" +
+                log[i].getAttribute('ulid') +
+                "</td><td>" +
+                log[i].getAttribute('message') + //message
+                "</td><td>" +
+                log[i].getAttribute('ext_message') + //ext_message
+                "</td></tr>" +
+                "</tbody>" +
+                "</table>";
 
-    table = xmlDoc.getElementsByTagName("loglist")[0].childNodes[0].nodeValue;
-    /* x[i].getAttribute('module_name') +
-        "</td><td>" +
-        x[i].getAttribute('app_path') +
-        "</td><td>" +
-        x[i].getAttribute('app_pid') +
-        "</td><td>" +
-        x[i].getAttribute('app_path') +
-        "</td><td>" +
-        x[i].getAttribute('thread_id') +
-        "</td><td>" +
-        x[i].getAttribute('time') +
-        "</td><td>" +
-        x[i].getAttribute('ulid') +
-        "</td><td>" +
-        x[i].getAttribute('type') +
-        "</td><td>" +
-        x[i].getAttribute('message') +
-        "</td><td>" +
-        x[i].getAttribute('ext_message') +
-        "</td></tr>"; */
-
-    //}
+        }
+    }
 
     return table
 
