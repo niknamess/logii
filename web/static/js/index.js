@@ -35,17 +35,11 @@ buttonR.addEventListener('click', event => {
 });
 
 buttonView.addEventListener('click', event => {
-    /*   setTimeout(
-          () => {
-              //  countWS(lastItem)
-              Null()
-          },
-          1 * 200
-      ); */
+
     setTimeout(
         () => {
-            //window.location.reload();
-            //countWS(lastItem)
+
+            Null()
             countWS(lastItem)
             initWS(lastItem)
             setBackColor('view', "#ed6c27")
@@ -54,10 +48,8 @@ buttonView.addEventListener('click', event => {
         1 * 200
     );
 
-    /*  countWar = 0
-     countErr = 0
-     countInf = 0
-     countDbg = 0 */
+
+
 
 });
 
@@ -181,7 +173,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("Your browser does not support WebSockets");
             return;
         } else {
-            //Null()
+            // Null()
             countWS(file)
             ws = initWS(file);
 
@@ -245,29 +237,23 @@ function initWS(file) {
         var loglist
         str = e.data.trim();
 
-        // str = ParseXml(str)
+
         parser = new DOMParser();
         xmlDoc = parser.parseFromString(str, "text/xml");
         loglist = xmlDoc.getElementsByTagName("loglist")
-            // print(loglist)
-            // if (loglist) {
-            //str = ParseXml(str)
-            //}
+
 
         k2 = isEmpty(loglist)
         if (k2 == false) {
             str = ParseXml(str)
-            container.append(str + "<hr>");
+            container.append("<table>" + str + "</table>" +
+                "<script>" +
+                "$(\'#sortTable\').DataTable();" +
+                "</script>");
         } else {
             container.append("<br>" + str + "</br>" + "<hr>");
         }
-        /*  var parser, xmlDoc, table;
-         parser = new DOMParser();
-         xmlDoc = parser.parseFromString(xml, "text/xml");
-         loglist = xmlDoc.getElementsByTagName("loglist"); */
 
-
-        //   container.append("K1:" + k1 + str + "K2:" + k2 + "<hr>");
 
     }
     socket.onclose = function() {
@@ -282,7 +268,7 @@ function initWS(file) {
 }
 
 
-
+/* 
 function initWSType(file, type, color) {
 
     var ws_proto = "ws:"
@@ -346,7 +332,7 @@ function initWSType(file, type, color) {
 
     return socket;
 }
-
+ */
 
 
 function countWS(file) {
@@ -387,23 +373,7 @@ function countWS(file) {
         }
     }
 
-    socket.onmessage = function(e) {
-        str = e.data.trim();
-        if (str.indexOf("WARNING") == 0) {
-            countWar++
 
-        } else if (str.indexOf("ERROR") == 0) {
-            countErr++
-
-        } else if (str.indexOf("INFO") == 0) {
-            countInf++
-        } else if (str.indexOf("DEBUG") == 0) {
-            countDbg++
-        }
-
-
-
-    }
     socket.onclose = function() {
         container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
         Null()
@@ -426,27 +396,17 @@ function Maket(str, type, color) {
 
  */
 function ParseXml(xml) {
-    var parser, xmlDoc, table;
+    var parser, xmlDoc, table, msg;
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(xml, "text/xml");
     loglist = xmlDoc.getElementsByTagName("loglist");
     for (i = 0; i < loglist.length; i++) {
         log = loglist[i].getElementsByTagName("log");
         for (i = 0; i < log.length; i++) {
-            table += "<table id=\"dtBasicExample\" class=\"table table-striped table-bordered table-sm\" cellspacing=\"0\" width=\"100%\">" +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<tbody>" +
+            table +=
+                "<tbody bgcolor =" + typeMsg(log[i].getAttribute('type')) + ">" +
                 "<tr><td>" +
-                log[i].getAttribute('type') + //type
+                typeMsg(log[i].getAttribute('type')) + //type
                 "</td><td>" +
                 log[i].getAttribute('module_name') + //module_name
                 "</td><td>" +
@@ -464,12 +424,52 @@ function ParseXml(xml) {
                 "</td><td>" +
                 log[i].getAttribute('ext_message') + //ext_message
                 "</td></tr>" +
-                "</tbody>" +
-                "</table>";
+                "</tbody>";
 
         }
     }
 
     return table
 
+}
+
+function typeMsg(type) {
+    if (type == "0") {
+        msg = "INFO";
+        countInf++
+    } else if (type == "1") {
+        msg = "DEBUG";
+        countDbg++
+    } else if (type == "2") {
+        msg = "WARNING";
+        countWar++
+
+    } else if (type == "3") {
+        msg = "ERROR";
+        countErr++
+    } else if (type == "4") {
+        msg = "FATAL";
+
+    }
+    return msg
+}
+
+function Color(type) {
+    if (type == "0") {
+
+        color = "#b0ffb0";
+    } else if (type == "1") {
+
+        color = "#ffff90";
+    } else if (type == "2") {
+
+        color = "#b0ffb0";
+    } else if (type == "3") {
+
+        color = "#ffb0b0";
+    } else if (type == "4") {
+
+        color = "#b1ffb1";
+    }
+    return color
 }
