@@ -64,11 +64,15 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		for line := range taillog.Lines {
 			//if dir == false {
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLineCSV(line.Text)))
+			//:TODO create common structure
+			//PS: Merge xml structure
+
 			//} else {
 			//	return true
 			//}
 
 		}
+		//:TODO transmit to websoket
 		//fmt.Println("Check")
 	} else if len(UlidC) == 0 {
 		println("Break")
@@ -79,11 +83,13 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 			v, found := SearchMap[UlidC[i]]
 			if found {
-
+				//:TODO create common structure
+				//PS: Merge xml structure
 				conn.WriteMessage(websocket.TextMessage, []byte(v))
 
 			}
 		}
+		//:TODO transmit to websoket
 
 	}
 	//return true

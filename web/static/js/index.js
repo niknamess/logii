@@ -15,10 +15,6 @@ var countDbg = 0
 var lastItem;
 //const input = document.querySelector('input');
 
-$('index.tmpl').ready(function() {
-    $('#dtBasicExample').DataTable();
-    $('.dataTables_length').addClass('bs-select');
-});
 
 function isEmpty(str) {
     return (!str || 0 === str.length);
@@ -135,9 +131,6 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     vm.toggleSideNav = function toggleSideNav() {
         $mdSidenav('left').toggle()
     }
-
-
-
     vm.init = function init() {
         console.log("In the main controller")
         $scope.showCard = true;
@@ -176,11 +169,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             // Null()
             countWS(file)
             ws = initWS(file);
-
-
         }
-
-
 
         vm.toggleSideNav()
     }
@@ -207,7 +196,7 @@ function initWS(file) {
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table class=\"mat-table mat-elevation-z8\" > " +
+            container.append("<table  > " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -218,7 +207,7 @@ function initWS(file) {
                 "<col width=\"400px\" />" +
                 "<col width=\"500px\" />" +
                 "<col width=\"200px\" />" +
-                "<thead><tr>" +
+                "<tr>" +
                 "<th class = \"th-sm\" > TYPE </th>" +
                 "<th class = \"th-sm\" > APPNAME </th>" +
                 "<th class = \"th-sm\" > APPPATH </th>" +
@@ -228,7 +217,7 @@ function initWS(file) {
                 "<th class = \"th-sm\" > ULID </th>" +
                 "<th class = \"th-sm\" > MESSAGE </th>" +
                 "<th class = \"th-sm\" > DETAILS </th> </tr>" +
-                "</thead></table>");
+                "</table>");
 
         }
     }
@@ -246,10 +235,7 @@ function initWS(file) {
         k2 = isEmpty(loglist)
         if (k2 == false) {
             str = ParseXml(str)
-            container.append("<table>" + str + "</table>" +
-                "<script>" +
-                "$(\'#sortTable\').DataTable();" +
-                "</script>");
+            container.append("<table>" + str);
         } else {
             container.append("<br>" + str + "</br>" + "<hr>");
         }
@@ -266,73 +252,6 @@ function initWS(file) {
 
     return socket;
 }
-
-
-/* 
-function initWSType(file, type, color) {
-
-    var ws_proto = "ws:"
-    if (window.location.protocol === "https:") {
-        ws_proto = "wss:"
-    }
-
-    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
-    var container = angular.element(document.querySelector("#container"));
-
-
-
-
-    container.html("")
-    socket.onopen = function() {
-        var filename = file.replace(/^.*[\\\/]/, '')
-        container.append("<p><b>Tailing file: " + filename + "</b></p>");
-        strf = file
-        if (strf.indexOf("undefined") != 0) {
-            container.append("<table> " +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"110px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"110px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<tr > <td>" +
-                "TYPE" + "</td> <td>" +
-                "APPNAME" + "</td> <td>" +
-                "APPPATH" + "</td> <td>" +
-                "APPPID" + "</td><td>" +
-                "THREAD" + "</td><td>" +
-                "TIME" + "</td><td>" +
-                "ULID" + "</td><td>" +
-                "MESSAGE" + "</td><td>" +
-                "DETAILS" + "</td></tr > </table >"
-
-            );
-        }
-    }
-
-    socket.onmessage = function(e) {
-        str = e.data.trim();
-        if (str.indexOf(type) == 0) {
-            str = Maket(str, type, color)
-            container.append(str);
-
-        }
-    }
-    socket.onclose = function() {
-        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
-        Null()
-    }
-    socket.onerror = function(e) {
-        container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
-    }
-
-    return socket;
-}
- */
 
 
 function countWS(file) {
@@ -375,27 +294,18 @@ function countWS(file) {
 
 
     socket.onclose = function() {
-        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        container.append("<p style='background-color: maroon; color:orange'>" + "Connection Closed to WebSocket, tail stopped" + "</p>");
         Null()
     }
     socket.onerror = function(e) {
-        container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
+        container.append("<b>Some error occurred " + e.data.trim() + "<b>");
     }
 
     return socket;
 }
 
-/* 
-//сортировка пузырек
-function Maket(str, type, color) {
-    str = str.replace(type, "," + type);
-    // str = "<table  cellspacing=\"0\" cellpadding=\"4\" border=\"1\" style='font-family:\"Courier New\", Courier, monospace; font-size:100%' >" +f2f3f4
-    str = e.data.trim();
-    return str
-}
 
- */
-function ParseXml(xml) {
+/* function ParseXml(xml) {
     var parser, xmlDoc, table, msg;
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(xml, "text/xml");
@@ -431,7 +341,53 @@ function ParseXml(xml) {
 
     return table
 
+} */
+
+function ParseXml(str) {
+
+    //:TODO create sortable table with xml structure
+    var parser, xmlDoc, table;
+    parser = new DOMParser();
+    //serializer = new XMLSerializer();
+    xmlDoc = parser.parseFromString(str, "application/xml");
+    //xmlDoc1 = serializer.serializeToString(xmlDoc);
+    //loglist = xmlDoc.getElementsByTagName("loglist");
+    log = xmlDoc.getElementsByTagName("log");
+    for (i = 0; i < log.length; i++) {
+        table += //< table > < /table>
+            //"<tbody>" +
+            "<table bgcolor =" + typeMsg(log[i].getAttribute('type')) + ">" +
+            "<tr><td>" +
+            typeMsg(log[i].getAttribute('type')) + //type
+            "</td><td>" +
+            log[i].getAttribute('module_name') + //module_name
+            "</td><td>" +
+            log[i].getAttribute('app_path') + //app_path
+            "</td><td>" +
+            log[i].getAttribute('app_pid') + //app_pid
+            "</td><td>" +
+            log[i].getAttribute('thread_id') + //thread_id
+            "</td><td>" +
+            log[i].getAttribute('time') +
+            "</td><td>" +
+            log[i].getAttribute('ulid') +
+            "</td><td>" +
+            log[i].getAttribute('message') + //message
+            "</td><td>" +
+            log[i].getAttribute('ext_message') +
+            "</td><td>" +
+            log[i].getAttribute('ddMMyyyyhhmmsszzz') + //message
+
+            "</td></tr>" +
+            "</table>";
+
+    }
+
+
+    return table
+
 }
+
 
 function typeMsg(type) {
     if (type == "0") {
@@ -457,16 +413,16 @@ function typeMsg(type) {
 function Color(type) {
     if (type == "0") {
 
-        color = "#b0ffb0";
+        color = "#b4fcb5";
     } else if (type == "1") {
 
-        color = "#ffff90";
+        color = "#a0a0a0";
     } else if (type == "2") {
 
-        color = "#b0ffb0";
+        color = "#fffc9b";
     } else if (type == "3") {
 
-        color = "#ffb0b0";
+        color = "#fdb1b1";
     } else if (type == "4") {
 
         color = "#b1ffb1";
