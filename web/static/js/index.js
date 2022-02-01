@@ -232,13 +232,13 @@ function initWS(file) {
         loglist = xmlDoc.getElementsByTagName("loglist")
 
 
-        k2 = isEmpty(loglist)
-        if (k2 == false) {
-            str = ParseXml(str)
-            container.append("<table>" + str);
-        } else {
-            container.append("<br>" + str + "</br>" + "<hr>");
-        }
+        //k2 = isEmpty(loglist)
+        //  if (k2 == false) {
+        //str = ParseXml(str)
+        //container.append(str);
+        //} else {
+        container.append("<br>" + str + "</br>" + "<hr>");
+        //  }
 
 
     }

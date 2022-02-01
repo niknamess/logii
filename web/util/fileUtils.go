@@ -26,7 +26,7 @@ var (
 	// FileList - list of files that were parsed from the provided config
 	FileList []string
 	visited  map[string]bool
-
+	//commoncsv logenc.LogList
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
 	indexMap = make(map[string]bool)
@@ -44,7 +44,7 @@ type FileStruct struct {
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
 func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]string) {
-
+	var commoncsv logenc.LogList
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	taillog, err := tail.TailFile(fileName,
@@ -62,18 +62,17 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		for line := range taillog.Lines {
-			//if dir == false {
-			conn.WriteMessage(websocket.TextMessage, []byte(logenc.ProcLineCSV(line.Text)))
 			//:TODO create common structure
 			//PS: Merge xml structure
 
-			//} else {
-			//	return true
-			//}
-
+			csvsimpl := logenc.ProcLineCSVv2(line.Text)
+			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+			go taillog.StopAtEOF()
 		}
+		//Why dont working
+		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 		//:TODO transmit to websoket
-		//fmt.Println("Check")
+		//fmt.Println("Check")z
 	} else if len(UlidC) == 0 {
 		println("Break")
 		return
