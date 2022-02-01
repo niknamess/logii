@@ -196,7 +196,9 @@ function initWS(file) {
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<table  > " +
+            container.append("<div class=\"container\">" +
+                "<div class=\"row\">" +
+                "<table  id=\"selectedColumn\" class=\"table table-striped table-bordered table-sm\" cellspacing=\"0\" width=\"100%\"> " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -207,6 +209,7 @@ function initWS(file) {
                 "<col width=\"400px\" />" +
                 "<col width=\"500px\" />" +
                 "<col width=\"200px\" />" +
+                "<thead>" +
                 "<tr>" +
                 "<th class = \"th-sm\" > TYPE </th>" +
                 "<th class = \"th-sm\" > APPNAME </th>" +
@@ -217,6 +220,7 @@ function initWS(file) {
                 "<th class = \"th-sm\" > ULID </th>" +
                 "<th class = \"th-sm\" > MESSAGE </th>" +
                 "<th class = \"th-sm\" > DETAILS </th> </tr>" +
+                "</thead>" +
                 "</table>");
 
         }
@@ -232,13 +236,17 @@ function initWS(file) {
         loglist = xmlDoc.getElementsByTagName("loglist")
 
 
-        //k2 = isEmpty(loglist)
-        //  if (k2 == false) {
-        //str = ParseXml(str)
-        //container.append(str);
-        //} else {
-        container.append("<br>" + str + "</br>" + "<hr>");
-        //  }
+        k2 = isEmpty(loglist)
+        if (k2 == false) {
+            str = ParseXml(str)
+            container.append(str + "</tbody></table>" +
+                "</div>" +
+                "</div>");
+        } else {
+            container.append("<br>" + str + "</br>" + "<hr>" +
+                "</div>" +
+                "</div>");
+        }
 
 
     }
@@ -356,8 +364,18 @@ function ParseXml(str) {
     for (i = 0; i < log.length; i++) {
         table += //< table > < /table>
             //"<tbody>" +
-            "<table bgcolor =" + typeMsg(log[i].getAttribute('type')) + ">" +
-            "<tr><td>" +
+            "<table id=\"selectedColumn\" class=\"table table-striped table-bordered table-sm\" cellspacing=\"0\" width=\"100%\" ><tbody>" +
+            "<col width=\"150px\" />" +
+            "<col width=\"150px\" />" +
+            "<col width=\"350px\" />" +
+            "<col width=\"100px\" />" +
+            "<col width=\"130px\" />" +
+            "<col width=\"100px\" />" +
+            "<col width=\"300px\" />" +
+            "<col width=\"400px\" />" +
+            "<col width=\"500px\" />" +
+            "<col width=\"200px\" />" +
+            "<tr  bgcolor =" + typeMsg(log[i].getAttribute('type')) + ">" + "<td>" +
             typeMsg(log[i].getAttribute('type')) + //type
             "</td><td>" +
             log[i].getAttribute('module_name') + //module_name
@@ -377,13 +395,8 @@ function ParseXml(str) {
             log[i].getAttribute('ext_message') +
             "</td><td>" +
             log[i].getAttribute('ddMMyyyyhhmmsszzz') + //message
-
-            "</td></tr>" +
-            "</table>";
-
+            "</td></tr>";
     }
-
-
     return table
 
 }
@@ -429,3 +442,9 @@ function Color(type) {
     }
     return color
 }
+
+
+
+$(document).ready(function() {
+    $("#example").DataTable();
+});
