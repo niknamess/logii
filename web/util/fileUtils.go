@@ -62,17 +62,12 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		for line := range taillog.Lines {
-			//:TODO create common structure
-			//PS: Merge xml structure
-
 			csvsimpl := logenc.ProcLineCSVv2(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-			go taillog.StopAtEOF()
+			go taillog.StopAtEOF() //end tail and stop service
 		}
-		//Why dont working
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-		//:TODO transmit to websoket
-		//fmt.Println("Check")z
+
 	} else if len(UlidC) == 0 {
 		println("Break")
 		return
@@ -84,6 +79,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			if found {
 				//:TODO create common structure
 				//PS: Merge xml structure
+				//:TODO map with xml structure
 				conn.WriteMessage(websocket.TextMessage, []byte(v))
 
 			}

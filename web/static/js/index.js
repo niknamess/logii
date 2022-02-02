@@ -196,9 +196,8 @@ function initWS(file) {
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<div class=\"container\">" +
-                "<div class=\"row\">" +
-                "<table  id=\"selectedColumn\" class=\"table table-striped table-bordered table-sm\" cellspacing=\"0\" width=\"100%\"> " +
+            container.append("<div style=\"\" class=\"TableContainer\">" +
+                "<table  id=\"tbl92\" border=\"1\"> " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
                 "<col width=\"350px\" />" +
@@ -212,16 +211,16 @@ function initWS(file) {
                 "<thead>" +
                 "<tr>" +
                 "<th class = \"th-sm\" > TYPE </th>" +
-                "<th class = \"th-sm\" > APPNAME </th>" +
+                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPNAME </th>" +
                 "<th class = \"th-sm\" > APPPATH </th>" +
-                "<th class = \"th-sm\" > APPPID </th>" +
+                "<th onclick=\"Vi.Table.sort.number(this)\" title=\"Number will be sortes as number.\" > APPPID </th>" +
                 "<th class = \"th-sm\" > THREAD </th>" +
                 "<th class = \"th-sm\" > TIME </th>" +
                 "<th class = \"th-sm\" > ULID </th>" +
                 "<th class = \"th-sm\" > MESSAGE </th>" +
                 "<th class = \"th-sm\" > DETAILS </th> </tr>" +
                 "</thead>" +
-                "</table>");
+                "</table>" + "</div>");
 
         }
     }
@@ -239,13 +238,12 @@ function initWS(file) {
         k2 = isEmpty(loglist)
         if (k2 == false) {
             str = ParseXml(str)
-            container.append(str + "</tbody></table>" +
-                "</div>" +
-                "</div>");
+            container.append("<div style=\"\" class=\"TableContainer TEST\">" +
+                "<table id=\"tbl92\" border=\"0\" class=\"tableScroll\" align=\"center\" ><tbody>" + str + "</tbody></table></div>");
         } else {
-            container.append("<br>" + str + "</br>" + "<hr>" +
-                "</div>" +
-                "</div>");
+            // container.append("<br>" + str + "</br>" + "<hr>" +
+            //    "</div>" +
+            //     "</div>");
         }
 
 
@@ -364,38 +362,37 @@ function ParseXml(str) {
     for (i = 0; i < log.length; i++) {
         table += //< table > < /table>
             //"<tbody>" +
-            "<table id=\"selectedColumn\" class=\"table table-striped table-bordered table-sm\" cellspacing=\"0\" width=\"100%\" ><tbody>" +
-            "<col width=\"150px\" />" +
-            "<col width=\"150px\" />" +
-            "<col width=\"350px\" />" +
-            "<col width=\"100px\" />" +
-            "<col width=\"130px\" />" +
-            "<col width=\"100px\" />" +
-            "<col width=\"300px\" />" +
-            "<col width=\"400px\" />" +
-            "<col width=\"500px\" />" +
-            "<col width=\"200px\" />" +
-            "<tr  bgcolor =" + typeMsg(log[i].getAttribute('type')) + ">" + "<td>" +
+            /*  "<col width=\"150px\" />" +
+             "<col width=\"150px\" />" +
+             "<col width=\"350px\" />" +
+             "<col width=\"100px\" />" +
+             "<col width=\"130px\" />" +
+             "<col width=\"100px\" />" +
+             "<col width=\"300px\" />" +
+             "<col width=\"400px\" />" +
+             "<col width=\"500px\" />" +
+             "<col width=\"200px\" />" + */
+            "<tr  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td  class=\"\"><span>" +
             typeMsg(log[i].getAttribute('type')) + //type
-            "</td><td>" +
+            "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('module_name') + //module_name
-            "</td><td>" +
+            "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('app_path') + //app_path
-            "</td><td>" +
+            "</span></td><td class=\"ellipsis\"><span>" +
             log[i].getAttribute('app_pid') + //app_pid
-            "</td><td>" +
+            "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('thread_id') + //thread_id
-            "</td><td>" +
+            "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('time') +
-            "</td><td>" +
+            "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('ulid') +
-            "</td><td>" +
+            "</span></td><td class=\"ellipsis\"><span>" +
             log[i].getAttribute('message') + //message
-            "</td><td>" +
+            "</span></td><td class=\"ellipsis\"><span>" +
             log[i].getAttribute('ext_message') +
-            "</td><td>" +
+            "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('ddMMyyyyhhmmsszzz') + //message
-            "</td></tr>";
+            "</span></td></tr>";
     }
     return table
 
@@ -443,8 +440,48 @@ function Color(type) {
     return color
 }
 
+//add
+// This is an example of a custom sort. Despite the values in this column are string,  
+// the column will be ordered as they were numbers (instead of lessically)
+function sortCustom1(th) {
+    try {
+
+        // the column will be ordered following the same order the items are in the array. 
+        var numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+
+        function getValue(tr, cellIndex) {
+            var value = tr.children[cellIndex].innerText.toLowerCase().trim();
+            return numbers.indexOf(value);
+        }
+
+        Vi.Table.sort(th, getValue);
+
+    } catch (jse) {
+        console.error(jse);
+    }
+}
 
 
-$(document).ready(function() {
-    $("#example").DataTable();
-});
+/**
+ * Here the column is sorted based on an atribute and not the value shown.
+ * That should highlight the fact the developer has an hight degree of 
+ * freedom on how implement the table and the data 
+ * At the end, the only constrain is that the function 'getValue' must
+ * return a sortable value.
+ */
+function sortCustom2(th) {
+    try {
+
+        function getValue(tr, cellIndex) {
+            var child = tr.children[cellIndex];
+            var ticks = child.getAttribute("data-ticks");
+            var value = parseInt(ticks);
+            return value;
+        }
+
+        Vi.Table.sort(th, getValue);
+
+    } catch (jse) {
+        console.error(jse);
+    }
+}
