@@ -43,10 +43,6 @@ buttonView.addEventListener('click', event => {
         },
         1 * 200
     );
-
-
-
-
 });
 
 buttonErr.addEventListener('click', event => {
@@ -187,40 +183,13 @@ function initWS(file) {
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
 
-
-
-
     container.html("")
     socket.onopen = function() {
         var filename = file.replace(/^.*[\\\/]/, '')
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
-            container.append("<div style=\"\" class=\"TableContainer\">" +
-                "<table  id=\"tbl92\" border=\"1\"> " +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"100px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<thead>" +
-                "<tr>" +
-                "<th class = \"th-sm\" > TYPE </th>" +
-                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPNAME </th>" +
-                "<th class = \"th-sm\" > APPPATH </th>" +
-                "<th onclick=\"Vi.Table.sort.number(this)\" title=\"Number will be sortes as number.\" > APPPID </th>" +
-                "<th class = \"th-sm\" > THREAD </th>" +
-                "<th class = \"th-sm\" > TIME </th>" +
-                "<th class = \"th-sm\" > ULID </th>" +
-                "<th class = \"th-sm\" > MESSAGE </th>" +
-                "<th class = \"th-sm\" > DETAILS </th> </tr>" +
-                "</thead>" +
-                "</table>" + "</div>");
+            container.append("nope");
 
         }
     }
@@ -238,8 +207,21 @@ function initWS(file) {
         k2 = isEmpty(loglist)
         if (k2 == false) {
             str = ParseXml(str)
-            container.append("<div style=\"\" class=\"TableContainer TEST\">" +
-                "<table id=\"tbl92\" border=\"0\" class=\"tableScroll\" align=\"center\" ><tbody>" + str + "</tbody></table></div>");
+            container.append("<div style=\"\" class=\"TableContainer\">" +
+                "<table id=\"tbl92\" border=\"0\" class=\"tableScroll\" align=\"center\" >" +
+                "<thead>" +
+                "<tr>" +
+                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > TYPE </th>" +
+                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPNAME </th>" +
+                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPPATH </th>" +
+                "<th onclick=\"Vi.Table.sort.number(this)\" title=\"Number will be sortes as number.\" > APPPID </th>" +
+                "<th class = \"th-sm\" > THREAD </th>" +
+                "<th class = \"th-sm\" > TIME </th>" +
+                "<th class = \"th-sm\" > ULID </th>" +
+                "<th class = \"th-sm\" > MESSAGE </th>" +
+                "<th class = \"th-sm\" > DETAILS </th> </tr>" +
+                "</thead>" +
+                "<tbody>" + str + "</tbody></table></div>");
         } else {
             // container.append("<br>" + str + "</br>" + "<hr>" +
             //    "</div>" +
@@ -311,93 +293,36 @@ function countWS(file) {
 }
 
 
-/* function ParseXml(xml) {
-    var parser, xmlDoc, table, msg;
-    parser = new DOMParser();
-    xmlDoc = parser.parseFromString(xml, "text/xml");
-    loglist = xmlDoc.getElementsByTagName("loglist");
-    for (i = 0; i < loglist.length; i++) {
-        log = loglist[i].getElementsByTagName("log");
-        for (i = 0; i < log.length; i++) {
-            table +=
-                "<tbody bgcolor =" + typeMsg(log[i].getAttribute('type')) + ">" +
-                "<tr><td>" +
-                typeMsg(log[i].getAttribute('type')) + //type
-                "</td><td>" +
-                log[i].getAttribute('module_name') + //module_name
-                "</td><td>" +
-                log[i].getAttribute('app_path') + //app_path
-                "</td><td>" +
-                log[i].getAttribute('app_pid') + //app_pid
-                "</td><td>" +
-                log[i].getAttribute('thread_id') + //thread_id
-                "</td><td>" +
-                log[i].getAttribute('time') +
-                "</td><td>" +
-                log[i].getAttribute('ulid') +
-                "</td><td>" +
-                log[i].getAttribute('message') + //message
-                "</td><td>" +
-                log[i].getAttribute('ext_message') + //ext_message
-                "</td></tr>" +
-                "</tbody>";
-
-        }
-    }
-
-    return table
-
-} */
-
 function ParseXml(str) {
-
-    //:TODO create sortable table with xml structure
     var parser, xmlDoc, table;
     parser = new DOMParser();
-    //serializer = new XMLSerializer();
     xmlDoc = parser.parseFromString(str, "application/xml");
-    //xmlDoc1 = serializer.serializeToString(xmlDoc);
-    //loglist = xmlDoc.getElementsByTagName("loglist");
     log = xmlDoc.getElementsByTagName("log");
     for (i = 0; i < log.length; i++) {
-        table += //< table > < /table>
-            //"<tbody>" +
-            /*  "<col width=\"150px\" />" +
-             "<col width=\"150px\" />" +
-             "<col width=\"350px\" />" +
-             "<col width=\"100px\" />" +
-             "<col width=\"130px\" />" +
-             "<col width=\"100px\" />" +
-             "<col width=\"300px\" />" +
-             "<col width=\"400px\" />" +
-             "<col width=\"500px\" />" +
-             "<col width=\"200px\" />" + */
+        table +=
             "<tr  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td  class=\"\"><span>" +
-            typeMsg(log[i].getAttribute('type')) + //type
+            typeMsg(log[i].getAttribute('type')) +
             "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('module_name') + //module_name
+            log[i].getAttribute('module_name') +
             "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('app_path') + //app_path
+            log[i].getAttribute('app_path') +
             "</span></td><td class=\"ellipsis\"><span>" +
-            log[i].getAttribute('app_pid') + //app_pid
+            log[i].getAttribute('app_pid') +
             "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('thread_id') + //thread_id
+            log[i].getAttribute('thread_id') +
             "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('time') +
             "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('ulid') +
             "</span></td><td class=\"ellipsis\"><span>" +
-            log[i].getAttribute('message') + //message
+            log[i].getAttribute('message') +
             "</span></td><td class=\"ellipsis\"><span>" +
             log[i].getAttribute('ext_message') +
-            "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('ddMMyyyyhhmmsszzz') + //message
             "</span></td></tr>";
     }
     return table
 
 }
-
 
 function typeMsg(type) {
     if (type == "0") {
@@ -460,7 +385,6 @@ function sortCustom1(th) {
         console.error(jse);
     }
 }
-
 
 /**
  * Here the column is sorted based on an atribute and not the value shown.
