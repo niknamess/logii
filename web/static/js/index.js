@@ -11,6 +11,7 @@ var countWar = 0
 var countErr = 0
 var countInf = 0
 var countDbg = 0
+var start
 
 var lastItem;
 //const input = document.querySelector('input');
@@ -24,7 +25,7 @@ buttonR.addEventListener('click', event => {
     setTimeout(
         () => {
             window.location.reload();
-            Null()
+
         },
         1 * 200
     );
@@ -35,8 +36,7 @@ buttonView.addEventListener('click', event => {
     setTimeout(
         () => {
 
-            Null()
-            countWS(lastItem)
+
             initWS(lastItem)
             setBackColor('view', "#ed6c27")
             quotation('view', "Find")
@@ -46,7 +46,7 @@ buttonView.addEventListener('click', event => {
 });
 
 buttonErr.addEventListener('click', event => {
-    Null()
+
     setTimeout(
         () => {
             initWSType(lastItem, "ERROR", "#ffb0b0")
@@ -120,7 +120,7 @@ function change(identifier, color) {
 }
 
 function mainController($rootScope, $scope, $mdSidenav, $http) {
-    Null()
+
     var vm = this;
     //var lastItem;
 
@@ -162,8 +162,8 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("Your browser does not support WebSockets");
             return;
         } else {
-            // Null()
-            countWS(file)
+
+
             ws = initWS(file);
         }
 
@@ -185,10 +185,12 @@ function initWS(file) {
 
     container.html("")
     socket.onopen = function() {
+
         var filename = file.replace(/^.*[\\\/]/, '')
         container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
+
             container.append("nope");
 
         }
@@ -207,59 +209,7 @@ function initWS(file) {
         k2 = isEmpty(loglist)
         if (k2 == false) {
             str = ParseXml(str)
-            container.append("<div style=\"\" class=\"TableContainer\">" +
-                "<table id=\"tbl92\" border=\"0\" class=\"tableScroll\" align=\"center\" >" +
-                "<thead>" +
-                "<tr>" +
-                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > TYPE </th>" +
-                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPNAME </th>" +
-                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPPATH </th>" +
-                "<th onclick=\"Vi.Table.sort.number(this)\" title=\"Number will be sortes as number.\" > APPPID </th>" +
-                "<th class = \"th-sm\" > THREAD </th>" +
-                "<th class = \"th-sm\" > TIME </th>" +
-                "<th class = \"th-sm\" > ULID </th>" +
-                "<th class = \"th-sm\" > MESSAGE </th>" +
-                "<th class = \"th-sm\" > DETAILS </th> </tr>" +
-                "</thead>" +
-                "<tbody>" + str + "</tbody></table></div>");
-        } else {
-            // container.append("<br>" + str + "</br>" + "<hr>" +
-            //    "</div>" +
-            //     "</div>");
-        }
 
-
-    }
-    socket.onclose = function() {
-        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
-        Null()
-    }
-    socket.onerror = function(e) {
-        container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
-    }
-
-    return socket;
-}
-
-
-function countWS(file) {
-
-    var ws_proto = "ws:"
-    if (window.location.protocol === "https:") {
-        ws_proto = "wss:"
-    }
-
-    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
-    var container = angular.element(document.querySelector("#container"));
-
-
-
-
-    container.html("")
-    socket.onopen = function() {
-        var filename = file.replace(/^.*[\\\/]/, '')
-        strf = file
-        if (strf.indexOf("undefined") != 0) {
             container.append("<table > " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
@@ -277,30 +227,61 @@ function countWS(file) {
                 countWar + "</td> <td class=\"debug\">" + "Debug:" +
                 countDbg +
                 "</td></tr > </table >");
+
+            Null()
+            container.append("<div style=\"\" class=\"TableContainer\">" +
+                "<table id=\"tbl92\" border=\"0\" class=\"tableScroll\" align=\"center\" >" +
+                "<thead>" +
+                "<tr>" +
+                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > TYPE </th>" +
+                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPNAME </th>" +
+                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPPATH </th>" +
+                "<th onclick=\"Vi.Table.sort.number(this)\" title=\"Number will be sortes as number.\" > APPPID </th>" +
+                "<th class = \"th-sm\" > THREAD </th>" +
+                "<th class = \"th-sm\" > TIME </th>" +
+                "<th class = \"th-sm\" > ULID </th>" +
+                "<th class = \"th-sm\" > MESSAGE </th>" +
+                "<th class = \"th-sm\" > DETAILS </th> </tr>" +
+                "</thead>" +
+                "<tbody>" + str + "</tbody></table></div>");
+
+
+
         }
+
+        /* else {
+                   // container.append("<br>" + str + "</br>" + "<hr>" +
+                   //    "</div>" +
+                   //     "</div>");
+               } */
+
+
     }
-
-
     socket.onclose = function() {
-        container.append("<p style='background-color: maroon; color:orange'>" + "Connection Closed to WebSocket, tail stopped" + "</p>");
-        Null()
+        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
     }
     socket.onerror = function(e) {
-        container.append("<b>Some error occurred " + e.data.trim() + "<b>");
+        container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
     }
 
     return socket;
 }
 
 
+
 function ParseXml(str) {
-    var parser, xmlDoc, table;
+    var parser, xmlDoc, table, heyho;
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(str, "application/xml");
     log = xmlDoc.getElementsByTagName("log");
     for (i = 0; i < log.length; i++) {
+        if (i == 0) {
+            heyho = "id='Foxtrot'"
+        } else {
+            heyho = ""
+        }
         table +=
-            "<tr  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td  class=\"\"><span>" +
+            "<tr " + heyho + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
             typeMsg(log[i].getAttribute('type')) +
             "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('module_name') +
@@ -363,49 +344,4 @@ function Color(type) {
         color = "#b1ffb1";
     }
     return color
-}
-
-//add
-// This is an example of a custom sort. Despite the values in this column are string,  
-// the column will be ordered as they were numbers (instead of lessically)
-function sortCustom1(th) {
-    try {
-
-        // the column will be ordered following the same order the items are in the array. 
-        var numbers = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
-
-        function getValue(tr, cellIndex) {
-            var value = tr.children[cellIndex].innerText.toLowerCase().trim();
-            return numbers.indexOf(value);
-        }
-
-        Vi.Table.sort(th, getValue);
-
-    } catch (jse) {
-        console.error(jse);
-    }
-}
-
-/**
- * Here the column is sorted based on an atribute and not the value shown.
- * That should highlight the fact the developer has an hight degree of 
- * freedom on how implement the table and the data 
- * At the end, the only constrain is that the function 'getValue' must
- * return a sortable value.
- */
-function sortCustom2(th) {
-    try {
-
-        function getValue(tr, cellIndex) {
-            var child = tr.children[cellIndex];
-            var ticks = child.getAttribute("data-ticks");
-            var value = parseInt(ticks);
-            return value;
-        }
-
-        Vi.Table.sort(th, getValue);
-
-    } catch (jse) {
-        console.error(jse);
-    }
 }

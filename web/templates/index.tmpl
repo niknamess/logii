@@ -3,7 +3,7 @@
 <<template "header" .>>
   <body style="background-color:#F2F2F2;" ng-app="logi2" >
   
-    <div ng-controller="mainController as mc" layout="column" ng-cloak>
+    <div class ="headContent"  ng-controller="mainController as mc" layout="column" ng-cloak>
       <md-toolbar class="md-hue-2 md-whiteframe-z3">
         <div class="md-toolbar-tools">
           <section layout="row" flex>
@@ -25,6 +25,7 @@
           <!-- <button type="button" id="res" (click)=”handleClick($event)” class="btn btn-warning">Reset</button> -->
           
       </md-toolbar>
+      <!--
       <md-content flex layout-padding layout="column">
         <md-content flex>
           <md-input-container>
@@ -36,7 +37,9 @@
             </md-select>
           </md-input-container>
         </md-content>
+          -->
         <iframe name="hiddenFrame" class="hide"></iframe>
+        <div>
         <form action="searchproject" method="GET" target="hiddenFrame">
             <label>Search</label><br>
             <input type="text" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs"/><br><br>
@@ -54,12 +57,12 @@
                 </div>
               </div>
         </form>
-          <!--  <button  id="view" (click)=”handleClick($event)” type=”button” >On start page</button> -->
+       
        </div>
-       <div ng-controller="mainController as mc" layout="column" ng-cloak>  
-
-        <<template "card" .>>
-        
+          <!--  <button  id="view" (click)=”handleClick($event)” type=”button” >On start page</button> -->
+        </div>
+        <div ng-controller="mainController as mc" layout="column" ng-cloak> 
+         <<template "card" .>>
         <<template "wscontent" .>>
         </div>
   </body>
@@ -81,6 +84,7 @@
   <script src="/js/ui-bootstrap-tpls.min.js"></script>
   <script src="/js/app.js"></script>
   <script src="/js/index.js"></script>
+  <script src="/js/content.js"></script>
   <style type="text/css">
     .scrollLock{
     position: fixed;
