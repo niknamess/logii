@@ -12,7 +12,7 @@ var countErr = 0
 var countInf = 0
 var countDbg = 0
 var start
-
+var standartform = ""
 var lastItem;
 //const input = document.querySelector('input');
 
@@ -49,7 +49,7 @@ buttonErr.addEventListener('click', event => {
 
     setTimeout(
         () => {
-            initWSType(lastItem, "ERROR", "#ffb0b0")
+            //initWSType(lastItem, "ERROR", "#ffb0b0")
             setBackColor('view', "#ffb0b0")
             quotation('view', "ERROR")
         },
@@ -59,7 +59,7 @@ buttonErr.addEventListener('click', event => {
 buttonInf.addEventListener('click', event => {
     setTimeout(
         () => {
-            initWSType(lastItem, "INFO", "#b0ffb0")
+            //initWSType(lastItem, "INFO", "#b0ffb0")
             setBackColor('view', "#b0ffb0")
             quotation('view', "INFO")
         },
@@ -70,7 +70,7 @@ buttonInf.addEventListener('click', event => {
 buttonDbgs.addEventListener('click', event => {
     setTimeout(
         () => {
-            initWSType(lastItem, "DEBUG", "#a0a0a0")
+            //initWSType(lastItem, "DEBUG", "#a0a0a0")
             setBackColor('view', "#a0a0a0")
             quotation('view', "DEBUG")
         },
@@ -81,7 +81,7 @@ buttonDbgs.addEventListener('click', event => {
 buttonWar.addEventListener('click', event => {
     setTimeout(
         () => {
-            initWSType(lastItem, "WARNING", "#ffff90")
+            //initWSType(lastItem, "WARNING", "#ffff90")
             setBackColor('view', "#ffff90")
             quotation('view', "WARNING")
                 //setFontColor('view ', "black")
@@ -191,7 +191,7 @@ function initWS(file) {
         strf = file
         if (strf.indexOf("undefined") != 0) {
 
-            container.append("nope");
+            container.append("<table");
 
         }
     }
@@ -245,16 +245,9 @@ function initWS(file) {
                 "</thead>" +
                 "<tbody>" + str + "</tbody></table></div>");
 
-
-
         }
 
-        /* else {
-                   // container.append("<br>" + str + "</br>" + "<hr>" +
-                   //    "</div>" +
-                   //     "</div>");
-               } */
-
+        container.append(standartform);
 
     }
     socket.onclose = function() {

@@ -1,3 +1,4 @@
+//ROW
 var start = document.getElementById('Foxtrot')
     // callback executed when canvas was found
 function handleCanvas(start) {
@@ -24,6 +25,51 @@ observer.observe(document, {
     childList: true,
     subtree: true
 });
+
+
+
+
+
+function dotheneedful(sibling) {
+    if (sibling != null) {
+        start.focus();
+        start.style.backgroundColor = '';
+        start.style.color = '';
+        sibling.focus();
+        sibling.style.backgroundColor = 'green';
+        sibling.style.color = 'white';
+        start = sibling;
+        standartform = start
+        document.getElementById("demo").innerHTML = "<table>" + (start) + "</table>"
+        console.log(start.cells.item(7));
+        console.log(Clean(start.cells.item(8)));
+    }
+}
+
+function Clean(texts) {
+    texts = $("td").map(function() {
+        return $(this).text();
+    });
+}
+
+
+
+
+document.onkeydown = checkKey;
+//37 39
+function checkKey(e) {
+    e = e || window.event;
+    if (e.keyCode == '38') {
+        // left arrow
+        var sibling = start.previousElementSibling;
+        dotheneedful(sibling);
+    } else if (e.keyCode == '40') {
+        // right arrow
+        var sibling = start.nextElementSibling;
+        dotheneedful(sibling);
+    }
+}
+
 
 
 
@@ -69,33 +115,5 @@ function sortCustom2(th) {
 
     } catch (jse) {
         console.error(jse);
-    }
-}
-
-
-
-function dotheneedful(sibling) {
-    if (sibling != null) {
-        start.focus();
-        start.style.backgroundColor = '';
-        start.style.color = '';
-        sibling.focus();
-        sibling.style.backgroundColor = 'green !important';
-        start = sibling;
-    }
-}
-
-
-
-function checkKey(e) {
-    e = e || window.event;
-    if (e.keyCode == '37') {
-        // left arrow
-        var sibling = start.previousElementSibling;
-        dotheneedful(sibling);
-    } else if (e.keyCode == '39') {
-        // right arrow
-        var sibling = start.nextElementSibling;
-        dotheneedful(sibling);
     }
 }
