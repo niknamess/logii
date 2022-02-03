@@ -153,6 +153,8 @@ func EncodeXML(tmp LogList) (v string) {
 
 func datestr2time(str string) time.Time {
 	// format example: 08092021224536920  from xml
+	//"02012006150405.000"
+
 	const shortForm = "02012006150405.000"
 
 	str2 := string(str[0:14]) + "." + string(str[14:17])

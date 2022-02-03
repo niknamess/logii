@@ -139,8 +139,8 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             })
     }
 
-    vm.fontSize = ["10px", "11px", "12px", "14px", "16px", "18px", "20px", "22px", "24px"]
-    $scope.currSize = vm.fontSize[2];
+    // vm.fontSize = ["10px", "11px", "12px", "14px", "16px", "18px", "20px", "22px", "24px"]
+    // $scope.currSize = vm.fontSize[2];
 
 
     $scope.open_connection = function(file) {
@@ -165,6 +165,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
 
             ws = initWS(file);
+            document.getElementById("clear1").innerHTML = "";
         }
 
         vm.toggleSideNav()
@@ -174,6 +175,24 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 }
 
 function initWS(file) {
+
+    var observer = new MutationObserver(function(mutations, me) {
+        // `mutations` is an array of mutations that occurred
+        // `me` is the MutationObserver instance
+        start = document.getElementById('Foxtrot');
+        if (start) {
+            handleCanvas(start);
+            me.disconnect(); // stop observing
+            return;
+        }
+    });
+
+    // start observing
+    observer.observe(document, {
+        childList: true,
+        subtree: true
+    });
+
 
     var ws_proto = "ws:"
     if (window.location.protocol === "https:") {
@@ -209,7 +228,7 @@ function initWS(file) {
         k2 = isEmpty(loglist)
         if (k2 == false) {
             str = ParseXml(str)
-
+                //document.getElementById("clear1").innerHTML = "";
             container.append("<table > " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
@@ -285,7 +304,7 @@ function ParseXml(str) {
             "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('thread_id') +
             "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('time') +
+            split_at_index(log[i].getAttribute('time')) +
             "</span></td><td class=\"\"><span>" +
             log[i].getAttribute('ulid') +
             "</span></td><td class=\"ellipsis\"><span>" +
@@ -296,6 +315,19 @@ function ParseXml(str) {
     }
     return table
 
+}
+//23072021005653.991
+//(year, monthIndex, day, hours, minutes, seconds, milliseconds)
+//23 07 2021 00 25 53.492
+function split_at_index(value) {
+    norm = value.substring(0, 2) + "." + value.substring(2);
+    norm = norm.substring(0, 5) + "." + norm.substring(5);
+    norm = norm.substring(0, 10) + " " + norm.substring(10);
+    norm = norm.substring(0, 13) + ":" + norm.substring(13);
+    norm = norm.substring(0, 16) + ":" + norm.substring(16);
+    norm = norm.substring(0, 19) + ":" + norm.substring(19);
+    norm = norm.substring(0, 23) + " UTC" + norm.substring(23);
+    return norm
 }
 
 function typeMsg(type) {

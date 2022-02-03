@@ -1,15 +1,25 @@
 //ROW
-var start = document.getElementById('Foxtrot')
-    // callback executed when canvas was found
+//var start = document.getElementById('Foxtrot')
+// callback executed when canvas was found
 function handleCanvas(start) {
     // start = document.getElementById('Foxtrot');
     start.focus();
     start.style.backgroundColor = 'green';
+    document.getElementById("message").innerHTML = start.cells.item(7).textContent
+    document.getElementById("details").innerHTML = start.cells.item(8).textContent
     document.onkeydown = checkKey;
 }
+/* var myElement = document.getElementById("tbl92");
 
+if (!myElement) {
+    //#myElementID element DOES NOT exist
+}
+
+if (myElement) {
+    //#myElementID element DOES exists
+} */
 // set up the mutation observer
-var observer = new MutationObserver(function(mutations, me) {
+/* var observer = new MutationObserver(function(mutations, me) {
     // `mutations` is an array of mutations that occurred
     // `me` is the MutationObserver instance
     start = document.getElementById('Foxtrot');
@@ -24,36 +34,28 @@ var observer = new MutationObserver(function(mutations, me) {
 observer.observe(document, {
     childList: true,
     subtree: true
-});
-
-
-
-
+}); */
 
 function dotheneedful(sibling) {
     if (sibling != null) {
         start.focus();
         start.style.backgroundColor = '';
         start.style.color = '';
+        start.id = "";
         sibling.focus();
         sibling.style.backgroundColor = 'green';
         sibling.style.color = 'white';
+        sibling.id = "clear1"
         start = sibling;
         standartform = start
-        document.getElementById("demo").innerHTML = "<table>" + (start) + "</table>"
-        console.log(start.cells.item(7));
-        console.log(Clean(start.cells.item(8)));
+        document.getElementById("message").innerHTML = start.cells.item(7).textContent
+        document.getElementById("details").innerHTML = start.cells.item(8).textContent
+
+        // document.getElementById("demo").innerHTML = start.cells.item(8).textContent
+
     }
+
 }
-
-function Clean(texts) {
-    texts = $("td").map(function() {
-        return $(this).text();
-    });
-}
-
-
-
 
 document.onkeydown = checkKey;
 //37 39
@@ -69,8 +71,6 @@ function checkKey(e) {
         dotheneedful(sibling);
     }
 }
-
-
 
 
 //add

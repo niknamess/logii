@@ -9,7 +9,6 @@
     font-size: 16px;
     border: none;
     outline: none;
-    display: inline-block;
 }
 
 .btnR {
@@ -19,13 +18,10 @@
     font-size: 16px;
     border: none;
     outline: none;
-    display: inline-block;
     right: 100px;
 }
 
-.dropdown {
-    display: inline-block;
-}
+.dropdown {}
 
 .dropdown-content {
     display: none;

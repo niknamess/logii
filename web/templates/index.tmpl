@@ -3,7 +3,7 @@
 <<template "header" .>>
   <body style="background-color:#F2F2F2;" ng-app="logi2" >
   
-    <div class ="headContent"  ng-controller="mainController as mc" layout="column" ng-cloak>
+    <div class ="headContent"  ng-controller="mainController as mc"  ng-cloak>
       <md-toolbar class="md-hue-2 md-whiteframe-z3">
         <div class="md-toolbar-tools">
           <section layout="row" flex>
@@ -39,14 +39,16 @@
         </md-content>
           -->
         <iframe name="hiddenFrame" class="hide"></iframe>
-        <div>
+        
         <form action="searchproject" method="GET" target="hiddenFrame">
             <label>Search</label><br>
-            <input type="text" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs"/><br><br>
-            <input id="scale0" class="scale" name="scale" type="radio" value="0" checked>
-            <button class="btn btn-primary"  style="border-left:1px solid #0d8bf2"  id="view" (click)=”handleClick($event)” type=”button”>Find</button>
+             <div class="input-group">
+            <input type="text" class="form-control" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs" aria-describedby="basic-addon2"/>
+            <!--<input id="scale0" class="scale form-control" name="scale" type="radio" value="0" checked>-->
+            <div class="input-group-append">
+            <button class="btn  btn-outline-secondary"  style="border-left:1px solid #0d8bf2"  id="view" (click)=”handleClick($event)” type=”button”>Find</button>
               <div class="dropdown bg-light clearfix">
-                 <button class="btn btn-primary">
+                 <button class="btn  btn-outline-secondary">
                     <i class="fa fa-caret-down"></i>
                 </button>
                 <div class="dropdown-content">
@@ -55,6 +57,7 @@
                   <a class="info" href="#info" id="btninf" (click)=”handleClick($event)” type=”button”>INFO</a>
                   <a class="debug" href="#debug" id="btndbgs" (click)=”handleClick($event)” type=”button”>DEBUG</a>
                 </div>
+              </div>
               </div>
         </form>
        
@@ -65,7 +68,9 @@
          <<template "card" .>>
         <<template "wscontent" .>>
         </div>
-        <div id = "demo">
+        <div id = "message">
+        </div>
+         <div id = "details">
         </div>
   </body>
   <link rel="stylesheet" href="/css/angular-material.min.css">
