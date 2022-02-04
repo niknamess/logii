@@ -116,11 +116,11 @@ func ProcBleveSearchv2(fileN string, word string) []string {
 	docs := make([]string, 0)
 	for _, val := range searchResult.Hits {
 		id := val.ID
-		//	log.Println(id)
+		//log.Println(id)
 		docs = append(docs, id)
 	}
 	//log.Println(word)
-	//log.Println(docs)
+	///log.Println(docs)
 	//fmt.Println(docs)
 	index.Close()
 	return docs

@@ -36,7 +36,7 @@ type MyStruct struct {
 }
 
 // RootHandler - http handler for handling / path
-func RootHandler(w http.ResponseWriter, r *http.Request) {
+func RootHandler(w http.ResponseWriter, _ *http.Request) {
 
 	files := []string{
 		"web/templates/index.tmpl",
@@ -137,7 +137,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusUnauthorized)
 }
 
-func SearchHandler(w http.ResponseWriter, r *http.Request) {
+func SearchHandler(_ http.ResponseWriter, r *http.Request) {
 	search = r.URL.Query().Get("search_string")
 
 }

@@ -6,7 +6,8 @@ const buttonErr = document.getElementById('btnerr');
 const buttonInf = document.getElementById('btninf');
 const buttonDbgs = document.getElementById('btndbgs');
 const buttonWar = document.getElementById('btnwar');
-const buttonView = document.getElementById('view');
+//const buttonView = document.getElementById('view');
+const inputform = document.getElementById('search_string');
 var countWar = 0
 var countErr = 0
 var countInf = 0
@@ -31,20 +32,19 @@ buttonR.addEventListener('click', event => {
     );
 });
 
-buttonView.addEventListener('click', event => {
 
-    setTimeout(
-        () => {
-
-
-            initWS(lastItem)
-            setBackColor('view', "#ed6c27")
-            quotation('view', "Find")
-        },
-        1 * 200
-    );
+inputform.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        // code for enter
+        setTimeout(
+            () => {
+                initWS(lastItem)
+            },
+            1 * 200
+        );
+    }
 });
-
+/* 
 buttonErr.addEventListener('click', event => {
 
     setTimeout(
@@ -88,7 +88,7 @@ buttonWar.addEventListener('click', event => {
         },
         1 * 200
     );
-});
+}); */
 
 function Null() {
     countWar = 0
@@ -272,6 +272,8 @@ function initWS(file) {
                 "</div>");
 
 
+        } else {
+            container.append("<hr>" + str + "</hr>");
         }
 
         container.append(standartform);

@@ -55,7 +55,7 @@ func ProcLine(line string) (csvF string) {
 	return csvline
 }
 
-func ProcLineCSVv1(line string) (csvF string) {
+func ProcLineCSVstr(line string) (csvF string) {
 
 	if len(line) == 0 {
 
@@ -72,7 +72,7 @@ func ProcLineCSVv1(line string) (csvF string) {
 	//fmt.Print(csvline)
 	return xmlline
 }
-func ProcLineCSVv2(line string) (val LogList) {
+func ProcLineCSVLoglost(line string) (val LogList) {
 
 	if len(line) == 0 {
 

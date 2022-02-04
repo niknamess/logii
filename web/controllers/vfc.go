@@ -1,21 +1,17 @@
 package controllers
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/shurcooL/httpfs/union"
 	"github.com/spf13/afero"
 )
-
-var reader = bufio.NewReader(os.Stdin)
 
 // RunHTTP run http api
 func VFC(port string, ctx context.Context) (err error) {

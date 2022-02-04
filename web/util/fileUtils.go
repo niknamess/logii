@@ -59,10 +59,11 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 		return
 	}
-
+	println("Find", lookFor)
+	println(lookFor)
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		for line := range taillog.Lines {
-			csvsimpl := logenc.ProcLineCSVv2(line.Text)
+			csvsimpl := logenc.ProcLineCSVLoglost(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			go taillog.StopAtEOF() //end tail and stop service
 		}
@@ -76,10 +77,13 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		for i := 0; i < len(UlidC); i++ {
 
 			v, found := SearchMap[UlidC[i]]
+			log.Println(v)
+			fmt.Println(v)
 			if found {
 				//:TODO create common structure
 				//PS: Merge xml structure
 				//:TODO map with xml structure
+				//structure <loglist> append <log></log>......<log></log></loglist>
 				conn.WriteMessage(websocket.TextMessage, []byte(v))
 
 			}
@@ -222,7 +226,7 @@ func GetFiles(address string, port string) error {
 			defer file.Close()
 
 			client := http.Client{
-				CheckRedirect: func(r *http.Request, via []*http.Request) error {
+				CheckRedirect: func(r *http.Request, _ []*http.Request) error {
 					r.URL.Opaque = r.URL.Path
 					return nil
 				},
