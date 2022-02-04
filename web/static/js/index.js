@@ -6,7 +6,7 @@ const buttonErr = document.getElementById('btnerr');
 const buttonInf = document.getElementById('btninf');
 const buttonDbgs = document.getElementById('btndbgs');
 const buttonWar = document.getElementById('btnwar');
-//const buttonView = document.getElementById('view');
+const buttonClr = document.getElementById('changeclr');
 const inputform = document.getElementById('search_string');
 var countWar = 0
 var countErr = 0
@@ -15,7 +15,8 @@ var countDbg = 0
 var start
 var standartform = ""
 var lastItem;
-//const input = document.querySelector('input');
+var statusS = "empty"
+    //const input = document.querySelector('input');
 
 
 function isEmpty(str) {
@@ -38,20 +39,24 @@ inputform.addEventListener('keypress', function(e) {
         // code for enter
         setTimeout(
             () => {
-                initWS(lastItem)
+                Null()
+                initWS(lastItem, statusS)
             },
             1 * 200
         );
     }
 });
-/* 
+
 buttonErr.addEventListener('click', event => {
 
     setTimeout(
         () => {
-            //initWSType(lastItem, "ERROR", "#ffb0b0")
-            setBackColor('view', "#ffb0b0")
-            quotation('view', "ERROR")
+            Null()
+            initWS(lastItem, "ERROR")
+            statusS = "ERROR"
+                //initWSType(lastItem, "ERROR", "#ffb0b0")
+            setBackColor('changeclr', "#ffb0b0")
+
         },
         1 * 200
     );
@@ -59,9 +64,12 @@ buttonErr.addEventListener('click', event => {
 buttonInf.addEventListener('click', event => {
     setTimeout(
         () => {
-            //initWSType(lastItem, "INFO", "#b0ffb0")
-            setBackColor('view', "#b0ffb0")
-            quotation('view', "INFO")
+            Null()
+            initWS(lastItem, "INFO")
+            statusS = "INFO"
+                //initWSType(lastItem, "INFO", "#b0ffb0")
+            setBackColor('changeclr', "#b0ffb0")
+
         },
         1 * 200
     );
@@ -70,9 +78,12 @@ buttonInf.addEventListener('click', event => {
 buttonDbgs.addEventListener('click', event => {
     setTimeout(
         () => {
-            //initWSType(lastItem, "DEBUG", "#a0a0a0")
-            setBackColor('view', "#a0a0a0")
-            quotation('view', "DEBUG")
+            Null()
+            statusS = "DEBUG"
+            initWS(lastItem, "DEBUG")
+                //initWSType(lastItem, "DEBUG", "#a0a0a0")
+            setBackColor('changeclr', "#a0a0a0")
+
         },
         1 * 200
     );
@@ -81,14 +92,16 @@ buttonDbgs.addEventListener('click', event => {
 buttonWar.addEventListener('click', event => {
     setTimeout(
         () => {
-            //initWSType(lastItem, "WARNING", "#ffff90")
-            setBackColor('view', "#ffff90")
-            quotation('view', "WARNING")
-                //setFontColor('view ', "black")
+            Null()
+            statusS = "WARNING"
+            initWS(lastItem, "WARNING")
+                //initWSType(lastItem, "WARNING", "#ffff90")
+            setBackColor('changeclr', "#ffff90")
+
         },
         1 * 200
     );
-}); */
+});
 
 function Null() {
     countWar = 0
@@ -162,9 +175,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("Your browser does not support WebSockets");
             return;
         } else {
-
-
-            ws = initWS(file);
+            ws = initWS(file, "empty");
             document.getElementById("clear1").innerHTML = "";
         }
 
@@ -174,7 +185,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     vm.init();
 }
 
-function initWS(file) {
+function initWS(file, type) {
 
     var observer = new MutationObserver(function(mutations, me) {
         // `mutations` is an array of mutations that occurred
@@ -224,11 +235,16 @@ function initWS(file) {
         xmlDoc = parser.parseFromString(str, "text/xml");
         loglist = xmlDoc.getElementsByTagName("loglist")
 
-
+        // document.getElementById('follow').scrollIntoView();
         k2 = isEmpty(loglist)
         if (k2 == false) {
-            str = ParseXml(str)
-                //document.getElementById("clear1").innerHTML = "";
+            Null()
+            str = ParseXml(str, type)
+            if (type == "INFO" || type == "empty") {
+                countInf = countInf / 2
+            }
+            //document.getElementById("clear1").innerHTML = "";
+
             container.append("<table > " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
@@ -240,16 +256,16 @@ function initWS(file) {
                 "<col width=\"400px\" />" +
                 "<col width=\"500px\" />" +
                 "<col width=\"200px\" />" +
-                "<tr > <td class=\"info\">" + "INFO:" +
-                countInf + "</td> <td class=\"error\">" + "Error:" +
-                countErr + "</td> <td class=\"warning\">" + "Warning:" +
-                countWar + "</td> <td class=\"debug\">" + "Debug:" +
+                "<tr > <td class=\"info\" id=\"btninf\" onclick='tdclick(event)' type=”button”>" + "INFO:" +
+                countInf + "</td> <td class=\"error\" id=\"btnerr\" onclick='tdclick(event)' type=”button”>" + "Error:" +
+                countErr + "</td> <td class=\"warning\" id=\"btnwar\" onclick='tdclick(event)' type=”button”>" + "Warning:" +
+                countWar + "</td> <td class=\"debug\" id=\"btndbgs\" onclick='tdclick(event)' type=”button”>" + "Debug:" +
                 countDbg +
                 "</td></tr > </table >");
 
             Null()
             container.append("<div style=\"\" class=\"TableContainer\">" +
-                "<table id=\"tbl92\" border=\"0\" class=\"tableScroll\" align=\"center\" >" +
+                "<table id=\"tbl92\" border=\"0\" class=\"tableScroll\"  data-scroll-speed=2 align=\"center\" >" +
                 "<thead>" +
                 "<tr>" +
                 "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > TYPE </th>" +
@@ -273,7 +289,27 @@ function initWS(file) {
 
 
         } else {
-            container.append("<hr>" + str + "</hr>");
+            if (str == "Indexing file, please wait") {
+                container.append(" <div id =\"load\" class=\"center\">" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"textL\">Loading...</div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "</div>");
+
+            } else if (str == "Indexing complated") {
+
+                document.getElementById("load").remove();
+                container.append("<div class=\"textL\">Indexing complated!</div>");
+            } else
+                container.append("<hr>" + str + "</hr>");
         }
 
         container.append(standartform);
@@ -291,7 +327,7 @@ function initWS(file) {
 
 
 
-function ParseXml(str) {
+function ParseXml(str, type) {
     var parser, xmlDoc, table, heyho;
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(str, "application/xml");
@@ -302,30 +338,35 @@ function ParseXml(str) {
         } else {
             heyho = ""
         }
-        table +=
-            "<tr " + heyho + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
-            typeMsg(log[i].getAttribute('type')) +
-            "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('module_name') +
-            "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('app_path') +
-            "</span></td><td class=\"ellipsis\"><span>" +
-            log[i].getAttribute('app_pid') +
-            "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('thread_id') +
-            "</span></td><td class=\"\"><span>" +
-            split_at_index(log[i].getAttribute('time')) +
-            "</span></td><td class=\"\"><span>" +
-            log[i].getAttribute('ulid') +
-            "</span></td><td class=\"ellipsis\"><span>" +
-            log[i].getAttribute('message') +
-            "</span></td><td class=\"ellipsis\"><span>" +
-            log[i].getAttribute('ext_message') +
-            "</span></td></tr>";
+        if (type == typeMsg(log[i].getAttribute('type')) || type == "empty") {
+            table +=
+                "<tr " + heyho + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
+                typeMsg(log[i].getAttribute('type')) +
+                "</span></td><td class=\"\"><span>" +
+                log[i].getAttribute('module_name') +
+                "</span></td><td class=\"\"><span>" +
+                log[i].getAttribute('app_path') +
+                "</span></td><td class=\"ellipsis\"><span>" +
+                log[i].getAttribute('app_pid') +
+                "</span></td><td class=\"\"><span>" +
+                log[i].getAttribute('thread_id') +
+                "</span></td><td class=\"\"><span>" +
+                split_at_index(log[i].getAttribute('time')) +
+                "</span></td><td class=\"\"><span>" +
+                log[i].getAttribute('ulid') +
+                "</span></td><td class=\"ellipsis\"><span>" +
+                log[i].getAttribute('message') +
+                "</span></td><td class=\"ellipsis\"><span>" +
+                log[i].getAttribute('ext_message') +
+                "</span></td></tr>";
+        }
     }
-    return table
 
+    return table
 }
+
+
+
 //23072021005653.991
 //(year, monthIndex, day, hours, minutes, seconds, milliseconds)
 //23 07 2021 00 25 53.492
@@ -350,7 +391,6 @@ function typeMsg(type) {
     } else if (type == "2") {
         msg = "WARNING";
         countWar++
-
     } else if (type == "3") {
         msg = "ERROR";
         countErr++

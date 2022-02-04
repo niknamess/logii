@@ -43,8 +43,8 @@ type FileStruct struct {
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
-func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]string) {
-	var commoncsv logenc.LogList
+func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) {
+
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	taillog, err := tail.TailFile(fileName,
@@ -62,8 +62,9 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	println("Find", lookFor)
 	println(lookFor)
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
+		var commoncsv logenc.LogList
 		for line := range taillog.Lines {
-			csvsimpl := logenc.ProcLineCSVLoglost(line.Text)
+			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			go taillog.StopAtEOF() //end tail and stop service
 		}
@@ -73,7 +74,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		println("Break")
 		return
 	} else {
-
+		var commoncsv logenc.LogList
 		for i := 0; i < len(UlidC); i++ {
 
 			v, found := SearchMap[UlidC[i]]
@@ -84,10 +85,10 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 				//PS: Merge xml structure
 				//:TODO map with xml structure
 				//structure <loglist> append <log></log>......<log></log></loglist>
-				conn.WriteMessage(websocket.TextMessage, []byte(v))
-
+				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, v.XML_RECORD_ROOT...)
 			}
 		}
+		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 		//:TODO transmit to websoket
 
 	}
@@ -168,7 +169,7 @@ func dfs(file string) {
 	}
 }
 
-func TailDir(fileName string, lookFor string, SearchMap map[string]string) bool {
+func TailDir(fileName string, lookFor string, SearchMap map[string]logenc.LogList) bool {
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)

@@ -27,7 +27,7 @@ var (
 	search    string
 	savefiles []string
 	stringF   bool
-	SearchMap map[string]string
+	SearchMap map[string]logenc.LogList
 )
 
 type MyStruct struct {
@@ -53,6 +53,10 @@ func RootHandler(w http.ResponseWriter, _ *http.Request) {
 		log.Fatal("Problem with template \"footer\"")
 	}
 	t, err = t.Parse("header")
+	if err != nil {
+		log.Fatal("Problem with template \"header\"")
+	}
+	t, err = t.Parse("loading")
 	if err != nil {
 		log.Fatal("Problem with template \"header\"")
 	}

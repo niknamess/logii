@@ -1,6 +1,8 @@
 //ROW
 //var start = document.getElementById('Foxtrot')
 // callback executed when canvas was found
+
+
 function handleCanvas(start) {
     // start = document.getElementById('Foxtrot');
     start.focus();
@@ -9,6 +11,7 @@ function handleCanvas(start) {
     document.getElementById("details").innerHTML = start.cells.item(8).textContent
     document.onkeydown = checkKey;
 }
+
 /* var myElement = document.getElementById("tbl92");
 
 if (!myElement) {
@@ -45,12 +48,16 @@ function dotheneedful(sibling) {
         sibling.focus();
         sibling.style.backgroundColor = 'green';
         sibling.style.color = 'white';
-        sibling.id = "clear1"
+        sibling.id = "follow"
+        sibling.style.backgroundColor = 'green';
+        sibling.style.color = 'white';
         start = sibling;
         standartform = start
+
         document.getElementById("message").innerHTML = start.cells.item(7).textContent
         document.getElementById("details").innerHTML = start.cells.item(8).textContent
-
+        var elmnt = document.getElementById("follow");
+        elmnt.scrollIntoView(false);
         // document.getElementById("demo").innerHTML = start.cells.item(8).textContent
 
     }
@@ -70,6 +77,7 @@ function checkKey(e) {
         var sibling = start.nextElementSibling;
         dotheneedful(sibling);
     }
+
 }
 
 

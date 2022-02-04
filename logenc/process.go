@@ -72,7 +72,8 @@ func ProcLineCSVstr(line string) (csvF string) {
 	//fmt.Print(csvline)
 	return xmlline
 }
-func ProcLineCSVLoglost(line string) (val LogList) {
+
+/* func ProcLineCSVLoglost(line string) (val LogList) {
 
 	if len(line) == 0 {
 
@@ -92,7 +93,7 @@ func ProcLineCSVLoglost(line string) (val LogList) {
 	}
 	//fmt.Print(csvline)
 	return val
-}
+} */
 
 func procLineq(line string) (csvF string) {
 
@@ -211,7 +212,13 @@ func ProcLineDecodeXML(line string) (val LogList) {
 
 		return
 	}
+	lookFor := "<loglist>"
 	xmlline := DecodeLine(line)
+	contain := strings.Contains(xmlline, lookFor)
+	if !contain {
+
+		return
+	}
 	val, err := DecodeXML(xmlline)
 	if err != nil {
 
@@ -220,16 +227,15 @@ func ProcLineDecodeXML(line string) (val LogList) {
 	return val
 }
 
-func ProcMapFile(file string) map[string]string {
+func ProcMapFile(file string) map[string]LogList {
 	//func ProcMapFile(file string) {
 	if len(file) <= 0 {
 		return nil
 	}
 	ch := make(chan string, 100)
-	SearchMap := make(map[string]string)
+	SearchMap := make(map[string]LogList)
 	var wg sync.WaitGroup
 	var data LogList
-	var datas string
 	go func() {
 		for {
 			line, ok := <-ch
@@ -240,10 +246,10 @@ func ProcMapFile(file string) map[string]string {
 				wg.Add(1)
 				defer wg.Done()
 				data = ProcLineDecodeXML(line)
-				datas = ProcLine(line)
+				//datas = ProcLineCSVLoglost(line)
 				if len(data.XML_RECORD_ROOT) > 0 {
 					mu.Lock()
-					SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = datas
+					SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = data
 					mu.Unlock()
 				}
 			}(line)
