@@ -6,6 +6,7 @@ const buttonErr = document.getElementById('btnerr');
 const buttonInf = document.getElementById('btninf');
 const buttonDbgs = document.getElementById('btndbgs');
 const buttonWar = document.getElementById('btnwar');
+const buttonAll = document.getElementById('btnall');
 const buttonClr = document.getElementById('changeclr');
 const inputform = document.getElementById('search_string');
 var countWar = 0
@@ -102,6 +103,19 @@ buttonWar.addEventListener('click', event => {
         1 * 200
     );
 });
+buttonAll.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            Null()
+            statusS = "empty"
+            initWS(lastItem, "empty")
+                //initWSType(lastItem, "WARNING", "#ffff90")
+            setBackColor('changeclr', "#ed6c27")
+
+        },
+        1 * 200
+    );
+});
 
 function Null() {
     countWar = 0
@@ -176,7 +190,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             return;
         } else {
             ws = initWS(file, "empty");
-            document.getElementById("clear1").innerHTML = "";
+
         }
 
         vm.toggleSideNav()
@@ -256,10 +270,10 @@ function initWS(file, type) {
                 "<col width=\"400px\" />" +
                 "<col width=\"500px\" />" +
                 "<col width=\"200px\" />" +
-                "<tr > <td class=\"info\" id=\"btninf\" onclick='tdclick(event)' type=”button”>" + "INFO:" +
-                countInf + "</td> <td class=\"error\" id=\"btnerr\" onclick='tdclick(event)' type=”button”>" + "Error:" +
-                countErr + "</td> <td class=\"warning\" id=\"btnwar\" onclick='tdclick(event)' type=”button”>" + "Warning:" +
-                countWar + "</td> <td class=\"debug\" id=\"btndbgs\" onclick='tdclick(event)' type=”button”>" + "Debug:" +
+                "<tr > <td class=\"info\" id=\"btninf\" onclick=”handleClick($event) type=”button” >" + "INFO:" +
+                countInf + "</td> <td class=\"error\" id=\"btnerr\" onclick=\"this.handleClick($event)\"  type=”button>" + "Error:" +
+                countErr + "</td> <td class=\"warning\" id=\"btnwar\" onclick=”handleClick($event)”>" + "Warning:" +
+                countWar + "</td> <td class=\"debug\" id=\"btndbgs\" onclick=\"handleClick($event)\">" + "Debug:" +
                 countDbg +
                 "</td></tr > </table >");
 

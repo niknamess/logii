@@ -65,6 +65,10 @@
     background-color: #a0a0a0;
 }
 
+.all {
+    background-color: #ed6c27;
+}
+
 .dropdown-content a:hover {
     background-color: #ddd
 }

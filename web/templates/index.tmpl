@@ -54,6 +54,7 @@
                           <a class="warning" href="#warning"id="btnwar" (click)=”handleClick($event)” type=”button”>WARNING</a>
                           <a class="info" href="#info" id="btninf" (click)=”handleClick($event)” type=”button”>INFO</a>
                           <a class="debug" href="#debug" id="btndbgs" (click)=”handleClick($event)” type=”button”>DEBUG</a>
+                          <a class="all" href="#all" id="btnall" (click)=”handleClick($event)” type=”button”>ALL</a>
                         </div>
                     </div>
                   </div>
@@ -76,7 +77,6 @@
     <link rel="stylesheet" href="/css/MaterialIcons.css">
     <link rel="stylesheet" href="/css/load.css">
     <<template "footer" .>>
-     <script src="/js/ Vi.Table.sort.js"></script>
   <script src="/js/angular.min.js"></script>
   <script src="/js/angular-animate.min.js"></script>
   <script src="/js/angular-messages.min.js"></script>
@@ -89,7 +89,6 @@
   <script src="/js/index.js"></script>
   <script src="/js/content.js"></script>
   <script src="/js/jquery.min.js"></script> 
-  <script src="jquery.scrollSync.js" type="text/javascript"></script>
   <style type="text/css">
     .scrollLock{
     position: fixed;
@@ -98,8 +97,6 @@
     position: fixed !important;
     }
   </style>
-  <script type="text/javascript">
-        $(".scrollable").scrollSync();
-    </script>
+ 
 </html>
 << end >>
