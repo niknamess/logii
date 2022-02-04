@@ -263,6 +263,14 @@ function initWS(file) {
                 "<th class = \"th-sm\" > DETAILS </th> </tr>" +
                 "</thead>" +
                 "<tbody>" + str + "</tbody></table></div>");
+            container.append(
+                "<div class =\"sysinfo d-block p-2 .bg-light.bg-gradient text-dark\">" + "Message: " +
+                "</div>" +
+                "<div class =\"sysinfo d-block p-2 .bg-light.bg-gradient text-dark\" id = \"message\">" +
+                "</div>" +
+                "<div class =\"sysinfo d-block p-2 .bg-secondary.bg-gradient text-dark\" id = \"details\">" +
+                "</div>");
+
 
         }
 

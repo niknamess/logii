@@ -15,15 +15,13 @@
               <h3 id="filename"></h3>
             </div>
             <div class="bg-light clearfix">
-                <button class="btn btn-primary float-right"
+                <button class="btnR btn-primary float-right"
                         type="button" id="res" (click)=”handleClick($event)”  >
                      RESET
                 </button>
             </div>
           </section>
         </div>
-          <!-- <button type="button" id="res" (click)=”handleClick($event)” class="btn btn-warning">Reset</button> -->
-          
       </md-toolbar>
       <!--
       <md-content flex layout-padding layout="column">
@@ -38,40 +36,34 @@
           </md-input-container>
         </md-content>
           -->
-        <iframe name="hiddenFrame" class="hide"></iframe>
-        
-        <form action="searchproject" method="GET" target="hiddenFrame">
-            <label>Search</label><br>
-             <div class="input-group">
-            <input type="text" class="form-control" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs" aria-describedby="basic-addon2"/>
-            <!--<input id="scale0" class="scale form-control" name="scale" type="radio" value="0" checked>-->
-            <div class="input-group-append">
-            <button class="btn  btn-outline-secondary"  style="border-left:1px solid #0d8bf2"  id="view" (click)=”handleClick($event)” type=”button”>Find</button>
-              <div class="dropdown bg-light clearfix">
-                 <button class="btn  btn-outline-secondary">
-                    <i class="fa fa-caret-down"></i>
-                </button>
-                <div class="dropdown-content">
-                  <a class="error" href="#error" id="btnerr" (click)=”handleClick($event)” type=”button”>ERROR</a>
-                  <a class="warning" href="#warning"id="btnwar" (click)=”handleClick($event)” type=”button”>WARNING</a>
-                  <a class="info" href="#info" id="btninf" (click)=”handleClick($event)” type=”button”>INFO</a>
-                  <a class="debug" href="#debug" id="btndbgs" (click)=”handleClick($event)” type=”button”>DEBUG</a>
+              <iframe name="hiddenFrame" class="hide"></iframe>
+              <form class="form-inline center-form" role="form" action="searchproject" method="GET" target="hiddenFrame">
+              <div class="row">
+                <div class="form-group ">
+                  <div class="input-group"> <span class="input-group-addon"><i class="fa fa-search fa-fw"></i></span>
+                    <input type="text" class="form-control wide" name="search_string" id="search_string" placeholder="Enter Ulid or text in logs" aria-label="Text input with segmented dropdown button"/>
+                  </div>
                 </div>
-              </div>
-              </div>
-        </form>
-       
-       </div>
+                  <button type="button" class="btn  btn-default"   id="view" (click)=”handleClick($event)” type=”button”>Find</button>
+                    <div class="dropdown bg-light clearfix">
+                      <button type="button" class="btn  btn-default">
+                          <i class="fa fa-caret-down"></i>
+                      </button>
+                        <div class="dropdown-content">
+                          <a class="error" href="#error" id="btnerr" (click)=”handleClick($event)” type=”button”>ERROR</a>
+                          <a class="warning" href="#warning"id="btnwar" (click)=”handleClick($event)” type=”button”>WARNING</a>
+                          <a class="info" href="#info" id="btninf" (click)=”handleClick($event)” type=”button”>INFO</a>
+                          <a class="debug" href="#debug" id="btndbgs" (click)=”handleClick($event)” type=”button”>DEBUG</a>
+                        </div>
+                    </div>
+                  </div>
+                </div>
           <!--  <button  id="view" (click)=”handleClick($event)” type=”button” >On start page</button> -->
-        </div>
         <div ng-controller="mainController as mc" layout="column" ng-cloak> 
          <<template "card" .>>
         <<template "wscontent" .>>
         </div>
-        <div id = "message">
-        </div>
-         <div id = "details">
-        </div>
+      
   </body>
   <link rel="stylesheet" href="/css/angular-material.min.css">
     <link rel="stylesheet" href="/css/fonts.css">
@@ -101,6 +93,5 @@
     position: fixed !important;
     }
   </style>
- 
 </html>
 << end >>

@@ -4,27 +4,38 @@
 
 .btn {
     background-color: #ed6c27;
-    color: black;
+    color: white;
     padding: 16px;
-    font-size: 16px;
+    font-size: 12px;
     border: none;
     outline: none;
+    display: inline-block;
+    height: 16px;
+    text-align: center;
 }
 
 .btnR {
     background-color: #ed6c27;
-    color: black;
+    color: whitesmoke;
     padding: 16px;
     font-size: 16px;
     border: none;
     outline: none;
+    display: inline-block;
     right: 100px;
 }
 
-.dropdown {}
+.wide {
+    overflow: hidden !important;
+}
+
+.dropdown {
+    display: inline-block;
+}
 
 .dropdown-content {
     display: none;
+    /*  */
     position: fixed;
     background-color: black;
     min-width: 160px;
@@ -112,7 +123,7 @@
     text-shadow: 1px 1px 3px #8e8e8e;
 }
 
-.ayout-padding {
+.layout-padding {
     position: fixed;
     top: 0;
     left: 0;
@@ -138,4 +149,8 @@
 
 .inline {
     display: inline-block;
+}
+
+.sysinfo {
+    font-size: 18px;
 }
