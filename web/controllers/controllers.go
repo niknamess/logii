@@ -183,7 +183,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 			fileN := filepath.Base(fileaddr)
 			go logenc.Replication(fileaddr)
 			bleveSI.ProcBleve(fileN, fileaddr)
-			conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
+			conn.WriteMessage(websocket.TextMessage, []byte(filepath.Base(fileList["FileList"][i])))
 
 		}
 

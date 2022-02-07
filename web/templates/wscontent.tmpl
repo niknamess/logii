@@ -6,16 +6,21 @@
        </md-content>
      
         <section layout="row">
-          <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="4">
+          <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="9">
           <md-toolbar>
             <h1 class="md-toolbar-tools">Log Directory</h1>
           </md-toolbar>
           <md-content>
             <md-list>
               <<range .FileList>>
-              <md-list-item class="md-3-line" id="filelist" ng-click="open_connection('<<.>>')">
-                <div id="listfile" class="md-list-item-text">
-                   <<.>>
+              <md-list-item class="md-4-line" id="filelist" ng-click="open_connection('<<.>>')">
+                <div  class="md-list-item-text" >
+                 <script>
+                 file = <<.>>
+                 filename = file.replace(/^.*[\\\/]/, '')
+                 document.write(filename)
+                 </script>
+             
                 </div>
                 
               </md-list-item>

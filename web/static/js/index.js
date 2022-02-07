@@ -47,12 +47,13 @@ inputform.addEventListener('keypress', function(e) {
             () => {
                 Null()
                 initWS(lastItem, statusS)
+                Null()
             },
             1 * 200
         );
     }
 });
-
+/* 
 buttonErr.addEventListener('click', event => {
 
     setTimeout(
@@ -87,6 +88,7 @@ buttonDbgs.addEventListener('click', event => {
             initWS(lastItem, "DEBUG")
             setBackColor('changeclr', "#a0a0a0")
 
+
         },
         1 * 200
     );
@@ -100,6 +102,7 @@ buttonWar.addEventListener('click', event => {
             initWS(lastItem, "WARNING")
             setBackColor('changeclr', "#ffff90")
 
+
         },
         1 * 200
     );
@@ -112,11 +115,12 @@ buttonAll.addEventListener('click', event => {
             initWS(lastItem, "empty")
             setBackColor('changeclr', "#ed6c27")
 
+
         },
         1 * 200
     );
 });
-
+ */
 /* trInf.addEventListener('click', event => {
     setTimeout(
         () => {
@@ -128,7 +132,35 @@ buttonAll.addEventListener('click', event => {
         1 * 200
     );
 }); */
-document.getElementById("trInf").addEventListener("click", myFunction());
+function editInf() {
+    Null()
+    initWS(lastItem, "INFO")
+    statusS = "INFO"
+}
+
+function editErr() {
+    Null()
+    initWS(lastItem, "ERROR")
+    statusS = "ERROR"
+}
+
+function editDbgs() {
+    Null()
+    initWS(lastItem, "DEBUG")
+    statusS = "DEBUG"
+}
+
+function editWarn() {
+    Null()
+    initWS(lastItem, "WARNING")
+    statusS = "WARNING"
+}
+
+function editAll() {
+    Null()
+    initWS(lastItem, "empty")
+    statusS = "empty"
+}
 
 function myFunction() {
     document.getElementById("trInf").innerHTML = "YOU CLICKED ME!";
@@ -294,11 +326,11 @@ function initWS(file, type) {
                 "<col width=\"400px\" />" +
                 "<col width=\"500px\" />" +
                 "<col width=\"200px\" />" +
-                "<tr > <td class=\"info\" id=\"trInf\">" + "INFO:" +
-                countInf + "</td> <td class=\"error\" id=\"btnerr\" onclick=\"this.handleClick($event)\"  type=”button>" + "Error:" +
-                countErr + "</td> <td class=\"warning\" id=\"btnwar\" onclick=”handleClick($event)”>" + "Warning:" +
-                countWar + "</td> <td class=\"debug\" id=\"btndbgs\" onclick=\"handleClick($event)\">" + "Debug:" +
-                countDbg + "</td> <td class=\"all\" id=\"btnall\" onclick=\"handleClick($event)\">" + "All:" +
+                "<tr > <td class=\"info\" onclick=\"editInf()\">" + "INFO:" +
+                countInf + "</td> <td class=\"error\" onclick=\"editErr()\">" + "Error:" +
+                countErr + "</td> <td class=\"warning\" onclick=\"editWarn()\">" + "Warning:" +
+                countWar + "</td> <td class=\"debug\" onclick=\"editDbgs()\">" + "Debug:" +
+                countDbg + "</td> <td class=\"all\" onclick=\"editAll()\">" + "All:" +
                 countAll +
                 "</td></tr > </table >");
 
