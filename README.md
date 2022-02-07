@@ -38,15 +38,17 @@
 - [x] problem with refused connection on other server
 - [x] check with md5 integrity file
 - [x] check with hash sum signature file 
-- [ ] stable terminal ui interface
+- [x] stable terminal ui interface
 - [x] client server architecture (control services from terminal)
 - [x] fix bugs with search web
 - [ ] interface in web
 - [ ] split web and server
-- [x] stable unix socket connection   
-
-
-
+- [x] stable unix socket connection 
+- [ ] fix path in toolbar webinterface
+- [ ] clicked in td to view type msg
+- [ ] fix control with green marker
+- [ ] sort on date (choose date to view) +page to transmit all files and view from choose date
+- [ ] fix bugs with view
 
 
 # FLAGS 

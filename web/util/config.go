@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"time"
@@ -9,8 +10,10 @@ import (
 
 // Config - struct to hold the config
 type Config struct {
-	Dir  []string
-	Cron string
+	Dir1  []string
+	Dir   []string
+	Cron  string
+	Cron1 string
 }
 
 // Conf global config
@@ -45,6 +48,7 @@ func ParseConfig(dir []string, cron string) error {
 	tmp := make([]interface{}, len(dir))
 	for idx, x := range dir {
 		tmp[idx] = x
+		log.Println(x)
 	}
 
 	// Setting up cron job to keep indexing the files

@@ -9,15 +9,20 @@ const buttonWar = document.getElementById('btnwar');
 const buttonAll = document.getElementById('btnall');
 const buttonClr = document.getElementById('changeclr');
 const inputform = document.getElementById('search_string');
+const textList = document.getElementById('listfile');
+//const trInf = document.getElementById('trInf');
 var countWar = 0
 var countErr = 0
 var countInf = 0
 var countDbg = 0
+var countFtl = 0
+var countAll = 0
 var start
 var standartform = ""
 var lastItem;
 var statusS = "empty"
     //const input = document.querySelector('input');
+
 
 
 function isEmpty(str) {
@@ -55,7 +60,6 @@ buttonErr.addEventListener('click', event => {
             Null()
             initWS(lastItem, "ERROR")
             statusS = "ERROR"
-                //initWSType(lastItem, "ERROR", "#ffb0b0")
             setBackColor('changeclr', "#ffb0b0")
 
         },
@@ -68,7 +72,6 @@ buttonInf.addEventListener('click', event => {
             Null()
             initWS(lastItem, "INFO")
             statusS = "INFO"
-                //initWSType(lastItem, "INFO", "#b0ffb0")
             setBackColor('changeclr', "#b0ffb0")
 
         },
@@ -82,7 +85,6 @@ buttonDbgs.addEventListener('click', event => {
             Null()
             statusS = "DEBUG"
             initWS(lastItem, "DEBUG")
-                //initWSType(lastItem, "DEBUG", "#a0a0a0")
             setBackColor('changeclr', "#a0a0a0")
 
         },
@@ -96,7 +98,6 @@ buttonWar.addEventListener('click', event => {
             Null()
             statusS = "WARNING"
             initWS(lastItem, "WARNING")
-                //initWSType(lastItem, "WARNING", "#ffff90")
             setBackColor('changeclr', "#ffff90")
 
         },
@@ -109,7 +110,6 @@ buttonAll.addEventListener('click', event => {
             Null()
             statusS = "empty"
             initWS(lastItem, "empty")
-                //initWSType(lastItem, "WARNING", "#ffff90")
             setBackColor('changeclr', "#ed6c27")
 
         },
@@ -117,11 +117,30 @@ buttonAll.addEventListener('click', event => {
     );
 });
 
+/* trInf.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            Null()
+            initWS(lastItem, "INFO")
+            statusS = "INFO"
+
+        },
+        1 * 200
+    );
+}); */
+document.getElementById("trInf").addEventListener("click", myFunction());
+
+function myFunction() {
+    document.getElementById("trInf").innerHTML = "YOU CLICKED ME!";
+}
+
 function Null() {
     countWar = 0
     countErr = 0
     countInf = 0
     countDbg = 0
+    countFtl = 0
+    countAll = 0
 }
 
 function setBackColor(btn, color) {
@@ -201,7 +220,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
 function initWS(file, type) {
 
-    var observer = new MutationObserver(function(mutations, me) {
+    var observer = new MutationObserver(function(_mutations, me) {
         // `mutations` is an array of mutations that occurred
         // `me` is the MutationObserver instance
         start = document.getElementById('Foxtrot');
@@ -254,11 +273,16 @@ function initWS(file, type) {
         if (k2 == false) {
             Null()
             str = ParseXml(str, type)
-            if (type == "INFO" || type == "empty") {
-                countInf = countInf / 2
-            }
-            //document.getElementById("clear1").innerHTML = "";
-
+                /*  if (type == "INFO" || type == "empty") {
+                     countInf = countInf / 2
+                 } */
+                //document.getElementById("clear1").innerHTML = "";
+            countWar = countWar / 2
+            countErr = countErr / 2
+            countInf = countInf / 2
+            countDbg = countDbg / 2
+            countFtl = countFtl / 2
+            countAll = countAll / 2
             container.append("<table > " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
@@ -270,11 +294,12 @@ function initWS(file, type) {
                 "<col width=\"400px\" />" +
                 "<col width=\"500px\" />" +
                 "<col width=\"200px\" />" +
-                "<tr > <td class=\"info\" id=\"btninf\" onclick=”handleClick($event) type=”button” >" + "INFO:" +
+                "<tr > <td class=\"info\" id=\"trInf\">" + "INFO:" +
                 countInf + "</td> <td class=\"error\" id=\"btnerr\" onclick=\"this.handleClick($event)\"  type=”button>" + "Error:" +
                 countErr + "</td> <td class=\"warning\" id=\"btnwar\" onclick=”handleClick($event)”>" + "Warning:" +
                 countWar + "</td> <td class=\"debug\" id=\"btndbgs\" onclick=\"handleClick($event)\">" + "Debug:" +
-                countDbg +
+                countDbg + "</td> <td class=\"all\" id=\"btnall\" onclick=\"handleClick($event)\">" + "All:" +
+                countAll +
                 "</td></tr > </table >");
 
             Null()
@@ -396,12 +421,12 @@ function split_at_index(value) {
 }
 
 function typeMsg(type) {
-    if (type == "0") {
-        msg = "INFO";
-        countInf++
-    } else if (type == "1") {
+    if (type == "1") {
         msg = "DEBUG";
         countDbg++
+    } else if (type == "0") {
+        msg = "INFO";
+        countInf++
     } else if (type == "2") {
         msg = "WARNING";
         countWar++
@@ -410,8 +435,9 @@ function typeMsg(type) {
         countErr++
     } else if (type == "4") {
         msg = "FATAL";
-
+        countFtl++
     }
+    countAll++
     return msg
 }
 
@@ -430,7 +456,7 @@ function Color(type) {
         color = "#fdb1b1";
     } else if (type == "4") {
 
-        color = "#b1ffb1";
+        color = "#b2ffb2";
     }
     return color
 }

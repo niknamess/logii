@@ -24,6 +24,7 @@ import (
 
 var (
 	// FileList - list of files that were parsed from the provided config
+	FileName []string
 	FileList []string
 	visited  map[string]bool
 	//commoncsv logenc.LogList
@@ -122,8 +123,16 @@ func IndexFiles(fileList []string) error {
 		//fmt.Fprintln(os.Stderr, k)
 		FileList = append(FileList, k)
 	}
+	//filepath.Base
+	//filename
+	for _, f := range FileList {
+		fileN := filepath.Base(f)
+		FileName = append(FileName, fileN)
+	}
 	Conf.Dir = FileList
+	Conf.Dir1 = FileName
 	fmt.Fprintln(os.Stderr, "Indexing complete !, file index length: ", len(Conf.Dir))
+	//fmt.Println(Conf.Dir)
 	return nil
 }
 

@@ -351,7 +351,7 @@ func SwitchMenu(idx int) (exit bool) {
 	case 3:
 		//TODO: add size file and count file
 		//UI for gerator animation when logs generated
-		generator.ProcGenN(10, 200000)
+		generator.ProcGenN(10, 2000)
 		exit = true
 	case 4:
 		//UI for run web and main server

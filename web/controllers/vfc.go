@@ -19,7 +19,8 @@ func VFC(port string, ctx context.Context) (err error) {
 	fmt.Println("Start VFC")
 	addr := ":" + port
 	//dir := "/home/maxxant/Documents/log"
-	dir := "./tmcs-log-agent-storage/"
+	//dir := "./tmcs-log-agent-storage/"
+	dir := "./genrlogs./"
 	//dir := "/home/nik/projects/Course/tmcs-log-agent-storage/"
 
 	var listener net.Listener
