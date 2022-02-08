@@ -41,15 +41,15 @@
 - [x] stable terminal ui interface
 - [x] client server architecture (control services from terminal)
 - [x] fix bugs with search web
-- [ ] interface in web
 - [ ] split web and server (Nginx)
 - [x] stable unix socket connection 
 - [x] fix path in toolbar webinterface 
-- [ ] clicked in td to view type msg
+- [ ] clicked in td to view 
 - [ ] fix control with green marker
-- [ ] sort on date (choose date to view) +page to transmit all files and view from choose date
-- [ ] fix bugs with view
+- [ ] sort on date (choose date to view) + page to transmit all files and view from choose date
 - [x] fix bugs with count type msg
+- [x] sort on date in file (client)
+
 
 
 # FLAGS 

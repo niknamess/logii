@@ -192,6 +192,7 @@ func TailDir(fileName string, lookFor string, SearchMap map[string]logenc.LogLis
 
 			_, found := SearchMap[UlidC[i]]
 			if found {
+				//return msg (xml_structure)
 				return true
 
 			}

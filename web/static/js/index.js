@@ -203,14 +203,27 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     //var lastItem;
 
     vm.toggleSideNav = function toggleSideNav() {
-        $mdSidenav('left').toggle()
-    }
+            $mdSidenav('left').toggle()
+        }
+        //transmit to server
     vm.init = function init() {
         console.log("In the main controller")
         $scope.showCard = true;
         $http.get('searchproject')
             .then(function(result) {
                 $rootScope.search_string = result.data["search_string"]
+                console.log("Search :", result.data)
+            }, function(result) {
+                console.log("Failed to get search")
+            })
+    }
+
+    vm.init = function init() {
+        console.log("In the main controller")
+        $scope.showCard = true;
+        $http.get('datestartend')
+            .then(function(result) {
+                $rootScope.daterange = result.data["daterange"]
                 console.log("Search :", result.data)
             }, function(result) {
                 console.log("Failed to get search")
@@ -341,7 +354,7 @@ function initWS(file, type) {
                 "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPPATH </th>" +
                 "<th onclick=\"Vi.Table.sort.number(this)\" title=\"Number will be sortes as number.\" > APPPID </th>" +
                 "<th class = \"th-sm\" > THREAD </th>" +
-                "<th class = \"th-sm\" > TIME </th>" +
+                "<th onclick=\"sortCustom2(this)\" title=\"The date is ordered based on 'ticks' stored as custom data.\" > TIME </th>" +
                 "<th class = \"th-sm\" > ULID </th>" +
                 "<th class = \"th-sm\" > MESSAGE </th>" +
                 "<th class = \"th-sm\" > DETAILS </th> </tr>" +
@@ -418,7 +431,7 @@ function ParseXml(str, type) {
                 log[i].getAttribute('app_pid') +
                 "</span></td><td class=\"\"><span>" +
                 log[i].getAttribute('thread_id') +
-                "</span></td><td class=\"\"><span>" +
+                "</span></td><td class=\"\" data-ticks=" + timestamp(log[i].getAttribute('time')) + "><span>" +
                 split_at_index(log[i].getAttribute('time')) +
                 "</span></td><td class=\"\"><span>" +
                 log[i].getAttribute('ulid') +
@@ -438,30 +451,28 @@ function ParseXml(str, type) {
 //23072021005653.991
 //(year, monthIndex, day, hours, minutes, seconds, milliseconds)
 //23 07 2021 00 25 53.492
+function timestamp(str) {
+    date = str.substring(0, 2);
+    month = str.substring(2, 4);
+    year = str.substring(4, 8);
+    hours = str.substring(8, 10);
+    minutes = str.substring(10, 12)
+    seconds = str.substring(12, 14);
+    milliseconds = str.substring(14, 17);
+    datum = new Date(Date.UTC(year, month - 1, date, hours, minutes, seconds, milliseconds));
+    //console.log(datum);
+    //console.log(datum.getTime());
+    return datum.getTime()
+}
+
 function split_at_index(value) {
     norm = value.substring(0, 2) + "." + value.substring(2); //date
-    date = value.substring(0, 2);
-    console.log(date);
     norm = norm.substring(0, 5) + "." + norm.substring(5); //month 
-    month = value.substring(2, 4)
-    console.log(month);
     norm = norm.substring(0, 10) + " " + norm.substring(10); //year
-    year = value.substring(4, 8);
-    console.log(year);
     norm = norm.substring(0, 13) + ":" + norm.substring(13); //hours
-    hours = value.substring(8, 10)
-    console.log(hours);
     norm = norm.substring(0, 16) + ":" + norm.substring(16); //minutes
-    minutes = value.substring(10, 12)
-    console.log(minutes);
     norm = norm.substring(0, 19) + ":" + norm.substring(19); //seconds
-    seconds = value.substring(12, 14);
-    console.log(seconds);
     norm = norm.substring(0, 23) + " UTC" + norm.substring(23); //milliseconds
-    milliseconds = value.substring(14, 17);
-    console.log(milliseconds);
-    //datetimehigh = new Date(year, month, date, hours, minutes, seconds, milliseconds);
-    //sDate = datetimehigh.format("dd/MM/yyyy HH:mm:ss l");
     return norm
 }
 

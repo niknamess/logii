@@ -1,43 +1,10 @@
-//ROW
-//var start = document.getElementById('Foxtrot')
-// callback executed when canvas was found
-
-
 function handleCanvas(start) {
-    // start = document.getElementById('Foxtrot');
     start.focus();
     start.style.backgroundColor = 'green';
     document.getElementById("message").innerHTML = start.cells.item(7).textContent
     document.getElementById("details").innerHTML = start.cells.item(8).textContent
     document.onkeydown = checkKey;
 }
-
-/* var myElement = document.getElementById("tbl92");
-
-if (!myElement) {
-    //#myElementID element DOES NOT exist
-}
-
-if (myElement) {
-    //#myElementID element DOES exists
-} */
-// set up the mutation observer
-/* var observer = new MutationObserver(function(mutations, me) {
-    // `mutations` is an array of mutations that occurred
-    // `me` is the MutationObserver instance
-    start = document.getElementById('Foxtrot');
-    if (start) {
-        handleCanvas(start);
-        me.disconnect(); // stop observing
-        return;
-    }
-});
-
-// start observing
-observer.observe(document, {
-    childList: true,
-    subtree: true
-}); */
 
 function dotheneedful(sibling) {
     if (sibling != null) {
@@ -58,8 +25,6 @@ function dotheneedful(sibling) {
         document.getElementById("details").innerHTML = start.cells.item(8).textContent
         var elmnt = document.getElementById("follow");
         elmnt.scrollIntoView(false);
-        // document.getElementById("demo").innerHTML = start.cells.item(8).textContent
-
     }
 
 }

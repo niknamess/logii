@@ -95,6 +95,7 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 	router.HandleFunc("/ws/{b64file}", Use(controllers.WSHandler)).Methods("GET")
 	router.HandleFunc("/", Use(controllers.RootHandler)).Methods("GET")
 	router.HandleFunc("/searchproject", controllers.SearchHandler)
+	router.HandleFunc("/datestartend", controllers.DataHandler)
 	router.PathPrefix("/").Handler(http.FileServer(http.Dir("./web/static")))
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, "index.tmpl")
