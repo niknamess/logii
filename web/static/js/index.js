@@ -300,21 +300,18 @@ function initWS(file, type) {
         xmlDoc = parser.parseFromString(str, "text/xml");
         loglist = xmlDoc.getElementsByTagName("loglist")
 
-        // document.getElementById('follow').scrollIntoView();
+
         k2 = isEmpty(loglist)
         if (k2 == false) {
             Null()
             str = ParseXml(str, type)
-                /*  if (type == "INFO" || type == "empty") {
-                     countInf = countInf / 2
-                 } */
-                //document.getElementById("clear1").innerHTML = "";
-            countWar = countWar / 2
-            countErr = countErr / 2
-            countInf = countInf / 2
-            countDbg = countDbg / 2
-            countFtl = countFtl / 2
-            countAll = countAll / 2
+
+            /*   countWar = countWar / 2
+              countErr = countErr / 2
+              countInf = countInf / 2
+              countDbg = countDbg / 2
+              countFtl = countFtl / 2
+              countAll = countAll / 2 */
             container.append("<table > " +
                 "<col width=\"150px\" />" +
                 "<col width=\"150px\" />" +
@@ -442,53 +439,64 @@ function ParseXml(str, type) {
 //(year, monthIndex, day, hours, minutes, seconds, milliseconds)
 //23 07 2021 00 25 53.492
 function split_at_index(value) {
-    norm = value.substring(0, 2) + "." + value.substring(2);
-    norm = norm.substring(0, 5) + "." + norm.substring(5);
-    norm = norm.substring(0, 10) + " " + norm.substring(10);
-    norm = norm.substring(0, 13) + ":" + norm.substring(13);
-    norm = norm.substring(0, 16) + ":" + norm.substring(16);
-    norm = norm.substring(0, 19) + ":" + norm.substring(19);
-    norm = norm.substring(0, 23) + " UTC" + norm.substring(23);
+    norm = value.substring(0, 2) + "." + value.substring(2); //date
+    date = value.substring(0, 2);
+    console.log(date);
+    norm = norm.substring(0, 5) + "." + norm.substring(5); //month 
+    month = value.substring(2, 4)
+    console.log(month);
+    norm = norm.substring(0, 10) + " " + norm.substring(10); //year
+    year = value.substring(4, 8);
+    console.log(year);
+    norm = norm.substring(0, 13) + ":" + norm.substring(13); //hours
+    hours = value.substring(8, 10)
+    console.log(hours);
+    norm = norm.substring(0, 16) + ":" + norm.substring(16); //minutes
+    minutes = value.substring(10, 12)
+    console.log(minutes);
+    norm = norm.substring(0, 19) + ":" + norm.substring(19); //seconds
+    seconds = value.substring(12, 14);
+    console.log(seconds);
+    norm = norm.substring(0, 23) + " UTC" + norm.substring(23); //milliseconds
+    milliseconds = value.substring(14, 17);
+    console.log(milliseconds);
+    //datetimehigh = new Date(year, month, date, hours, minutes, seconds, milliseconds);
+    //sDate = datetimehigh.format("dd/MM/yyyy HH:mm:ss l");
     return norm
 }
 
 function typeMsg(type) {
-    if (type == "1") {
-        msg = "DEBUG";
-        countDbg++
-    } else if (type == "0") {
+    if (type == "0") {
         msg = "INFO";
-        countInf++
+    } else if (type == "1") {
+        msg = "DEBUG";
     } else if (type == "2") {
         msg = "WARNING";
-        countWar++
     } else if (type == "3") {
         msg = "ERROR";
-        countErr++
     } else if (type == "4") {
         msg = "FATAL";
-        countFtl++
     }
-    countAll++
     return msg
 }
 
 function Color(type) {
     if (type == "0") {
-
+        countInf++
         color = "#b4fcb5";
     } else if (type == "1") {
-
+        countDbg++
         color = "#a0a0a0";
     } else if (type == "2") {
-
+        countWar++
         color = "#fffc9b";
     } else if (type == "3") {
-
+        countErr++
         color = "#fdb1b1";
     } else if (type == "4") {
-
+        countFtl++
         color = "#b2ffb2";
     }
+    countAll++
     return color
 }

@@ -49,6 +49,7 @@
 - [ ] fix control with green marker
 - [ ] sort on date (choose date to view) +page to transmit all files and view from choose date
 - [ ] fix bugs with view
+- [x] fix bugs with count type msg
 
 
 # FLAGS 
