@@ -179,7 +179,7 @@ func dfs(file string) {
 	}
 }
 
-func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, startUnixTime int64, endUnixTime int64, commoncsv logenc.LogList) logenc.LogList {
+func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, startUnixTime int64, endUnixTime int64, commoncsv logenc.LogList, lastUlid string) logenc.LogList {
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
@@ -202,9 +202,11 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 	if (lookFor == "" || lookFor == " " || lookFor == "Search") && (startUnixTime == 0 || endUnixTime == 0) {
 
 		for line := range taillog.Lines {
+			//Найти lastUlid и только потом продолжать
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			go taillog.StopAtEOF() //end tail and stop service
+
 		}
 		return commoncsv
 

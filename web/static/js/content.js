@@ -5,6 +5,7 @@ function handleCanvas(start) {
     document.getElementById("details").innerHTML = start.cells.item(8).textContent
     document.onkeydown = checkKey;
 }
+var count = 0
 
 function dotheneedful(sibling) {
     if (sibling != null) {
@@ -34,15 +35,29 @@ document.onkeydown = checkKey;
 function checkKey(e) {
     e = e || window.event;
     if (e.keyCode == '38') {
-        // left arrow
+        // up arrow
+        if (count != 0) {
+            count = count - 1
+        }
         var sibling = start.previousElementSibling;
         dotheneedful(sibling);
     } else if (e.keyCode == '40') {
-        // right arrow
+        // down arrow
+        count = count + 1
         var sibling = start.nextElementSibling;
+        console.log(sibling)
+        if (sibling != "null") {
+            count = count + 1
+        }
         dotheneedful(sibling);
+        //elem.addEventListener('click', function hideContent(e)
     }
+    /* else if (e.addEventListener('click')) {
 
+           var sibling = start.ElementSibling;
+           dotheneedful(sibling);
+       } */
+    console.log(count)
 }
 
 
