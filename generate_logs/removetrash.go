@@ -23,7 +23,7 @@ func Remove(dirpath string, lineS string) {
 		fileN := file.Name()
 		//fmt.Println(fileN)
 		contain := strings.Contains(fileN, lineS)
-		if contain == true {
+		if contain {
 			logenc.DeleteOldsFiles(dirpath, fileN, "")
 		}
 

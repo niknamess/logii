@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"time"
 
 	//"encoding/json"
 
@@ -24,11 +25,14 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 	}
-	search       string
-	datestartend string
-	savefiles    []string
-	stringF      bool
-	SearchMap    map[string]logenc.LogList
+	search        string
+	datestartend  string
+	savefiles     []string
+	stringF       bool
+	SearchMap     map[string]logenc.LogList
+	date_layout   = "01/02/2006"
+	startUnixTime int64
+	endUnixTime   int64
 )
 
 type MyStruct struct {
@@ -138,8 +142,9 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 		//util.TailFile(conn, filename, search, SearchMap, false)
 		util.TailFile(conn, filename, search, SearchMap)
+		search = ""
 	}
-	w.WriteHeader(http.StatusUnauthorized)
+	//w.WriteHeader(http.StatusUnauthorized)
 }
 
 func SearchHandler(_ http.ResponseWriter, r *http.Request) {
@@ -150,16 +155,27 @@ func DataHandler(_ http.ResponseWriter, r *http.Request) {
 	datestartend = r.URL.Query().Get("daterange")
 	fmt.Println("DATAHANDLER:", datestartend)
 	//SEARCHHANDLER: 01/01/2021 - 01/15/2021
-	daystart := string(datestartend[0:2])
+	datastart := string(datestartend[0:10])
+	/* daystart := string(datestartend[0:2])
 	monthstart := string(datestartend[3:5])
 	yearstart := string(datestartend[6:10])
 
 	dayend := string(datestartend[13:15])
 	monthend := string(datestartend[16:18])
-	yearend := string(datestartend[19:23])
+	yearend := string(datestartend[19:23]) */
+	dataend := string(datestartend[13:23])
 
-	fmt.Println(daystart, ":", monthstart, ":", yearstart)
-	fmt.Println(dayend, ":", monthend, ":", yearend)
+	timeendUnix, _ := time.Parse(date_layout, "01/15/2021")
+	timestartUnix, _ := time.Parse(date_layout, datastart)
+
+	fmt.Println("Common", dataend, "Unix", timeendUnix.Unix())
+	fmt.Println("Common", datastart, "Unix", timestartUnix.Unix())
+
+	//fmt.Println("Parse d:m:y", daystart, ":", monthstart, ":", yearstart)
+	//fmt.Println("Parse d:m:y", dayend, ":", monthend, ":", yearend)
+	startUnixTime = timestartUnix.Unix()
+	endUnixTime = timeendUnix.Unix()
+
 }
 
 //NOT fileUtils !!!
@@ -183,41 +199,33 @@ func Indexing(conn *websocket.Conn, fileaddr string) {
 //View List of Dir
 //NOT fileUtils !!!
 func ViewDir(conn *websocket.Conn, search string) {
+	/* startUnixTime
+	endUnixTime
+	*/
+	var commoncsv logenc.LogList
 	var fileList = make(map[string][]string)
 	files, _ := ioutil.ReadDir("./repdata")
 	//"/home/nik/projects/Course/tmcs-log-agent-storage/"
 	//"./view"
 	countFiles := (len(files))
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-	if len(search) == 0 {
 
-		fileList["FileList"] = util.Conf.Dir
-		//String[] values = fileList.get("FileList");
-		fmt.Println("start")
-		for i := 0; i < countFiles; i++ {
-			fileaddr := fileList["FileList"][i]
-			fileN := filepath.Base(fileaddr)
-			go logenc.Replication(fileaddr)
-			bleveSI.ProcBleve(fileN, fileaddr)
-			conn.WriteMessage(websocket.TextMessage, []byte(filepath.Base(fileList["FileList"][i])))
+	fileList["FileList"] = util.Conf.Dir
+	//String[] values = fileList.get("FileList");
+	fmt.Println("start")
 
-		}
-
-	} else {
-		fileList["FileList"] = util.Conf.Dir
-		//String[] values = fileList.get("FileList");
-		fmt.Println("start")
-		for i := 0; i < countFiles; i++ {
-			fileaddr := fileList["FileList"][i]
-			fileN := filepath.Base(fileaddr)
-			go logenc.Replication(fileaddr)
-			bleveSI.ProcBleve(fileN, fileaddr)
-			if util.TailDir(fileN, search, SearchMap) {
-				conn.WriteMessage(websocket.TextMessage, []byte(fileList["FileList"][i]))
-			}
-			//fmt.Println(fileaddr)
-		}
+	for i := 0; i < countFiles; i++ {
+		fileaddr := fileList["FileList"][i]
+		fileN := filepath.Base(fileaddr)
+		go logenc.Replication(fileaddr)
+		bleveSI.ProcBleve(fileN, fileaddr)
+		commoncsv = util.TailDir(conn, fileaddr, search, SearchMap, startUnixTime, endUnixTime, commoncsv)
+		//conn.WriteMessage(websocket.TextMessage, []byte(filepath.Base(fileList["FileList"][i])))
+		search = ""
 	}
+	conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
-
+	search = ""
+	startUnixTime = 0
+	endUnixTime = 0
 }

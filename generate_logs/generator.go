@@ -33,11 +33,11 @@ type Log struct {
 }
 
 var (
-	Logger     *log.Logger
-	label      string
-	labeld     string
-	countFile  int = 0
-	countFiled int = 0
+	Logger *log.Logger
+	label  string
+	//labeld     string
+	countFile int = 0
+	//countFiled int = 0
 )
 
 const (
@@ -71,8 +71,8 @@ func StructFile() string {
 		" message=" + elem + XML_MESSAGE + elem +
 		" ext_message=" + elem + XML_DETAILS + address + elem + "/></loglist>"
 
-	rand.Seed(time.Now().UnixNano())
-
+	//rand.Seed(time.Now().UnixNano())
+	//fmt.Println(time_ulid.Time())
 	return LINE
 }
 
@@ -83,7 +83,7 @@ func ProcGenN(count int, FileSize int64) int {
 	//	last3  := string(s[len(s)-3:])
 	logenc.CreateDir("./genrlogs", "")
 
-	for true {
+	for {
 
 		LINE := StructFile()
 
@@ -123,5 +123,5 @@ func ProcGenN(count int, FileSize int64) int {
 
 	}
 	//fmt.Println("done")
-	return 1
+
 }

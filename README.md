@@ -49,6 +49,7 @@
 - [ ] sort on date (choose date to view) + page to transmit all files and view from choose date
 - [x] fix bugs with count type msg
 - [x] sort on date in file (client)
+- [ ] problem with infinity scrom;
 
 
 

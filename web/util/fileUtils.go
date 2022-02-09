@@ -17,6 +17,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/hpcloud/tail"
+	"github.com/oklog/ulid/v2"
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 	//"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
@@ -178,9 +179,78 @@ func dfs(file string) {
 	}
 }
 
-func TailDir(fileName string, lookFor string, SearchMap map[string]logenc.LogList) bool {
+func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, startUnixTime int64, endUnixTime int64, commoncsv logenc.LogList) logenc.LogList {
 
 	fileN := filepath.Base(fileName)
+	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
+	taillog, err := tail.TailFile(fileName,
+		tail.Config{
+			Follow: true,
+			Location: &tail.SeekInfo{
+				Whence: os.SEEK_CUR, //!!!
+
+			},
+		})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
+		return commoncsv
+	}
+	println("Find", lookFor)
+	println(startUnixTime)
+	println(endUnixTime)
+	println(fileName)
+	if (lookFor == "" || lookFor == " " || lookFor == "Search") && (startUnixTime == 0 || endUnixTime == 0) {
+
+		for line := range taillog.Lines {
+			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
+			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+			go taillog.StopAtEOF() //end tail and stop service
+		}
+		return commoncsv
+
+	} else if len(UlidC) == 0 {
+		println("Break")
+		return commoncsv
+	} else if (startUnixTime != 0 || endUnixTime != 0) && (lookFor == "" || lookFor == " " || lookFor == "Search") {
+		for i := 0; i < len(UlidC); i++ {
+			ulidS := UlidC[i]
+			ulidU, _ := ulid.Parse(ulidS)
+			Unixtime := ulidU.Time()
+			log.Println("Uint64", Unixtime)
+			log.Println("int64", int64(Unixtime))
+			if startUnixTime <= int64(Unixtime) && endUnixTime >= int64(Unixtime) {
+				conn.WriteMessage(websocket.TextMessage, []byte(ulidS))
+			}
+
+		}
+	} else {
+		var commoncsv logenc.LogList
+		for i := 0; i < len(UlidC); i++ {
+			//	ulidS := UlidC[i]
+			//	ulidU, _ := ulid.Parse(ulidS)
+			//	Unixtime := ulidU.Time()
+			v, found := SearchMap[UlidC[i]]
+			log.Println(v)
+			fmt.Println(v)
+			//	if found && startUnixTime <= int64(Unixtime) && endUnixTime >= int64(Unixtime) {
+			if found {
+				//:TODO create common structure
+				//PS: Merge xml structure
+				//:TODO map with xml structure
+				//structure <loglist> append <log></log>......<log></log></loglist>
+				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, v.XML_RECORD_ROOT...)
+			}
+		}
+		return commoncsv
+		//:TODO transmit to websoket
+
+	}
+	//return from Ulid timestamp
+	//if in period return
+	/* startUnixTime
+	endUnixTime
+	*/
+	/* fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 
 	if len(UlidC) == 0 {
@@ -192,14 +262,15 @@ func TailDir(fileName string, lookFor string, SearchMap map[string]logenc.LogLis
 
 			_, found := SearchMap[UlidC[i]]
 			if found {
-				//return msg (xml_structure)
+				conn.WriteMessage(websocket.TextMessage, []byte("LOL"))
 				return true
 
 			}
 		}
 
 	}
-	return false
+	return false */
+	return commoncsv
 
 }
 
