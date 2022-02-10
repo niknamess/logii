@@ -32,6 +32,10 @@ function dotheneedful(sibling) {
 
 document.onkeydown = checkKey;
 //37 39
+//присваивать id с номером для каждого выбранного элемента 
+//ecли доходим до 200 удалять предыдущие 100 записей и подгружать вниз следущие 100 очищать значение count и присваивать 100
+
+
 function checkKey(e) {
     e = e || window.event;
     if (e.keyCode == '38') {

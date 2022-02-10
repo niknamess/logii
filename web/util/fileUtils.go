@@ -65,9 +65,16 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	println(lookFor)
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		var commoncsv logenc.LogList
+		var countline int = 0
 		for line := range taillog.Lines {
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+			countline++
+			if countline == 100 {
+				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+				countline = 0
+				commoncsv = logenc.LogList{}
+			}
 			go taillog.StopAtEOF() //end tail and stop service
 		}
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))

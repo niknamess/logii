@@ -33,6 +33,7 @@ var (
 	date_layout   = "01/02/2006"
 	startUnixTime int64
 	endUnixTime   int64
+	pointH        string
 )
 
 type MyStruct struct {
@@ -176,6 +177,10 @@ func DataHandler(_ http.ResponseWriter, r *http.Request) {
 	startUnixTime = timestartUnix.Unix()
 	endUnixTime = timeendUnix.Unix()
 
+}
+func PointHandler(_ http.ResponseWriter, r *http.Request) {
+	pointH = r.URL.Query().Get("pointer")
+	fmt.Println("POINTHANDLER:", pointH)
 }
 
 //NOT fileUtils !!!

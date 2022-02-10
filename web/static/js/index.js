@@ -253,6 +253,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("Your browser does not support WebSockets");
             return;
         } else {
+            //
             ws = initWS(file, "empty");
 
         }
@@ -406,6 +407,21 @@ function initWS(file, type) {
     return socket;
 }
 
+function addStructure(file, type) {
+    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
+    var container = angular.element(document.querySelector("#container"));
+    socket.onmessage = function(e) {
+        var loglist
+        str = e.data.trim();
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(str, "text/xml");
+        loglist = xmlDoc.getElementsByTagName("loglist")
+        k2 = isEmpty(loglist)
+        if (k2 == false) {
+            str = ParseXml(str, type)
+        }
+    }
+}
 
 
 function ParseXml(str, type) {
