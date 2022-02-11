@@ -109,3 +109,9 @@ function sortCustom2(th) {
         console.error(jse);
     }
 }
+
+
+/* $(document).ready(function() {
+    $('#tbl92').DataTable();
+    $('.dataTables_length').addClass('bs-select');
+}); */

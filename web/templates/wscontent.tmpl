@@ -1,10 +1,40 @@
 <<define "wscontent">>
 <!--START -->
 <html>
-        <md-content flex  class="md-padding" id="container"style="font-size:{{currSize}}">
+
+<div style="" class="TableContainer">
+      <table align="center">
+            <tr> 
+            <td id ="cntinfo" class="info testI" onclick="editInf()"> </td> 
+            <td id ="cnterror" class="error testE" onclick="editErr()"> </td> 
+            <td id ="cntwrng" class="warning testW" onclick="editWarn()"> </td> 
+            <td id ="ctndbg" class="debug testD" onclick="editDbgs()"> </td> 
+            <td id ="cntall" class="all testA" onclick="editAll()"> </td>
+            </tr >"
+
+
+      </table>
+
+        <table id="tbl92" border="0" class="tableScroll "  data-scroll-speed=2 align="center">
+        <thead>
+                <tr> 
+                <th onclick="Vi.Table.sort.string(this)" title="Strings will be ordered lessically." > TYPE </th> 
+                <th onclick="Vi.Table.sort.string(this)" title="Strings will be ordered lessically." > APPNAME </th> 
+                <th onclick="Vi.Table.sort.string(this)" title="Strings will be ordered lessically." > APPPATH </th> 
+                <th onclick="Vi.Table.sort.number(this)" title="Number will be sortes as number." > APPPID </th> 
+                <th class = "th-sm" > THREAD </th> 
+                <th onclick="sortCustom2(this)" title="The date is ordered based on 'ticks' stored as custom data." > TIME </th>
+                <th class = "th-sm" > ULID </th>
+                <th class = "th-sm" > MESSAGE </th>
+                <th class = "th-sm" > DETAILS </th> </tr> 
+                </thead>
+          <tbody  id="container">
+          <!--<md-content flex   id="container">-->
           <!-- Content will be inserted by websocket connection -->
-       </md-content>
-     
+        <!-- </md-content> -->
+          </tbody>
+        </table>
+  </div>
         <section layout="row">
           <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="9">
           <md-toolbar>

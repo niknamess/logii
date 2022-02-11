@@ -53,85 +53,7 @@ inputform.addEventListener('keypress', function(e) {
         );
     }
 });
-/* 
-buttonErr.addEventListener('click', event => {
 
-    setTimeout(
-        () => {
-            Null()
-            initWS(lastItem, "ERROR")
-            statusS = "ERROR"
-            setBackColor('changeclr', "#ffb0b0")
-
-        },
-        1 * 200
-    );
-});
-buttonInf.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            Null()
-            initWS(lastItem, "INFO")
-            statusS = "INFO"
-            setBackColor('changeclr', "#b0ffb0")
-
-        },
-        1 * 200
-    );
-});
-
-buttonDbgs.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            Null()
-            statusS = "DEBUG"
-            initWS(lastItem, "DEBUG")
-            setBackColor('changeclr', "#a0a0a0")
-
-
-        },
-        1 * 200
-    );
-});
-
-buttonWar.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            Null()
-            statusS = "WARNING"
-            initWS(lastItem, "WARNING")
-            setBackColor('changeclr', "#ffff90")
-
-
-        },
-        1 * 200
-    );
-});
-buttonAll.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            Null()
-            statusS = "empty"
-            initWS(lastItem, "empty")
-            setBackColor('changeclr', "#ed6c27")
-
-
-        },
-        1 * 200
-    );
-});
- */
-/* trInf.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            Null()
-            initWS(lastItem, "INFO")
-            statusS = "INFO"
-
-        },
-        1 * 200
-    );
-}); */
 function editInf() {
     Null()
     initWS(lastItem, "INFO")
@@ -244,8 +166,6 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         $scope.showCard = false;
         angular.element(document.querySelector("#filename")).html("File: " + filename)
 
-
-
         var container = angular.element(document.querySelector("#container"))
 
         var ws;
@@ -255,6 +175,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         } else {
             //
             ws = initWS(file, "empty");
+            Null();
 
         }
 
@@ -291,16 +212,22 @@ function initWS(file, type) {
 
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
+    var cntinfo = angular.element(document.querySelector("#cntinfo"));
+    var cnterror = angular.element(document.querySelector("#cnterror"));
+    var cntwrng = angular.element(document.querySelector("#cntwrng"));
+    var ctndbg = angular.element(document.querySelector("#ctndbg"));
+    var cntall = angular.element(document.querySelector("#cntall"));
+
 
     container.html("")
     socket.onopen = function() {
 
         var filename = file.replace(/^.*[\\\/]/, '')
-        container.append("<p><b>Tailing file: " + filename + "</b></p>");
+            //container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
 
-            container.append("<table");
+            container.append("TODO:");
 
         }
     }
@@ -317,84 +244,16 @@ function initWS(file, type) {
 
         k2 = isEmpty(loglist)
         if (k2 == false) {
-            Null()
             str = ParseXml(str, type)
-
-            /*   countWar = countWar / 2
-              countErr = countErr / 2
-              countInf = countInf / 2
-              countDbg = countDbg / 2
-              countFtl = countFtl / 2
-              countAll = countAll / 2 */
-            container.append("<table > " +
-                "<col width=\"150px\" />" +
-                "<col width=\"150px\" />" +
-                "<col width=\"350px\" />" +
-                "<col width=\"110px\" />" +
-                "<col width=\"130px\" />" +
-                "<col width=\"110px\" />" +
-                "<col width=\"300px\" />" +
-                "<col width=\"400px\" />" +
-                "<col width=\"500px\" />" +
-                "<col width=\"200px\" />" +
-                "<tr > <td class=\"info\" onclick=\"editInf()\">" + "INFO:" +
-                countInf + "</td> <td class=\"error\" onclick=\"editErr()\">" + "Error:" +
-                countErr + "</td> <td class=\"warning\" onclick=\"editWarn()\">" + "Warning:" +
-                countWar + "</td> <td class=\"debug\" onclick=\"editDbgs()\">" + "Debug:" +
-                countDbg + "</td> <td class=\"all\" onclick=\"editAll()\">" + "All:" +
-                countAll +
-                "</td></tr > </table >");
-
-            Null()
-            container.append("<div style=\"\" class=\"TableContainer\">" +
-                "<table id=\"tbl92\" border=\"0\" class=\"tableScroll\"  data-scroll-speed=2 align=\"center\" >" +
-                "<thead>" +
-                "<tr>" +
-                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > TYPE </th>" +
-                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPNAME </th>" +
-                "<th onclick=\"Vi.Table.sort.string(this)\" title=\"Strings will be ordered lessically.\" > APPPATH </th>" +
-                "<th onclick=\"Vi.Table.sort.number(this)\" title=\"Number will be sortes as number.\" > APPPID </th>" +
-                "<th class = \"th-sm\" > THREAD </th>" +
-                "<th onclick=\"sortCustom2(this)\" title=\"The date is ordered based on 'ticks' stored as custom data.\" > TIME </th>" +
-                "<th class = \"th-sm\" > ULID </th>" +
-                "<th class = \"th-sm\" > MESSAGE </th>" +
-                "<th class = \"th-sm\" > DETAILS </th> </tr>" +
-                "</thead>" +
-                "<tbody>" + str + "</tbody></table></div>");
-            container.append(
-                "<div class =\"sysinfo d-block p-2 .bg-light.bg-gradient text-dark\">" + "Message: " +
-                "</div>" +
-                "<div class =\"sysinfo d-block p-2 .bg-light.bg-gradient text-dark\" id = \"message\">" +
-                "</div>" +
-                "<div class =\"sysinfo d-block p-2 .bg-secondary.bg-gradient text-dark\" id = \"details\">" +
-                "</div>");
-
-
-        } else {
-            if (str == "Indexing file, please wait") {
-                container.append(" <div id =\"load\" class=\"center\">" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"textL\">Loading...</div>" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"wave\"></div>" +
-                    "<div class=\"wave\"></div>" +
-                    "</div>");
-
-            } else if (str == "Indexing complated") {
-
-                document.getElementById("load").remove();
-                container.append("<div class=\"textL\">Indexing complated!</div>");
-            } else
-                container.append("<hr>" + str + "</hr>");
+            container.append(str);
+            cntinfo.append("INFO:" + countInf)
+            cnterror.append("Error:" + countErr)
+            cntwrng.append("Warning:" + countWar)
+            ctndbg.append("Debug:" + countDbg)
+            cntall.append("All:" + countAll)
         }
 
-        container.append(standartform);
+        //container.append(standartform);
 
     }
     socket.onclose = function() {
@@ -405,22 +264,6 @@ function initWS(file, type) {
     }
 
     return socket;
-}
-
-function addStructure(file, type) {
-    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
-    var container = angular.element(document.querySelector("#container"));
-    socket.onmessage = function(e) {
-        var loglist
-        str = e.data.trim();
-        parser = new DOMParser();
-        xmlDoc = parser.parseFromString(str, "text/xml");
-        loglist = xmlDoc.getElementsByTagName("loglist")
-        k2 = isEmpty(loglist)
-        if (k2 == false) {
-            str = ParseXml(str, type)
-        }
-    }
 }
 
 
