@@ -1,7 +1,7 @@
 <<define "wscontent">>
 <!--START -->
 <html>
-
+<div id = "loading" > </div>
 <table align="center">
             <tr> 
             <td id ="cntinfo" class="info testI" onclick="editInf()"> </td> 
@@ -10,9 +10,25 @@
             <td id ="ctndbg" class="debug testD" onclick="editDbgs()"> </td> 
             <td id ="cntall" class="all testA" onclick="editAll()"> </td>
             </tr >
-      </table>
 
-<div class="TableContainer">
+      </table>
+<div class="containerT">
+<h2>Select Number Of Rows</h2>
+				<div class="form-group"> 	<!--		Show Numbers Of Rows 		-->
+			 		<select class  ="form-control" name="state" id="maxRows">
+						 <option value="1000">Show ALL Rows(1000)</option>
+						 <option value="5">5</option>
+						 <option value="10">10</option>
+						 <option value="15">15</option>
+						 <option value="20">20</option>
+						 <option value="50">50</option>
+						 <option value="70">70</option>
+						 <option value="100">100</option>
+						</select>
+			 		
+			  	</div>
+      <div class="TableContainer">
+	
         <table id="tbl92" border="0" class="tableScroll"  data-scroll-speed=2 align="center">
         <thead>
                 <tr> 
@@ -32,11 +48,28 @@
         <!-- </md-content> -->
           </tbody>
         </table>
-  </div>
+         </div>
+	    <div class='pagination-container' >
+				<nav>
+				  <ul class="pagination">
+            
+            <li data-page="prev" >
+								     <span> < <span class="sr-only">(current)</span></span>
+								    </li>
+				   <!--	Here the JS Function Will Add the Rows -->
+        <li data-page="next" id="prev">
+								       <span> > <span class="sr-only">(current)</span></span>
+								    </li>
+				  </ul>
+				</nav>
+			</div>
 
+ 
+ </div>
   <div class ="sysinfo d-block p-2 .bg-light.bg-gradient text-dark"> Message:</div> 
   <div class ="sysinfo d-block p-2 .bg-light.bg-gradient text-dark" id = "message"> </div>
   <div class ="sysinfo d-block p-2 .bg-secondary.bg-gradient text-dark" id = "details"> </div>
+  <div class ="sysinfo d-block p-2 .bg-secondary.bg-gradient text-dark" id = "sysMsgAll"> </div>
 
   
   <!--For system msg -->

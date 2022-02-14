@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -34,6 +35,8 @@ var (
 	indexMap = make(map[string]bool)
 	//SearchMap map[string]string
 	signature bool = false
+	current   int64
+	last_ulid string = ""
 )
 
 type FileStruct struct {
@@ -49,10 +52,12 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
+	//lineCounter(fileName)
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
 			Location: &tail.SeekInfo{
+				Offset: current,
 				Whence: os.SEEK_CUR, //!!!
 
 			},
@@ -67,16 +72,28 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		var commoncsv logenc.LogList
 		var countline int = 0
 		for line := range taillog.Lines {
+
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-			countline++
+			if last_ulid == csvsimpl.XML_RECORD_ROOT[1].XML_ULID || last_ulid == csvsimpl.XML_RECORD_ROOT[0].XML_ULID || last_ulid == "" {
+				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+				countline++
+
+			}
+
 			if countline == 100 {
+				last_ulid = csvsimpl.XML_RECORD_ROOT[0].XML_ULID
 				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 				countline = 0
 				commoncsv = logenc.LogList{}
+				current, _ = taillog.Tell()
+				//stop tail
 			}
 			go taillog.StopAtEOF() //end tail and stop service
 		}
+
+		current = 0
+		last_ulid = ""
+
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 
 	} else if len(UlidC) == 0 {
@@ -481,4 +498,29 @@ func CheckIPAddress(ip string) bool {
 		return true
 	}
 
+}
+
+func lineCounter(path string) (int, error) {
+
+	r, err := os.Open(path)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to open file: %v", err)
+		os.Exit(1)
+	}
+	buf := make([]byte, 32*1024)
+	count := 0
+	lineSep := []byte{'\n'}
+
+	for {
+		c, err := r.Read(buf)
+		count += bytes.Count(buf[:c], lineSep)
+
+		switch {
+		case err == io.EOF:
+			return count, nil
+
+		case err != nil:
+			return count, err
+		}
+	}
 }

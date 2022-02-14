@@ -23,7 +23,30 @@ var lastItem;
 var statusS = "empty"
     //const input = document.querySelector('input');
 
+$(document).ready(function() {
+    $('#MyTable').DataTable({
+        initComplete: function() {
+            this.api().columns().every(function() {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo($(column.footer()).empty())
+                    .on('change', function() {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+                        //to select and search from grid  
+                        column
+                            .search(val ? '^' + val + '$' : '', true, false)
+                            .draw();
+                    });
 
+                column.data().unique().sort().each(function(d, j) {
+                    select.append('<option value="' + d + '">' + d + '</option>')
+                });
+            });
+        }
+    });
+});
 
 function isEmpty(str) {
     return (!str || 0 === str.length);
@@ -212,6 +235,8 @@ function initWS(file, type) {
 
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
+    var sysMsgAll = angular.element(document.querySelector("#sysMsgAll"));
+    var loading = angular.element(document.querySelector("#loading"));
     /* var cntinfo = angular.element(document.querySelector("#cntinfo"));
     var cnterror = angular.element(document.querySelector("#cnterror"));
     var cntwrng = angular.element(document.querySelector("#cntwrng"));
@@ -251,21 +276,43 @@ function initWS(file, type) {
             quotation("cntwrng", "Warning:" + countWar);
             quotation("ctndbg", "Debug:" + countDbg);
             quotation("cntall", "All:" + countAll);
-            /*  cntinfo.append("INFO:" + countInf)
-             cnterror.append("Error:" + countErr)
-             cntwrng.append("Warning:" + countWar)
-             ctndbg.append("Debug:" + countDbg)
-             cntall.append("All:" + countAll) */
+
+        } else {
+            if (str == "Indexing file, please wait") {
+                loading.append(" <div id =\"load\" class=\"center\">" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"textL\">Loading...</div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "<div class=\"wave\"></div>" +
+                    "</div>");
+
+            } else if (str == "Indexing complated") {
+
+                document.getElementById("load").remove();
+                //loading.append("<div class=\"textL\">Indexing complated!</div>");
+            } else
+                sysMsgAll.append("<hr>" + str + "</hr>")
+
+
         }
 
         //container.append(standartform);
 
     }
     socket.onclose = function() {
-        container.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        quotation("sysMsgAll", "<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+
+        // sysMsgAll.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
     }
     socket.onerror = function(e) {
-        container.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
+        sysMsgAll.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
     }
 
     return socket;
