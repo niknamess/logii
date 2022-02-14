@@ -2,20 +2,18 @@
 <!--START -->
 <html>
 
-<div style="" class="TableContainer">
-      <table align="center">
+<table align="center">
             <tr> 
             <td id ="cntinfo" class="info testI" onclick="editInf()"> </td> 
             <td id ="cnterror" class="error testE" onclick="editErr()"> </td> 
             <td id ="cntwrng" class="warning testW" onclick="editWarn()"> </td> 
             <td id ="ctndbg" class="debug testD" onclick="editDbgs()"> </td> 
             <td id ="cntall" class="all testA" onclick="editAll()"> </td>
-            </tr >"
-
-
+            </tr >
       </table>
 
-        <table id="tbl92" border="0" class="tableScroll "  data-scroll-speed=2 align="center">
+<div class="TableContainer">
+        <table id="tbl92" border="0" class="tableScroll"  data-scroll-speed=2 align="center">
         <thead>
                 <tr> 
                 <th onclick="Vi.Table.sort.string(this)" title="Strings will be ordered lessically." > TYPE </th> 
@@ -35,6 +33,13 @@
           </tbody>
         </table>
   </div>
+
+  <div class ="sysinfo d-block p-2 .bg-light.bg-gradient text-dark"> Message:</div> 
+  <div class ="sysinfo d-block p-2 .bg-light.bg-gradient text-dark" id = "message"> </div>
+  <div class ="sysinfo d-block p-2 .bg-secondary.bg-gradient text-dark" id = "details"> </div>
+
+  
+  <!--For system msg -->
         <section layout="row">
           <md-sidenav class="md-sidenav-left" md-component-id="left" md-whiteframe="9">
           <md-toolbar>

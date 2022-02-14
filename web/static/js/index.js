@@ -212,18 +212,18 @@ function initWS(file, type) {
 
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
-    var cntinfo = angular.element(document.querySelector("#cntinfo"));
+    /* var cntinfo = angular.element(document.querySelector("#cntinfo"));
     var cnterror = angular.element(document.querySelector("#cnterror"));
     var cntwrng = angular.element(document.querySelector("#cntwrng"));
     var ctndbg = angular.element(document.querySelector("#ctndbg"));
     var cntall = angular.element(document.querySelector("#cntall"));
-
+ */
 
     container.html("")
     socket.onopen = function() {
 
-        var filename = file.replace(/^.*[\\\/]/, '')
-            //container.append("<p><b>Tailing file: " + filename + "</b></p>");
+        //var filename = file.replace(/^.*[\\\/]/, '')
+        //container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
 
@@ -246,11 +246,16 @@ function initWS(file, type) {
         if (k2 == false) {
             str = ParseXml(str, type)
             container.append(str);
-            cntinfo.append("INFO:" + countInf)
-            cnterror.append("Error:" + countErr)
-            cntwrng.append("Warning:" + countWar)
-            ctndbg.append("Debug:" + countDbg)
-            cntall.append("All:" + countAll)
+            quotation("cntinfo", "INFO:" + countInf);
+            quotation("cnterror", "Error:" + countErr);
+            quotation("cntwrng", "Warning:" + countWar);
+            quotation("ctndbg", "Debug:" + countDbg);
+            quotation("cntall", "All:" + countAll);
+            /*  cntinfo.append("INFO:" + countInf)
+             cnterror.append("Error:" + countErr)
+             cntwrng.append("Warning:" + countWar)
+             ctndbg.append("Debug:" + countDbg)
+             cntall.append("All:" + countAll) */
         }
 
         //container.append(standartform);

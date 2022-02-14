@@ -47,7 +47,7 @@ function checkKey(e) {
         dotheneedful(sibling);
     } else if (e.keyCode == '40') {
         // down arrow
-        count = count + 1
+        // count = count + 1
         var sibling = start.nextElementSibling;
         console.log(sibling)
         if (sibling != "null") {
