@@ -142,7 +142,8 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	if ok {
 
 		//util.TailFile(conn, filename, search, SearchMap, false)
-		util.TailFile(conn, filename, search, SearchMap)
+		ulsid := util.TailFile(conn, filename, search, SearchMap)
+		fmt.Println("LAstULID", ulsid)
 		search = ""
 	}
 	//w.WriteHeader(http.StatusUnauthorized)

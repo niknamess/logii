@@ -48,7 +48,7 @@ type FileStruct struct {
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
-func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) {
+func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) string {
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
@@ -64,7 +64,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
-		return
+		return last_ulid
 	}
 	println("Find", lookFor)
 	println(lookFor)
@@ -74,11 +74,12 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		for line := range taillog.Lines {
 
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			if last_ulid == csvsimpl.XML_RECORD_ROOT[1].XML_ULID || last_ulid == csvsimpl.XML_RECORD_ROOT[0].XML_ULID || last_ulid == "" {
-				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-				countline++
+			//if last_ulid == csvsimpl.XML_RECORD_ROOT[0].XML_ULID || last_ulid == "" {
+			//go log.Println(csvsimpl.XML_RECORD_ROOT[0].XML_ULID)
+			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+			countline++
 
-			}
+			//}
 
 			if countline == 100 {
 				last_ulid = csvsimpl.XML_RECORD_ROOT[0].XML_ULID
@@ -89,16 +90,17 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 				//stop tail
 			}
 			go taillog.StopAtEOF() //end tail and stop service
+			last_ulid = commoncsv.XML_RECORD_ROOT[0].XML_ULID
 		}
 
 		current = 0
-		last_ulid = ""
+		//last_ulid = ""
 
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 
 	} else if len(UlidC) == 0 {
 		println("Break")
-		return
+		return last_ulid
 	} else {
 		var commoncsv logenc.LogList
 		for i := 0; i < len(UlidC); i++ {
@@ -118,7 +120,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		//:TODO transmit to websoket
 
 	}
-	//return true
+	return last_ulid
 }
 
 // IndexFiles - takes argument as a list of files and directories and returns
