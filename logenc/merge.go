@@ -162,9 +162,10 @@ func CreateDir(dirpath string, path string) {
 
 func DeleteOldsFiles(dirpath string, path string, labels string) {
 	fileN := filepath.Base(path)
-	err := os.Remove(dirpath + fileN + labels)
+	log.Println("RemoveOldfile:", dirpath+"/"+fileN+labels)
+	err := os.Remove(dirpath + "/" + fileN + labels)
 	if err != nil {
-		log.Println("DeleteOldsFiles:", err)
+		log.Println("DeleteOldsFiles err:", err)
 	}
 
 }

@@ -87,7 +87,7 @@ func RootHandler(w http.ResponseWriter, _ *http.Request) {
 
 // WSHandler - Websocket handler
 func WSHandler(w http.ResponseWriter, r *http.Request) {
-
+	var currentUlid string
 	conn, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
 		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
@@ -142,8 +142,8 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	if ok {
 
 		//util.TailFile(conn, filename, search, SearchMap, false)
-		ulsid := util.TailFile(conn, filename, search, SearchMap)
-		fmt.Println("LAstULID", ulsid)
+		currentUlid = util.TailFile(conn, filename, search, SearchMap, currentUlid)
+		fmt.Println("LAstULID", currentUlid)
 		search = ""
 	}
 	//w.WriteHeader(http.StatusUnauthorized)

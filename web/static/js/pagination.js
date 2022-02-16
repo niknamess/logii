@@ -132,7 +132,7 @@ function limitPagging() {
 
 $(function() {
     // Just to append id number for each row
-    $('table tr:eq(0)').prepend('<th> ID </th>');
+    $('table tr:eq(0)').prepend();
 
     var id = 0;
 

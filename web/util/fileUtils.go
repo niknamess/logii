@@ -48,7 +48,7 @@ type FileStruct struct {
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
-func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) string {
+func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, currentUlid string) string {
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
@@ -57,7 +57,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		tail.Config{
 			Follow: true,
 			Location: &tail.SeekInfo{
-				Offset: current,
+				//Offset: current,
 				Whence: os.SEEK_CUR, //!!!
 
 			},
@@ -74,23 +74,36 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		for line := range taillog.Lines {
 
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			//if last_ulid == csvsimpl.XML_RECORD_ROOT[0].XML_ULID || last_ulid == "" {
-			//go log.Println(csvsimpl.XML_RECORD_ROOT[0].XML_ULID)
+			testulid := logenc.ProcLineDecodeXMLUlid(line.Text)
+			log.Println(testulid)
+			//if currentUlid == csvsimpl.XML_RECORD_ROOT[0].XML_ULID || currentUlid == "" {
+			//log.Println(csvsimpl.XML_RECORD_ROOT[0])
+			//log.Println(csvsimpl.XML_RECORD_ROOT[0].XML_ULID)
+
+			/* v, found := SearchMap[currentUlid]
+
+			if found {
+				currulid := v.XML_RECORD_ROOT
+			} */
+
+			//log.Println(csvsimpl.XML_RECORD_ROOT[0])
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
 
 			//}
+			//}
 
-			if countline == 100 {
+			if countline == 1000 {
 				last_ulid = csvsimpl.XML_RECORD_ROOT[0].XML_ULID
 				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 				countline = 0
 				commoncsv = logenc.LogList{}
 				current, _ = taillog.Tell()
 				//stop tail
+				return last_ulid
 			}
 			go taillog.StopAtEOF() //end tail and stop service
-			last_ulid = commoncsv.XML_RECORD_ROOT[0].XML_ULID
+			//last_ulid = commoncsv.XML_RECORD_ROOT[0].XML_ULID
 		}
 
 		current = 0

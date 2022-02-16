@@ -227,6 +227,28 @@ func ProcLineDecodeXML(line string) (val LogList) {
 	return val
 }
 
+func ProcLineDecodeXMLUlid(line string) (ulid string) {
+
+	if len(line) == 0 {
+
+		return
+	}
+	lookFor := "<loglist>"
+	xmlline := DecodeLine(line)
+	contain := strings.Contains(xmlline, lookFor)
+	if !contain {
+
+		return
+	}
+	val, err := DecodeXML(xmlline)
+	if err != nil {
+
+		return
+	}
+	ulid = val.XML_RECORD_ROOT[0].XML_ULID
+	return ulid
+}
+
 func ProcMapFile(file string) map[string]LogList {
 	//func ProcMapFile(file string) {
 	if len(file) <= 0 {

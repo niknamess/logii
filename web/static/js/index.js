@@ -10,7 +10,10 @@ const buttonAll = document.getElementById('btnall');
 const buttonClr = document.getElementById('changeclr');
 const inputform = document.getElementById('search_string');
 const textList = document.getElementById('listfile');
-//const trInf = document.getElementById('trInf');
+const buttonNext = document.getElementById('buttonNext');
+const buttonPrev = document.getElementById('buttonPrev');
+
+var currentPage = 1
 var countWar = 0
 var countErr = 0
 var countInf = 0
@@ -21,7 +24,6 @@ var start
 var standartform = ""
 var lastItem;
 var statusS = "empty"
-    //const input = document.querySelector('input');
 
 $(document).ready(function() {
     $('#MyTable').DataTable({
@@ -51,11 +53,35 @@ $(document).ready(function() {
 function isEmpty(str) {
     return (!str || 0 === str.length);
 }
+buttonNext.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            initWS()
+
+        },
+        1 * 200
+    );
+});
+
+buttonNext.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            currentPage++
+            initWS(lastItem, statusS)
+            console.log("Page", currentPage)
+        },
+        1 * 200
+    );
+});
 
 buttonR.addEventListener('click', event => {
     setTimeout(
         () => {
-            window.location.reload();
+            if (currentPage != 0 || currentPage != 1) {
+                currentPage = currentPage - 1
+                initWS(lastItem, statusS)
+            }
+            console.log("Page", currentPage)
 
         },
         1 * 200
@@ -107,9 +133,9 @@ function editAll() {
     statusS = "empty"
 }
 
-function myFunction() {
+/* function myFunction() {
     document.getElementById("trInf").innerHTML = "YOU CLICKED ME!";
-}
+} */
 
 function Null() {
     countWar = 0
@@ -237,7 +263,8 @@ function initWS(file, type) {
     var container = angular.element(document.querySelector("#container"));
     var sysMsgAll = angular.element(document.querySelector("#sysMsgAll"));
     var loading = angular.element(document.querySelector("#loading"));
-    /* var cntinfo = angular.element(document.querySelector("#cntinfo"));
+    var count = 0
+        /* var cntinfo = angular.element(document.querySelector("#cntinfo"));
     var cnterror = angular.element(document.querySelector("#cnterror"));
     var cntwrng = angular.element(document.querySelector("#cntwrng"));
     var ctndbg = angular.element(document.querySelector("#ctndbg"));
@@ -264,13 +291,18 @@ function initWS(file, type) {
 
         parser = new DOMParser();
         xmlDoc = parser.parseFromString(str, "text/xml");
-        loglist = xmlDoc.getElementsByTagName("loglist")
+        loglist = xmlDoc.getElementsByTagName("loglist");
 
 
-        k2 = isEmpty(loglist)
+        k2 = isEmpty(loglist);
         if (k2 == false) {
             str = ParseXml(str, type)
-            container.append(str);
+            count++;
+            console.log(count);
+
+            if (count > currentPage - 1 && count <= currentPage) {
+                container.append(str);
+            }
             quotation("cntinfo", "INFO:" + countInf);
             quotation("cnterror", "Error:" + countErr);
             quotation("cntwrng", "Warning:" + countWar);
@@ -278,7 +310,7 @@ function initWS(file, type) {
             quotation("cntall", "All:" + countAll);
 
         } else {
-            if (str == "Indexing file, please wait") {
+            /* if (str == "Indexing file, please wait") {
                 loading.append(" <div id =\"load\" class=\"center\">" +
                     "<div class=\"wave\"></div>" +
                     "<div class=\"wave\"></div>" +
@@ -293,12 +325,12 @@ function initWS(file, type) {
                     "<div class=\"wave\"></div>" +
                     "</div>");
 
-            } else if (str == "Indexing complated") {
+            } else if (str == "Indexing complated" || currentPage >= 2) {
 
-                document.getElementById("load").remove();
-                //loading.append("<div class=\"textL\">Indexing complated!</div>");
-            } else
-                sysMsgAll.append("<hr>" + str + "</hr>")
+                document.getElementById("load").remove(); */
+            //loading.append("<div class=\"textL\">Indexing complated!</div>");
+            // } else
+            sysMsgAll.append("<hr>" + str + "</hr>")
 
 
         }
