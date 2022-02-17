@@ -74,12 +74,13 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 		time.Sleep(time.Second * 55)
 		util.DiskInfo("./repdata")
 	}()
-	if status {
+	EnterIpReady(slice)
+	/* if status {
 		EnterIpReady(slice)
 	} else {
 		EnterIp()
 	}
-
+	*/
 	Ip, CPort := CheckConfig()
 	for i := 0; i < len(Ip); i++ {
 		//TODO

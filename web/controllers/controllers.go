@@ -87,7 +87,8 @@ func RootHandler(w http.ResponseWriter, _ *http.Request) {
 
 // WSHandler - Websocket handler
 func WSHandler(w http.ResponseWriter, r *http.Request) {
-	var currentUlid string
+	var currentUlid string = ""
+
 	conn, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
 		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
@@ -143,7 +144,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 		//util.TailFile(conn, filename, search, SearchMap, false)
 		currentUlid = util.TailFile(conn, filename, search, SearchMap, currentUlid)
-		fmt.Println("LAstULID", currentUlid)
+		//fmt.Println("LAstULID", currentUlid)
 		search = ""
 	}
 	//w.WriteHeader(http.StatusUnauthorized)
@@ -236,10 +237,10 @@ func ViewDir(conn *websocket.Conn, search string) {
 		fileN := filepath.Base(fileaddr)
 		go logenc.Replication(fileaddr)
 		bleveSI.ProcBleve(fileN, fileaddr)
-		commoncsv = util.TailDir(conn, fileaddr, search, SearchMap, startUnixTime, endUnixTime, commoncsv, lastUlid)
+		util.TailDir(conn, fileaddr, search, SearchMap, startUnixTime, endUnixTime, commoncsv, lastUlid)
 		//conn.WriteMessage(websocket.TextMessage, []byte(filepath.Base(fileList["FileList"][i])))
 	}
-	conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 	search = ""
 	startUnixTime = 0

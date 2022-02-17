@@ -171,8 +171,19 @@ func EncodeCSV(val LogList) string {
 		//print("EncodeCSV")
 		t := datestr2time(logstr.XML_TIME)
 		//fmt.Println(logstr.XML_TIME, t, err)
-		//TYPE
 		typeM := "INFO"
+		switch logstr.XML_TYPE {
+		case "1":
+			typeM = "DEBUG"
+		case "2":
+			typeM = "WARNING"
+		case "3":
+			typeM = "ERROR"
+		case "4":
+			typeM = "FATAL"
+		}
+		//TYPE
+		/* typeM := "INFO"
 		if logstr.XML_TYPE == "1" {
 			typeM = "DEBUG"
 		} else if logstr.XML_TYPE == "2" {
@@ -181,7 +192,7 @@ func EncodeCSV(val LogList) string {
 			typeM = "ERROR"
 		} else if logstr.XML_TYPE == "4" {
 			typeM = "FATAL"
-		}
+		} */
 		//id := fmt.Sprint(count)
 		err := writer.Write([]string{typeM, logstr.XML_APPNAME, logstr.XML_APPPATH, logstr.XML_APPPID, logstr.XML_THREAD, t.Format(time.RubyDate), logstr.XML_ULID, logstr.XML_MESSAGE, logstr.XML_DETAILS, logstr.DT_FORMAT})
 		count++

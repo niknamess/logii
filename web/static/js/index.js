@@ -66,6 +66,7 @@ buttonNext.addEventListener('click', event => {
 buttonNext.addEventListener('click', event => {
     setTimeout(
         () => {
+            Null();
             currentPage++
             initWS(lastItem, statusS)
             console.log("Page", currentPage)
@@ -78,6 +79,7 @@ buttonR.addEventListener('click', event => {
     setTimeout(
         () => {
             if (currentPage != 0 || currentPage != 1) {
+                Null();
                 currentPage = currentPage - 1
                 initWS(lastItem, statusS)
             }
@@ -310,7 +312,7 @@ function initWS(file, type) {
             quotation("cntall", "All:" + countAll);
 
         } else {
-            /* if (str == "Indexing file, please wait") {
+            if (str == "Indexing file, please wait") {
                 loading.append(" <div id =\"load\" class=\"center\">" +
                     "<div class=\"wave\"></div>" +
                     "<div class=\"wave\"></div>" +
@@ -327,11 +329,12 @@ function initWS(file, type) {
 
             } else if (str == "Indexing complated" || currentPage >= 2) {
 
-                document.getElementById("load").remove(); */
-            //loading.append("<div class=\"textL\">Indexing complated!</div>");
-            // } else
-            sysMsgAll.append("<hr>" + str + "</hr>")
-
+                document.getElementById("load").remove();
+            } else {
+                //loading.append("<div class=\"textL\">Indexing complated!</div>");
+                // } else
+                sysMsgAll.append("<hr>" + str + "</hr>")
+            }
 
         }
 

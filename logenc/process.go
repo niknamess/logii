@@ -249,6 +249,28 @@ func ProcLineDecodeXMLUlid(line string) (ulid string) {
 	return ulid
 }
 
+func ProcLineDecodeXMLType(line string) (typem string) {
+
+	if len(line) == 0 {
+
+		return
+	}
+	lookFor := "<loglist>"
+	xmlline := DecodeLine(line)
+	contain := strings.Contains(xmlline, lookFor)
+	if !contain {
+
+		return
+	}
+	val, err := DecodeXML(xmlline)
+	if err != nil {
+
+		return
+	}
+	typem = val.XML_RECORD_ROOT[0].XML_TYPE
+	return typem
+}
+
 func ProcMapFile(file string) map[string]LogList {
 	//func ProcMapFile(file string) {
 	if len(file) <= 0 {
