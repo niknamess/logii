@@ -13,17 +13,19 @@ const textList = document.getElementById('listfile');
 const buttonNext = document.getElementById('buttonNext');
 const buttonPrev = document.getElementById('buttonPrev');
 
-var currentPage = 1
-var countWar = 0
-var countErr = 0
-var countInf = 0
-var countDbg = 0
-var countFtl = 0
-var countAll = 0
-var start
-var standartform = ""
+var countRows = 0
+var currentPage = 1;
+var countWar = 0;
+var countErr = 0;
+var countInf = 0;
+var countDbg = 0;
+var countFtl = 0;
+var countAll = 0;
+var start;
+var standartform = "";
 var lastItem;
-var statusS = "empty"
+var statusS = "empty";
+var ws;
 
 $(document).ready(function() {
     $('#MyTable').DataTable({
@@ -53,7 +55,7 @@ $(document).ready(function() {
 function isEmpty(str) {
     return (!str || 0 === str.length);
 }
-buttonNext.addEventListener('click', event => {
+/* buttonNext.addEventListener('click', event => {
     setTimeout(
         () => {
             initWS()
@@ -62,25 +64,27 @@ buttonNext.addEventListener('click', event => {
         1 * 200
     );
 });
-
+ */
 buttonNext.addEventListener('click', event => {
     setTimeout(
         () => {
+            //ws.close();
             Null();
-            currentPage++
-            initWS(lastItem, statusS)
+            currentPage = currentPage + 1000
+            ws = initWS(lastItem, statusS)
             console.log("Page", currentPage)
         },
         1 * 200
     );
 });
 
-buttonR.addEventListener('click', event => {
+buttonPrev.addEventListener('click', event => {
     setTimeout(
         () => {
-            if (currentPage != 0 || currentPage != 1) {
+            if (currentPage != 0 || currentPage != 1000) {
+                //ws.close();
                 Null();
-                currentPage = currentPage - 1
+                ws = currentPage = currentPage - 1000
                 initWS(lastItem, statusS)
             }
             console.log("Page", currentPage)
@@ -219,7 +223,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
 
         var container = angular.element(document.querySelector("#container"))
 
-        var ws;
+        // var ws;
         if (window.WebSocket === undefined) {
             container.append("Your browser does not support WebSockets");
             return;
@@ -227,6 +231,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             //
             ws = initWS(file, "empty");
             Null();
+            //ws.close();
 
         }
 
@@ -299,10 +304,13 @@ function initWS(file, type) {
         k2 = isEmpty(loglist);
         if (k2 == false) {
             str = ParseXml(str, type)
-            count++;
-            console.log(count);
+                //  count++;
+            console.log(countRows);
 
-            if (count > currentPage - 1 && count <= currentPage) {
+            //console.log(count);
+
+            //  if (count > currentPage - 1 && count <= currentPage) {
+            if (countRows <= currentPage) {
                 container.append(str);
             }
             quotation("cntinfo", "INFO:" + countInf);
@@ -310,9 +318,10 @@ function initWS(file, type) {
             quotation("cntwrng", "Warning:" + countWar);
             quotation("ctndbg", "Debug:" + countDbg);
             quotation("cntall", "All:" + countAll);
+            countRows = 0
 
         } else {
-            if (str == "Indexing file, please wait") {
+            /* if (str == "Indexing file, please wait") {
                 loading.append(" <div id =\"load\" class=\"center\">" +
                     "<div class=\"wave\"></div>" +
                     "<div class=\"wave\"></div>" +
@@ -330,13 +339,13 @@ function initWS(file, type) {
             } else if (str == "Indexing complated" || currentPage >= 2) {
 
                 document.getElementById("load").remove();
-            } else {
-                //loading.append("<div class=\"textL\">Indexing complated!</div>");
-                // } else
-                sysMsgAll.append("<hr>" + str + "</hr>")
-            }
-
+            } else { */
+            //loading.append("<div class=\"textL\">Indexing complated!</div>");
+            // } else
+            sysMsgAll.append("<hr>" + str + "</hr>")
         }
+
+
 
         //container.append(standartform);
 
@@ -356,6 +365,7 @@ function initWS(file, type) {
 
 function ParseXml(str, type) {
     var parser, xmlDoc, table, heyho;
+
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(str, "application/xml");
     log = xmlDoc.getElementsByTagName("log");
@@ -367,6 +377,7 @@ function ParseXml(str, type) {
         }
         if (type == typeMsg(log[i].getAttribute('type')) || type == "empty") {
             table +=
+                countRows++
                 "<tr " + heyho + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
                 typeMsg(log[i].getAttribute('type')) +
                 "</span></td><td class=\"\"><span>" +

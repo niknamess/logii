@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
@@ -87,7 +88,6 @@ func RootHandler(w http.ResponseWriter, _ *http.Request) {
 
 // WSHandler - Websocket handler
 func WSHandler(w http.ResponseWriter, r *http.Request) {
-	var currentUlid string = ""
 
 	conn, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
@@ -143,9 +143,10 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	if ok {
 
 		//util.TailFile(conn, filename, search, SearchMap, false)
-		currentUlid = util.TailFile(conn, filename, search, SearchMap, currentUlid)
+		util.TailFile(conn, filename, search, SearchMap)
 		//fmt.Println("LAstULID", currentUlid)
 		search = ""
+		context.Clear(r)
 	}
 	//w.WriteHeader(http.StatusUnauthorized)
 }
@@ -153,6 +154,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 func SearchHandler(_ http.ResponseWriter, r *http.Request) {
 	search = r.URL.Query().Get("search_string")
 	fmt.Println("SEARCHHANDLER:", search)
+	context.Clear(r)
 }
 func DataHandler(_ http.ResponseWriter, r *http.Request) {
 	datestartend = r.URL.Query().Get("daterange")
@@ -178,11 +180,12 @@ func DataHandler(_ http.ResponseWriter, r *http.Request) {
 	//fmt.Println("Parse d:m:y", dayend, ":", monthend, ":", yearend)
 	startUnixTime = timestartUnix.Unix()
 	endUnixTime = timeendUnix.Unix()
-
+	context.Clear(r)
 }
 func PointHandler(_ http.ResponseWriter, r *http.Request) {
 	pointH = r.URL.Query().Get("pointer")
 	fmt.Println("POINTHANDLER:", pointH)
+	context.Clear(r)
 }
 
 //NOT fileUtils !!!
@@ -219,8 +222,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 	//Переходим на 3 структуру удаляем первые 600 записей и подгружаем 600 следующих
 	//Dinamic
 	//
-	var lastUlid string
-	var commoncsv logenc.LogList
+
 	var fileList = make(map[string][]string)
 	files, _ := ioutil.ReadDir("./repdata")
 	//"/home/nik/projects/Course/tmcs-log-agent-storage/"
@@ -237,7 +239,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 		fileN := filepath.Base(fileaddr)
 		go logenc.Replication(fileaddr)
 		bleveSI.ProcBleve(fileN, fileaddr)
-		util.TailDir(conn, fileaddr, search, SearchMap, startUnixTime, endUnixTime, commoncsv, lastUlid)
+		util.TailDir(conn, fileaddr, search, SearchMap, startUnixTime, endUnixTime)
 		//conn.WriteMessage(websocket.TextMessage, []byte(filepath.Base(fileList["FileList"][i])))
 	}
 

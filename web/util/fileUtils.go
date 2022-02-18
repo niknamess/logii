@@ -1,7 +1,6 @@
 package util
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -49,7 +48,7 @@ type FileStruct struct {
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
-func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, currentUlid string) (last_ulid string) {
+func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) {
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
@@ -65,104 +64,44 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
-		return last_ulid
+		return
 	}
 	println("Find", lookFor)
 	println(lookFor)
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		var (
 			commoncsv logenc.LogList
-			countline int = 0
-			allline   int = 0
-			typeI     int = 0
-			typeD     int = 0
-			typeW     int = 0
-			typeE     int = 0
-			typeF     int = 0
+			//countline int = 0
 		)
-
-		type Message struct {
-			All     int
-			Info    int
-			Debug   int
-			Warning int
-			Error   int
-		}
 
 		for line := range taillog.Lines {
 
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			last_ulid := logenc.ProcLineDecodeXMLUlid(line.Text)
-			if (currentUlid == "" || currentUlid == last_ulid) && countline <= 500 {
-				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-				countline++
-			}
-			typem := logenc.ProcLineDecodeXMLType(line.Text)
-			allline++
-			switch typem {
-			case "0":
-				typeI++
-			case "1":
-				typeD++
-			case "2":
-				typeW++
-			case "3":
-				typeE++
-			}
 
-			if countline == 500 {
-				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-				countline = 0
-				commoncsv = logenc.LogList{}
-				//current, _ = taillog.Tell()
-				//stop tail
-				last_ulid = logenc.ProcLineDecodeXMLUlid(line.Text)
-				//log.Println(last_ulid)
-
-			}
-
-			//testulid := logenc.ProcLineDecodeXMLUlid(line.Text)
-			//log.Println(testulid)
-			//if currentUlid == csvsimpl.XML_RECORD_ROOT[0].XML_ULID || currentUlid == "" {
-			//log.Println(csvsimpl.XML_RECORD_ROOT[0])
-			//log.Println(csvsimpl.XML_RECORD_ROOT[0].XML_ULID)
-
-			/* v, found := SearchMap[currentUlid]
-
-			if found {
-				currulid := v.XML_RECORD_ROOT
-			} */
-
-			//log.Println(csvsimpl.XML_RECORD_ROOT[0])
-
+			//if countline <= 2000 {
+			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+			//	countline++
 			//}
-			//}
-			//
+
+			//if countline == 2000 {
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+			//countline = 0
+			commoncsv = logenc.LogList{}
+
+			//	}
+
 			go taillog.StopAtEOF() //end tail and stop service
 
-			//go taillog.StopAtEOF() //end tail and stop service
-			//last_ulid = commoncsv.XML_RECORD_ROOT[0].XML_ULID
 		}
 
-		//current = 0
-		//last_ulid = ""
-		//strcountline := strconv.Itoa(allline)
-		//conn.WriteMessage(websocket.TextMessage, []byte("CountLine"+strcountline))
-		c := Message{allline, typeI, typeD, typeW, typeE} ///TODO
-		out, err := json.Marshal(c)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println(string(out))
-		conn.WriteMessage(websocket.TextMessage, []byte(string(out)))
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 		commoncsv = logenc.LogList{}
-		fmt.Println("Info:", typeI, "Debug", typeD, "Warning", typeW, "Error", typeE, "Fatal", typeF)
-		return last_ulid
+
+		return
 
 	} else if len(UlidC) == 0 {
 		println("Break")
-		return last_ulid
+		return
 	} else {
 		var commoncsv logenc.LogList
 		var countCheck int
@@ -179,7 +118,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, v.XML_RECORD_ROOT...)
 				countCheck++
-				if countCheck == 500 {
+				if countCheck == 2000 {
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
@@ -192,7 +131,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		//:TODO transmit to websoket
 
 	}
-	return last_ulid
+
 }
 
 // IndexFiles - takes argument as a list of files and directories and returns
@@ -277,7 +216,7 @@ func dfs(file string) {
 	}
 }
 
-func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, startUnixTime int64, endUnixTime int64, commoncsv logenc.LogList, lastUlid string) {
+func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, startUnixTime int64, endUnixTime int64) {
 
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
@@ -298,7 +237,10 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 	println(endUnixTime)
 	println(fileName)
 	if (lookFor == "" || lookFor == " " || lookFor == "Search") && (startUnixTime == 0 || endUnixTime == 0) {
-		var countline int = 0
+		var (
+			countline int = 0
+			commoncsv logenc.LogList
+		)
 		for line := range taillog.Lines {
 			countline++
 			//Найти lastUlid и только потом продолжать
@@ -315,6 +257,7 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 		}
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+		commoncsv = logenc.LogList{}
 	} else if len(UlidC) == 0 {
 		println("Break")
 		return
@@ -377,7 +320,6 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 
 	}
 	return false */
-	return
 
 }
 
