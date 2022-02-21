@@ -35,6 +35,8 @@ var (
 	startUnixTime int64
 	endUnixTime   int64
 	pointH        string
+	filePred      string
+	currentUlid   string = ""
 )
 
 type MyStruct struct {
@@ -88,7 +90,7 @@ func RootHandler(w http.ResponseWriter, _ *http.Request) {
 
 // WSHandler - Websocket handler
 func WSHandler(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println("WSHandler .................................................")
 	conn, err := upgrader.Upgrade(w, r, w.Header())
 	if err != nil {
 		http.Error(w, "Could not open websocket connection", http.StatusBadRequest)
@@ -141,9 +143,16 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// be searched as a string in the index, if not found then rejected.
 
 	if ok {
-
+		if filePred == filename {
+			util.TailFile(conn, filename, search, SearchMap, currentUlid)
+			fmt.Println("filePred == filename", currentUlid)
+		} else {
+			filePred = filename
+			currentUlid = util.TailFile(conn, filename, search, SearchMap, "")
+			fmt.Println("filePred != filename", currentUlid)
+		}
+		fmt.Println("currentUlid", currentUlid)
 		//util.TailFile(conn, filename, search, SearchMap, false)
-		util.TailFile(conn, filename, search, SearchMap)
 		//fmt.Println("LAstULID", currentUlid)
 		search = ""
 		context.Clear(r)
@@ -241,6 +250,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 		bleveSI.ProcBleve(fileN, fileaddr)
 		util.TailDir(conn, fileaddr, search, SearchMap, startUnixTime, endUnixTime)
 		//conn.WriteMessage(websocket.TextMessage, []byte(filepath.Base(fileList["FileList"][i])))
+		fmt.Println("View file", fileaddr)
 	}
 
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))

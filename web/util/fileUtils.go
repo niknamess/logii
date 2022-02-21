@@ -35,6 +35,7 @@ var (
 	indexMap = make(map[string]bool)
 	//SearchMap map[string]string
 	signature bool = false
+	status    bool = false
 	//current   int64
 	//last_ulid string = ""
 )
@@ -48,8 +49,8 @@ type FileStruct struct {
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
-func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) {
-
+func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, currentUlid string) string {
+	var lastulid string
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	//lineCounter(fileName)
@@ -58,50 +59,67 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			Follow: true,
 			Location: &tail.SeekInfo{
 				//Offset: current,
-				Whence: os.SEEK_CUR, //!!!
+				Whence: os.SEEK_SET, //!!!
 
 			},
 		})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
-		return
+		return ""
 	}
-	println("Find", lookFor)
-	println(lookFor)
+	fmt.Println("currentUlid", currentUlid)
+
+	//println("Find", lookFor)
+	//println(lookFor)
+	status = false
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		var (
 			commoncsv logenc.LogList
-			//countline int = 0
+			countline int = 0
 		)
-
+		status = false
 		for line := range taillog.Lines {
+			fmt.Println("LINEEEEEEEEEEEee", logenc.ProcLineDecodeXMLUlid(line.Text))
+			if currentUlid == "" || currentUlid == logenc.ProcLineDecodeXMLUlid(line.Text) {
+				status = true
+			}
 
-			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
+			if status == true {
+				csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 
-			//if countline <= 2000 {
-			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-			//	countline++
-			//}
+				//if countline <= 2000 {
 
-			//if countline == 2000 {
-			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-			//countline = 0
-			commoncsv = logenc.LogList{}
+				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+				//fmt.Println(csvsimpl.XML_RECORD_ROOT)
+				countline++
 
-			//	}
+				//}
 
-			go taillog.StopAtEOF() //end tail and stop service
+				if countline == 200 {
+					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+					countline = 0
+					commoncsv = logenc.LogList{}
+					lastulid = logenc.ProcLineDecodeXMLUlid(line.Text)
+					taillog.Stop()
+					return lastulid
+				}
+
+				go taillog.StopAtEOF() //end tail and stop service
+			}
 
 		}
 
-		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-		commoncsv = logenc.LogList{}
-
-		return
+		if status == true {
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+			commoncsv = logenc.LogList{}
+			countline = 0
+		}
+		fmt.Println("lastulid", lastulid)
+		return lastulid
 
 	} else if len(UlidC) == 0 {
 		println("Break")
-		return
+		return ""
 	} else {
 		var commoncsv logenc.LogList
 		var countCheck int
@@ -122,6 +140,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
+					lastulid = v.XML_RECORD_ROOT[0].XML_ULID
 				}
 			}
 
@@ -129,6 +148,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 		commoncsv = logenc.LogList{}
 		//:TODO transmit to websoket
+		return lastulid
 
 	}
 
@@ -167,8 +187,11 @@ func IndexFiles(fileList []string) error {
 		fileN := filepath.Base(f)
 		FileName = append(FileName, fileN)
 	}
+	//fmt.Println("FileName   ", FileName)
+	//fmt.Println("FileList   ", FileList)
 	Conf.Dir = FileList
 	Conf.Dir1 = FileName
+	FileName = nil
 	fmt.Fprintln(os.Stderr, "Indexing complete !, file index length: ", len(Conf.Dir))
 	//fmt.Println(Conf.Dir)
 	return nil

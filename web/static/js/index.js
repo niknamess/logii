@@ -70,7 +70,8 @@ buttonNext.addEventListener('click', event => {
         () => {
             //ws.close();
             Null();
-            currentPage = currentPage + 1000
+            //currentPage = currentPage + 1
+            currentPage = currentPage
             ws = initWS(lastItem, statusS)
             console.log("Page", currentPage)
         },
@@ -81,10 +82,11 @@ buttonNext.addEventListener('click', event => {
 buttonPrev.addEventListener('click', event => {
     setTimeout(
         () => {
-            if (currentPage != 0 || currentPage != 1000) {
+            if (currentPage > 1) {
                 //ws.close();
                 Null();
-                ws = currentPage = currentPage - 1000
+                //ws = currentPage = currentPage - 1
+                ws = currentPage = currentPage
                 initWS(lastItem, statusS)
             }
             console.log("Page", currentPage)
@@ -303,23 +305,37 @@ function initWS(file, type) {
 
         k2 = isEmpty(loglist);
         if (k2 == false) {
-            str = ParseXml(str, type)
-                //  count++;
-            console.log(countRows);
+            //str = ParseXml(str, type)
+            count++;
+
 
             //console.log(count);
 
             //  if (count > currentPage - 1 && count <= currentPage) {
-            if (countRows <= currentPage) {
-                container.append(str);
+            //if (countRows <= currentPage) {
+            //console.log(str)
+            console.log("countRows", countRows);
+            console.log("currentPage", currentPage);
+            console.log("count", count);
+            // container.append(str);
+            if (count == currentPage) {
+
+                str = ParseXml(str, type)
+                if (countRows <= 2000) {
+                    countRows = 0
+                        // console.log("str", str);
+                    container.append(str);
+                    //container.append(str);
+                    socket.close();
+                }
+                //  }
             }
             quotation("cntinfo", "INFO:" + countInf);
             quotation("cnterror", "Error:" + countErr);
             quotation("cntwrng", "Warning:" + countWar);
             quotation("ctndbg", "Debug:" + countDbg);
             quotation("cntall", "All:" + countAll);
-            countRows = 0
-
+            //countRows = 0;
         } else {
             /* if (str == "Indexing file, please wait") {
                 loading.append(" <div id =\"load\" class=\"center\">" +
@@ -376,8 +392,8 @@ function ParseXml(str, type) {
             heyho = ""
         }
         if (type == typeMsg(log[i].getAttribute('type')) || type == "empty") {
+            countRows++
             table +=
-                countRows++
                 "<tr " + heyho + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
                 typeMsg(log[i].getAttribute('type')) +
                 "</span></td><td class=\"\"><span>" +
