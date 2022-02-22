@@ -98,6 +98,7 @@ func ProcBleve(fileN string, file string) {
 }
 
 func ProcBleveSearchv2(fileN string, word string) []string {
+	//var query *query.MatchQuery
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	filename := fileN
@@ -105,7 +106,6 @@ func ProcBleveSearchv2(fileN string, word string) []string {
 	index, _ := bleve.OpenUsing(metaname, nil)
 
 	query := bleve.NewMatchQuery(word)
-	query.Fuzziness = 1
 	mq := bleve.NewMatchPhraseQuery(word)
 	rq := bleve.NewRegexpQuery(word)
 	q := bleve.NewDisjunctionQuery(query, mq, rq)
@@ -124,5 +124,9 @@ func ProcBleveSearchv2(fileN string, word string) []string {
 	//fmt.Println(docs)
 	index.Close()
 	return docs
+
+	//NewMatchAllQuery
+
+	//query := bleve.NewMatchQuery(word)
 
 }

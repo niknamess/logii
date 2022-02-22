@@ -148,7 +148,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if ok {
 
-		util.TailFile(conn, filename, search, SearchMap)
+		util.TailFile(conn, filename, search, SearchMap, 0)
 
 	}
 

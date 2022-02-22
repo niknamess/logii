@@ -25,16 +25,20 @@ import (
 
 var (
 	// FileList - list of files that were parsed from the provided config
-	FileName []string
-	FileList []string
-	visited  map[string]bool
+	strSlice  []string
+	firstUlid string
+	FileName  []string
+	FileList  []string
+	visited   map[string]bool
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap       = make(map[string]bool)
-	signature bool = false
-	current   int64
-	Fname     string
+	indexMap         = make(map[string]bool)
+	signature   bool = false
+	current     int64
+	Fname       string
+	currentUlid string
+	countSearch int
 	//last_ulid string = ""
 )
 
@@ -47,12 +51,15 @@ type FileStruct struct {
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
-func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) {
+func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, command int) {
 
 	fileN := filepath.Base(fileName)
 	if Fname != fileName {
 		Fname = fileName
+		currentUlid = ""
 		current = 638
+		countSearch = 0
+		firstUlid = ""
 	}
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	//lineCounter(fileName)
@@ -82,7 +89,11 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		//taillog.Config.Follow = false
 
 		for line := range taillog.Lines {
+
 			current, _ = taillog.Tell()
+			strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
+			currentUlid = logenc.ProcLineDecodeXMLUlid(line.Text)
+
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
@@ -91,6 +102,8 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 				countline = 0
 				commoncsv = logenc.LogList{}
 				taillog.Stop()
+				firstUlid = strSlice[0]
+				strSlice = nil
 				return
 			}
 			go taillog.StopAtEOF() //end tail and stop service
@@ -111,7 +124,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	} else {
 		var commoncsv logenc.LogList
 		var countCheck int
-		for i := 0; i < len(UlidC); i++ {
+		for i := countSearch; i <= len(UlidC); i++ {
 
 			v, found := SearchMap[UlidC[i]]
 			log.Println(v)
@@ -124,11 +137,26 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, v.XML_RECORD_ROOT...)
 				countCheck++
-				if countCheck == 2000 {
+				currentUlid = v.XML_RECORD_ROOT[0].XML_ULID
+				strSlice = append(strSlice, v.XML_RECORD_ROOT[0].XML_ULID)
+				if countCheck == 1000 {
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
+					countSearch = i
+					firstUlid = strSlice[0]
+					strSlice = nil
+					return
+				} else if len(UlidC) == i && countCheck < 1000 {
+					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+					countCheck = 0
+					commoncsv = logenc.LogList{}
+					countSearch = 0
+					firstUlid = strSlice[0]
+					strSlice = nil
+					return
 				}
+
 			}
 
 		}
