@@ -26,20 +26,21 @@ import (
 var (
 	// FileList - list of files that were parsed from the provided config
 
-	//firstUlid string
-	FileName []string
-	FileList []string
-	visited  map[string]bool
+	firstUlid string
+	FileName  []string
+	FileList  []string
+	visited   map[string]bool
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap       = make(map[string]bool)
-	signature bool = false
-	current   int64
-	Fname     string
-	//currentUlid string
+	indexMap         = make(map[string]bool)
+	signature   bool = false
+	current     int64
+	currentPred int64
+	Fname       string
+	currentUlid string
 	countSearch int
-	//last_ulid string = ""
+	last_ulid   string = ""
 )
 
 type FileStruct struct {
@@ -52,14 +53,23 @@ type FileStruct struct {
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
 func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, command int) {
-	//var strSlice []string
+	var strSlice []string
 	fileN := filepath.Base(fileName)
 	if Fname != fileName {
 		Fname = fileName
 		//currentUlid = ""
 		current = 638
 		countSearch = 0
+		//currentPred = 638
 		//firstUlid = ""
+	}
+	if command == -1 {
+		if countSearch >= 999 {
+			countSearch = countSearch - 1000
+		}
+
+		//current = current - currentPred
+
 	}
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	//lineCounter(fileName)
@@ -80,6 +90,22 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	//println("Find", lookFor)
 	//println(lookFor)
 	//status = false
+	/* f, _ := os.Open(fileName)
+	// Check err.
+	s := bufio.NewScanner(f)
+	n := 0
+	if lookFor == "" || lookFor == " " || lookFor == "Search" {
+		for s.Scan() {
+			n++
+			if n > 1000 {
+
+				k, err = os.Stdout.WriteString(s.Text() + "\n")
+				// Check err.
+			}
+		}
+		err = s.Err()
+	} */
+
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		var (
 			commoncsv logenc.LogList
@@ -87,23 +113,25 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		)
 		//status = false
 		//taillog.Config.Follow = false
-
+		currentPred = current
 		for line := range taillog.Lines {
 
 			current, _ = taillog.Tell()
-			//strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
+			strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
 			//currentUlid = logenc.ProcLineDecodeXMLUlid(line.Text)
 
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
 			if countline == 500 {
+				fmt.Println("Current", current)
 				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 				countline = 0
 				commoncsv = logenc.LogList{}
 				taillog.Stop()
-				//firstUlid = strSlice[0]
-				//strSlice = nil
+				firstUlid = strSlice[0]
+				strSlice = nil
+
 				return
 			}
 			go taillog.StopAtEOF() //end tail and stop service
@@ -137,23 +165,23 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, v.XML_RECORD_ROOT...)
 				countCheck++
-				//currentUlid = v.XML_RECORD_ROOT[0].XML_ULID
-				//strSlice = append(strSlice, v.XML_RECORD_ROOT[0].XML_ULID)
+				currentUlid = v.XML_RECORD_ROOT[0].XML_ULID
+				strSlice = append(strSlice, v.XML_RECORD_ROOT[0].XML_ULID)
 				if countCheck == 1000 {
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
 					countSearch = i
-					//firstUlid = strSlice[0]
-					//strSlice = nil
+					firstUlid = strSlice[0]
+					strSlice = nil
 					return
 				} else if len(UlidC) == i-1 && countCheck < 1000 {
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
 					countSearch = 0
-					//firstUlid = strSlice[0]
-					//strSlice = nil
+					firstUlid = strSlice[0]
+					strSlice = nil
 					return
 				}
 

@@ -117,7 +117,7 @@ func ProcBleveSearchv2(fileN string, word string) []string {
 		id := val.ID
 		docs = append(docs, id)
 	}
-
+	//sort
 	for i := len(docs); i > 0; i-- {
 		for j := 1; j < i; j++ {
 			j2, _ := ulid.Parse(docs[j-1])

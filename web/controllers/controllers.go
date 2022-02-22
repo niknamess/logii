@@ -155,7 +155,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	//util.TailFile(conn, filename, search, SearchMap, false)
 	//fmt.Println("LAstULID", currentUlid)
-	search = ""
+	//search = ""
 	context.Clear(r)
 
 	//w.WriteHeader(http.StatusUnauthorized)
@@ -255,7 +255,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 	}
 
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
-	search = ""
+	//search = ""
 	startUnixTime = 0
 	endUnixTime = 0
 }
