@@ -25,6 +25,7 @@ var start;
 var standartform = "";
 var lastItem;
 var statusS = "empty";
+var typePage = 0;
 
 var ws;
 
@@ -71,8 +72,9 @@ buttonNext.addEventListener('click', event => {
             //ws.close();
             Null();
             //currentPage = currentPage + 1
-            currentPage = currentPage
-            ws = initWS(lastItem, statusS)
+
+            initWS(lastItem, statusS)
+            typePage = 1;
             console.log("Page", currentPage, "next")
         },
         1 * 200
@@ -82,13 +84,13 @@ buttonNext.addEventListener('click', event => {
 buttonPrev.addEventListener('click', event => {
     setTimeout(
         () => {
-            if (currentPage > 1) {
+            //if (currentPage > 1) {
 
-                Null();
-                ws = currentPage
-                initWS(lastItem, statusS, "prev")
-            }
-            console.log("Page", currentPage)
+            Null();
+            initWS(lastItem, statusS, -1)
+            typePage = -1;
+            //}
+            console.log("Page", currentPage, "prev")
 
         },
         1 * 200
@@ -242,7 +244,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     vm.init();
 }
 
-function initWS(file, type, page) {
+function initWS(file, type) {
 
     var observer = new MutationObserver(function(_mutations, me) {
         // `mutations` is an array of mutations that occurred
@@ -290,7 +292,12 @@ function initWS(file, type, page) {
             container.append("TODO:");
 
         }
-        socket.send("Hello server!")
+        //console.log("page", page)
+        //if (page = "prev") {
+        console.log("Test", typePage)
+        socket.send(typePage)
+            // }
+
     }
 
     socket.onmessage = function(e) {

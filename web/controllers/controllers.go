@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"strconv"
 	"time"
 
 	//"encoding/json"
@@ -143,12 +144,12 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("msgType", msgType)
 	fmt.Println("msg", string(msg[:]))
 	fmt.Println(msg)
-	if string(msg[:]) == "-1" {
 
-	}
+	command, _ := strconv.Atoi(string(msg[:]))
+
 	if ok {
 
-		util.TailFile(conn, filename, search, SearchMap, 0)
+		util.TailFile(conn, filename, search, SearchMap, command)
 
 	}
 

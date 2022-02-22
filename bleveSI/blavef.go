@@ -8,13 +8,12 @@ import (
 
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/index/scorch"
+	"github.com/oklog/ulid/v2"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
 )
 
 var (
-	Logger       *log.Logger
-	mu           sync.Mutex
-	sliceLoglist []logenc.LogList
+	Logger *log.Logger
 )
 
 func bleveIndex(fileN string) (bleve.Index, error) {
@@ -116,17 +115,23 @@ func ProcBleveSearchv2(fileN string, word string) []string {
 	docs := make([]string, 0)
 	for _, val := range searchResult.Hits {
 		id := val.ID
-		//log.Println(id)
 		docs = append(docs, id)
 	}
-	//log.Println(word)
-	//log.Println(docs)
-	//fmt.Println(docs)
+
+	for i := len(docs); i > 0; i-- {
+		for j := 1; j < i; j++ {
+			j2, _ := ulid.Parse(docs[j-1])
+			j1, _ := ulid.Parse(docs[j])
+			if j2.Compare(j1) == 1 {
+				intermediate := docs[j]
+				docs[j] = docs[j-1]
+				docs[j-1] = intermediate
+			}
+
+		}
+	}
+
 	index.Close()
 	return docs
-
-	//NewMatchAllQuery
-
-	//query := bleve.NewMatchQuery(word)
 
 }
