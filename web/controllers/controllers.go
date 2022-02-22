@@ -35,8 +35,6 @@ var (
 	startUnixTime int64
 	endUnixTime   int64
 	pointH        string
-	filePred      string
-	currentUlid   string = ""
 )
 
 type MyStruct struct {
@@ -141,22 +139,24 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// This is to prevent arbitrary file access. Otherwise send a 403 status
 	// This should take care of stacking of filenames as it would first
 	// be searched as a string in the index, if not found then rejected.
+	msgType, msg, _ := conn.ReadMessage()
+	fmt.Println("msgType", msgType)
+	fmt.Println("msg", string(msg[:]))
+	fmt.Println(msg)
+	if string(msg[:]) == "-1" {
 
-	if ok {
-		if filePred == filename {
-			util.TailFile(conn, filename, search, SearchMap, currentUlid)
-			fmt.Println("filePred == filename", currentUlid)
-		} else {
-			filePred = filename
-			currentUlid = util.TailFile(conn, filename, search, SearchMap, "")
-			fmt.Println("filePred != filename", currentUlid)
-		}
-		fmt.Println("currentUlid", currentUlid)
-		//util.TailFile(conn, filename, search, SearchMap, false)
-		//fmt.Println("LAstULID", currentUlid)
-		search = ""
-		context.Clear(r)
 	}
+	if ok {
+
+		util.TailFile(conn, filename, search, SearchMap)
+
+	}
+
+	//util.TailFile(conn, filename, search, SearchMap, false)
+	//fmt.Println("LAstULID", currentUlid)
+	search = ""
+	context.Clear(r)
+
 	//w.WriteHeader(http.StatusUnauthorized)
 }
 

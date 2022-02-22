@@ -25,6 +25,7 @@ var start;
 var standartform = "";
 var lastItem;
 var statusS = "empty";
+
 var ws;
 
 $(document).ready(function() {
@@ -55,16 +56,15 @@ $(document).ready(function() {
 function isEmpty(str) {
     return (!str || 0 === str.length);
 }
-/* buttonNext.addEventListener('click', event => {
+
+buttonR.addEventListener('click', event => {
     setTimeout(
         () => {
-            initWS()
-
+            window.location.reload();
         },
         1 * 200
     );
 });
- */
 buttonNext.addEventListener('click', event => {
     setTimeout(
         () => {
@@ -73,7 +73,7 @@ buttonNext.addEventListener('click', event => {
             //currentPage = currentPage + 1
             currentPage = currentPage
             ws = initWS(lastItem, statusS)
-            console.log("Page", currentPage)
+            console.log("Page", currentPage, "next")
         },
         1 * 200
     );
@@ -83,11 +83,10 @@ buttonPrev.addEventListener('click', event => {
     setTimeout(
         () => {
             if (currentPage > 1) {
-                //ws.close();
+
                 Null();
-                //ws = currentPage = currentPage - 1
-                ws = currentPage = currentPage
-                initWS(lastItem, statusS)
+                ws = currentPage
+                initWS(lastItem, statusS, "prev")
             }
             console.log("Page", currentPage)
 
@@ -103,7 +102,7 @@ inputform.addEventListener('keypress', function(e) {
         setTimeout(
             () => {
                 Null()
-                initWS(lastItem, statusS)
+                initWS(lastItem, statusS, )
                 Null()
             },
             1 * 200
@@ -243,7 +242,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     vm.init();
 }
 
-function initWS(file, type) {
+function initWS(file, type, page) {
 
     var observer = new MutationObserver(function(_mutations, me) {
         // `mutations` is an array of mutations that occurred
@@ -291,6 +290,7 @@ function initWS(file, type) {
             container.append("TODO:");
 
         }
+        socket.send("Hello server!")
     }
 
     socket.onmessage = function(e) {
@@ -305,15 +305,8 @@ function initWS(file, type) {
 
         k2 = isEmpty(loglist);
         if (k2 == false) {
-            //str = ParseXml(str, type)
+
             count++;
-
-
-            //console.log(count);
-
-            //  if (count > currentPage - 1 && count <= currentPage) {
-            //if (countRows <= currentPage) {
-            //console.log(str)
             console.log("countRows", countRows);
             console.log("currentPage", currentPage);
             console.log("count", count);
@@ -323,12 +316,9 @@ function initWS(file, type) {
                 str = ParseXml(str, type)
                 if (countRows <= 2000) {
                     countRows = 0
-                        // console.log("str", str);
                     container.append(str);
-                    //container.append(str);
                     socket.close();
                 }
-                //  }
             }
             quotation("cntinfo", "INFO:" + countInf);
             quotation("cnterror", "Error:" + countErr);
