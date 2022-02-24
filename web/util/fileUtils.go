@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -26,21 +27,21 @@ import (
 var (
 	// FileList - list of files that were parsed from the provided config
 
-	firstUlid string
-	FileName  []string
-	FileList  []string
-	visited   map[string]bool
-
+	firstUlid       string
+	FileName        []string
+	FileList        []string
+	visited         map[string]bool
+	paginationUlids = make(map[string]int64)
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap         = make(map[string]bool)
-	signature   bool = false
-	current     int64
-	currentPred int64
-	Fname       string
-	currentUlid string
+	indexMap        = make(map[string]bool)
+	signature bool  = false
+	current   int64 = 638
+	//currentPred int64 = 0
+	Fname string
+	//currentUlid string
 	countSearch int
-	last_ulid   string = ""
+	//last_ulid   string = ""
 )
 
 type FileStruct struct {
@@ -57,19 +58,55 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	fileN := filepath.Base(fileName)
 	if Fname != fileName {
 		Fname = fileName
+		lookFor = ""
 		//currentUlid = ""
 		current = 638
 		countSearch = 0
 		//currentPred = 638
-		//firstUlid = ""
+		firstUlid = ""
+		paginationUlids = nil
 	}
+	fmt.Println("Command", command)
 	if command == -1 {
-		if countSearch >= 999 {
-			countSearch = countSearch - 1000
+		//For search it is work
+		if countSearch >= 1999 && (lookFor != "" && lookFor != " " && lookFor != "Search") {
+			countSearch = countSearch - 2000
+			fmt.Println("Сравнение countSearch", countSearch)
+		} else {
+			countSearch = 0
 		}
 
-		//current = current - currentPred
+		// /fmt.Println("CurrentIndex", PreviousPageall(fileName))
 
+		// если шаг назад...
+		/* if countSearch >= 999 {
+			countSearch = countSearch -
+		}
+		*/
+		if lookFor == "" || lookFor == " " || lookFor == "Search" {
+			tailFirst, err := tail.TailFile(fileName,
+				tail.Config{
+					Follow: true,
+					Location: &tail.SeekInfo{
+						Whence: io.SeekStart, //!!!
+
+					},
+				})
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
+				return
+			}
+			for line := range tailFirst.Lines {
+				fmt.Println("firstUlid firstUlid", firstUlid)
+				if firstUlid == logenc.ProcLineDecodeXMLUlid(line.Text) {
+					current, _ = tailFirst.Tell()
+					fmt.Println("Сравнение current", current)
+					break
+
+				}
+			}
+
+		}
 	}
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	//lineCounter(fileName)
@@ -87,51 +124,44 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		return
 	}
 
-	//println("Find", lookFor)
-	//println(lookFor)
-	//status = false
-	/* f, _ := os.Open(fileName)
-	// Check err.
-	s := bufio.NewScanner(f)
-	n := 0
-	if lookFor == "" || lookFor == " " || lookFor == "Search" {
-		for s.Scan() {
-			n++
-			if n > 1000 {
-
-				k, err = os.Stdout.WriteString(s.Text() + "\n")
-				// Check err.
-			}
-		}
-		err = s.Err()
-	} */
-
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		var (
 			commoncsv logenc.LogList
 			countline int = 0
 		)
-		//status = false
-		//taillog.Config.Follow = false
-		currentPred = current
+
 		for line := range taillog.Lines {
 
 			current, _ = taillog.Tell()
 			strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
+			//fmt.Println(current)
 			//currentUlid = logenc.ProcLineDecodeXMLUlid(line.Text)
-
+			//fmt.Println("current", current)
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
-			if countline == 500 {
+			if countline == 1000 {
 				fmt.Println("Current", current)
 				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 				countline = 0
 				commoncsv = logenc.LogList{}
-				taillog.Stop()
+				//taillog.Stop()
 				firstUlid = strSlice[0]
-				strSlice = nil
+				fmt.Println("firstUlid", firstUlid)
+				fmt.Println("current", current)
+				paginationUlids[firstUlid] = current
 
+				strSlice = nil
+				fmt.Println(paginationUlids)
+				for key, value := range paginationUlids {
+					fmt.Println("Key:", key, "Value:", value)
+				}
+				println(createKeyValuePairs(paginationUlids))
+				//transmit := createKeyValuePairs(paginationUlids)
+
+				//	fmt.Println("transmit", transmit)
+				//	conn.WriteMessage(websocket.TextMessage, []byte(transmit))
+				taillog.Stop()
 				return
 			}
 			go taillog.StopAtEOF() //end tail and stop service
@@ -139,10 +169,20 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		}
 
 		//if status == true {
+		firstUlid = strSlice[0]
+		fmt.Println("firstUlid", firstUlid)
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+		//transmit := createKeyValuePairs(paginationUlids)
+		//fmt.Println("transmit", transmit)
+		//conn.WriteMessage(websocket.TextMessage, []byte(transmit))
+		//TODO:
+		//Передать структру из первых ULID на 1000
+		//сформировать из каждого ulid ссылку с запуском нового websoket соеденения
+		//conn.WriteMessage(websocket.TextMessage, []byte(paginationUlids))
+
 		commoncsv = logenc.LogList{}
 		countline = 0
-
+		strSlice = nil
 		//fmt.Println("lastulid", lastulid)
 		return
 
@@ -152,12 +192,33 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	} else {
 		var commoncsv logenc.LogList
 		var countCheck int
-		for i := countSearch; i < len(UlidC); i++ {
+		/* for i := 0; i < len(UlidC); i++ {
+			v, found := SearchMap[UlidC[i]]
+			if found {
+				if logenc.ProcLineDecodeXMLUlid(line.Text) == firstUlid {
+					break
+				}
+			}
+		} */
+		var count int = 0
+		for i := 0; i < len(UlidC); i++ {
+			//var count int = 0
+			_, found := SearchMap[UlidC[i]]
+			//log.Println(v)
+			//fmt.Println(v)
+			if found {
+				count++
+			}
 
+		}
+		fmt.Println(count)
+		fmt.Println("countSearch", countSearch)
+		for i := countSearch; i < len(UlidC); i++ {
 			v, found := SearchMap[UlidC[i]]
 			//log.Println(v)
 			//fmt.Println(v)
 			if found {
+
 				//:TODO create common structure
 				//PS: Merge xml structure
 				//:TODO map with xml structure
@@ -165,22 +226,24 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, v.XML_RECORD_ROOT...)
 				countCheck++
-				currentUlid = v.XML_RECORD_ROOT[0].XML_ULID
+				//currentUlid = v.XML_RECORD_ROOT[0].XML_ULID
 				strSlice = append(strSlice, v.XML_RECORD_ROOT[0].XML_ULID)
-				if countCheck == 1000 {
+				if countCheck == 100 {
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
 					countSearch = i
 					firstUlid = strSlice[0]
+					fmt.Println("firstUlid", firstUlid)
 					strSlice = nil
 					return
-				} else if len(UlidC) == i-1 && countCheck < 1000 {
+				} else if len(UlidC) == i-1 && countCheck < 100 {
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
 					countSearch = 0
 					firstUlid = strSlice[0]
+					fmt.Println("firstUlid", firstUlid)
 					strSlice = nil
 					return
 				}
@@ -196,6 +259,43 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	}
 
 }
+
+func createKeyValuePairs(m map[string]int64) string {
+	b := new(bytes.Buffer)
+	for key, value := range m {
+		fmt.Fprintf(b, "%s=\"%v\"\n", key, value)
+	}
+	return b.String()
+}
+
+/* func PreviousPageall(filename string) (currentInd int64) {
+
+	taillog, err := tail.TailFile(filename,
+		tail.Config{
+			Follow: true,
+			Location: &tail.SeekInfo{
+				Offset: current,
+				Whence: io.SeekStart, //!!!
+
+			},
+		})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
+		return
+	}
+
+	for line := range taillog.Lines {
+		fmt.Println(firstUlid)
+		currentInd, _ = taillog.Tell()
+
+		if logenc.ProcLineDecodeXMLUlid(line.Text) == firstUlid {
+			fmt.Println(currentInd)
+			return currentInd
+		}
+	}
+	fmt.Println(currentInd)
+	return currentInd
+} */
 
 // IndexFiles - takes argument as a list of files and directories and returns
 // a list of absolute file strings to be tailed

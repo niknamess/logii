@@ -221,18 +221,7 @@ func Indexing(conn *websocket.Conn, fileaddr string) {
 func ViewDir(conn *websocket.Conn, search string) {
 
 	//:TODO
-	//Рассортировать файлы по Ulid ??
-	//в порядке возрастания по времения от самого старого до нового
-	//также они отображаются и в Tollbar
-	//
-
-	//Добавить отслеживаеи последнего выведенного ulid
-	//Разбить передеваеммую структуру на 3*600 записей
-	//Всегда отоюражать 2 из 3 структур (кроме начала)
-	//Переходим на 3 структуру удаляем первые 600 записей и подгружаем 600 следующих
-	//Dinamic
-	//
-
+	//Пагинация из первых ulid см как для отдельных файлов
 	var fileList = make(map[string][]string)
 	files, _ := ioutil.ReadDir("./repdata")
 	//"/home/nik/projects/Course/tmcs-log-agent-storage/"

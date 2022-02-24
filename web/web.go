@@ -83,7 +83,7 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 	*/
 	Ip, CPort := CheckConfig()
 	for i := 0; i < len(Ip); i++ {
-		//TODO
+
 		go CheckFiles(Ip[i], CPort, ctxCF)
 		time.Sleep(time.Second * 2)
 	}
@@ -214,7 +214,6 @@ func EnterIp() {
 			data, _ = toml.Marshal(&config)
 		}
 	}
-	//TODO
 	err3 := ioutil.WriteFile("config.toml", data, 0666)
 
 	if err3 != nil {

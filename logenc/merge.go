@@ -299,7 +299,6 @@ func IsDirEmpty(name string) (bool, error) {
 	return false, err
 }
 
-// TODO test
 func Replication(path string) {
 	var dirpath string = "./repdata/"
 	CreateDir(dirpath, "")
