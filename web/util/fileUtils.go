@@ -25,32 +25,24 @@ import (
 )
 
 type ir_table struct {
-	page  int
+	ulid  string
 	point int64
 }
 
-var paginationUlids = map[string]ir_table{}
+var paginationUlids = map[int]ir_table{}
 
 var (
-	// FileList - list of files that were parsed from the provided config
-	page      int    = 0
-	firstUlid string = " "
-	FileName  []string
-	FileList  []string
-	visited   map[string]bool
-	//paginationUlids map[string]int64
+	FileName []string
+	FileList []string
+	visited  map[string]bool
 
-	//paginationUlids = make(map[string]int64)
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap        = make(map[string]bool)
-	signature bool  = false
-	current   int64 = 638
-	//currentPred int64 = 0
-	Fname string
-	//currentUlid string
+	indexMap          = make(map[string]bool)
+	signature   bool  = false
+	current     int64 = 638
+	Fname       string
 	countSearch int
-	//last_ulid   string = ""
 )
 
 type FileStruct struct {
@@ -66,18 +58,21 @@ type FileStruct struct {
 func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, command int) {
 	//paginationUlids = make(map[string]int64)
 	fmt.Println("Fname", Fname)
-	var strSlice []string
+	var (
+		strSlice  []string
+		firstUlid string = " "
+	)
 	fileN := filepath.Base(fileName)
-	if Fname != fileName && Fname != "" {
+
+	if Fname != fileName {
 		Fname = fileName
 		lookFor = ""
-		//currentUlid = ""
 		current = 638
 		countSearch = 0
-		//currentPred = 638
 		firstUlid = " "
-		paginationUlids = nil
-		page = 0
+		for k := range paginationUlids {
+			delete(paginationUlids, k)
+		}
 	}
 	fmt.Println("Command", command)
 	if command == -1 {
@@ -142,39 +137,18 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			commoncsv logenc.LogList
 			countline int = 0
 		)
-
+		go TransmitUlidPagination(fileName)
 		for line := range taillog.Lines {
 
-			current, _ = taillog.Tell()
-			strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
-			//fmt.Println(current)
-			//currentUlid = logenc.ProcLineDecodeXMLUlid(line.Text)
-			//fmt.Println("current", current)
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
-			if countline == 1000 {
-				page++
-				fmt.Println("Current", current)
+			if countline == 500 {
+
 				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 				countline = 0
 				commoncsv = logenc.LogList{}
-				//taillog.Stop()
-				firstUlid = strSlice[0]
-				fmt.Println("firstUlid", firstUlid)
-				fmt.Println("current", current)
-				paginationUlids[firstUlid] = ir_table{page: page, point: current}
 
-				strSlice = nil
-				fmt.Println(paginationUlids)
-				for key, value := range paginationUlids {
-					fmt.Println("Key:", key, "Value:", value)
-				}
-				//	println(createKeyValuePairs(paginationUlids))
-				//transmit := createKeyValuePairs(paginationUlids)
-
-				//	fmt.Println("transmit", transmit)
-				//	conn.WriteMessage(websocket.TextMessage, []byte(transmit))
 				taillog.Stop()
 				return
 			}
@@ -182,30 +156,11 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 		}
 
-		//if status == true {
-		page++
-		firstUlid = strSlice[0]
-		fmt.Println("firstUlid", firstUlid)
-		fmt.Println("current", current)
-		paginationUlids[firstUlid] = ir_table{page: page, point: current}
-		fmt.Println(paginationUlids)
-		for key, value := range paginationUlids {
-			fmt.Println("Key:", key, "Value:", value)
-		}
-		//println(createKeyValuePairs(paginationUlids))
-		fmt.Println("firstUlid", firstUlid)
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-		//transmit := createKeyValuePairs(paginationUlids)
-		//fmt.Println("transmit", transmit)
-		//conn.WriteMessage(websocket.TextMessage, []byte(transmit))
-		//TODO:
-		//Передать структру из первых ULID на 1000
-		//сформировать из каждого ulid ссылку с запуском нового websoket соеденения
-		//conn.WriteMessage(websocket.TextMessage, []byte(paginationUlids))
-
 		commoncsv = logenc.LogList{}
 		countline = 0
 		strSlice = nil
+		taillog.Stop()
 		//fmt.Println("lastulid", lastulid)
 		return
 
@@ -283,21 +238,18 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 }
 
-func createKeyValuePairs(m map[string]int64) string {
-	b := new(bytes.Buffer)
-	for key, value := range m {
-		fmt.Fprintf(b, "%s=\"%v\"\n", key, value)
-	}
-	return b.String()
-}
+func TransmitUlidPagination(fileName string) {
+	var (
+		strSlice []string
 
-/* func PreviousPageall(filename string) (currentInd int64) {
-
-	taillog, err := tail.TailFile(filename,
+		countline int
+		page      int    = 0
+		firstUlid string = " "
+	)
+	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
 			Location: &tail.SeekInfo{
-				Offset: current,
 				Whence: io.SeekStart, //!!!
 
 			},
@@ -306,19 +258,44 @@ func createKeyValuePairs(m map[string]int64) string {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 		return
 	}
-
 	for line := range taillog.Lines {
-		fmt.Println(firstUlid)
-		currentInd, _ = taillog.Tell()
 
-		if logenc.ProcLineDecodeXMLUlid(line.Text) == firstUlid {
-			fmt.Println(currentInd)
-			return currentInd
+		current, _ = taillog.Tell()
+
+		strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
+		countline++
+		if countline == 500 {
+			page++
+			countline = 0
+			firstUlid = strSlice[0]
+			paginationUlids[page] = ir_table{ulid: firstUlid, point: current}
+			strSlice = nil
+
 		}
+		go taillog.StopAtEOF() //end tail and stop service
 	}
-	fmt.Println(currentInd)
-	return currentInd
-} */
+	page++
+	firstUlid = strSlice[0]
+	paginationUlids[page] = ir_table{ulid: firstUlid, point: current}
+
+	for key, value := range paginationUlids {
+		fmt.Println("Key:", key, "Value:", value)
+	}
+	fmt.Println("map", (paginationUlids))
+	fmt.Println("func", createKeyValuePairs(paginationUlids))
+	countline = 0
+	strSlice = nil
+	taillog.Stop()
+
+}
+
+func createKeyValuePairs(m map[int]ir_table) string {
+	b := new(bytes.Buffer)
+	for key, value := range m {
+		fmt.Fprintf(b, "%v=\"%v\"\n", key, value)
+	}
+	return b.String()
+}
 
 // IndexFiles - takes argument as a list of files and directories and returns
 // a list of absolute file strings to be tailed
