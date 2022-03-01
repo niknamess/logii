@@ -271,6 +271,7 @@ function initWS(file, type) {
 
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
+    var mapContainer = angular.element(document.querySelector("#mapContainer"));
     var sysMsgAll = angular.element(document.querySelector("#sysMsgAll"));
     var loading = angular.element(document.querySelector("#loading"));
     var count = 0
@@ -302,24 +303,32 @@ function initWS(file, type) {
 
     socket.onmessage = function(e) {
         var loglist
+        var map
         str = e.data.trim();
 
 
         parser = new DOMParser();
         xmlDoc = parser.parseFromString(str, "text/xml");
         loglist = xmlDoc.getElementsByTagName("loglist");
-
-
+        map = xmlDoc.getElementsByTagName("Map");
+        //console.log("It is str", str)
         k2 = isEmpty(loglist);
+        k3 = isEmpty(map);
+        if (k3 == false) {
+            console.log(str)
+            str = ParseXmlMap(str)
+            mapContainer.append(str)
+
+        }
         if (k2 == false) {
 
             count++;
-            console.log("countRows", countRows);
-            console.log("currentPage", currentPage);
-            console.log("count", count);
+            // console.log("countRows", countRows);
+            //console.log("currentPage", currentPage);
+            //console.log("count", count);
             // container.append(str);
             if (count == currentPage) {
-
+                //console.log(str)
                 str = ParseXml(str, type)
                 if (countRows <= 2000) {
                     countRows = 0
@@ -415,6 +424,26 @@ function ParseXml(str, type) {
 
     return table
 }
+
+function ParseXmlMap(str) {
+    var parser, xmlDoc, tablemap;
+
+    parser = new DOMParser();
+    xmlDoc = parser.parseFromString(str, "application/xml").documentElement;
+
+    // var nodes = xmlDoc.querySelectorAll("*");
+    map = xmlDoc.getElementsByTagName("Map");
+    for (i = 0; i < map.length; i++) {
+        tablemap +=
+            console.log("TageName : ", map[i])
+        "<tr> <td><span>" + map[i] + "</span></td>" + "</tr>";
+
+    }
+
+
+    return tablemap
+}
+
 
 
 

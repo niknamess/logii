@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"encoding/xml"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -12,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -29,7 +31,7 @@ type ir_table struct {
 	point int64
 }
 
-var paginationUlids = map[int]ir_table{}
+var paginationUlids map[string]string
 
 var (
 	FileName []string
@@ -50,6 +52,13 @@ type FileStruct struct {
 	NAME    string `json:"filename"`
 	HASHSUM string `json:"hashsum"`
 }
+
+type xmlMapEntry struct {
+	XMLName xml.Name
+	Value   string `xml:",chardata"`
+}
+
+type Map map[string]string
 
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
@@ -137,7 +146,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			commoncsv logenc.LogList
 			countline int = 0
 		)
-		go TransmitUlidPagination(fileName)
+		TransmitUlidPagination(conn, fileName)
 		for line := range taillog.Lines {
 
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
@@ -238,7 +247,8 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 }
 
-func TransmitUlidPagination(fileName string) {
+func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
+	paginationUlids = make(map[string]string)
 	var (
 		strSlice []string
 
@@ -268,7 +278,9 @@ func TransmitUlidPagination(fileName string) {
 			page++
 			countline = 0
 			firstUlid = strSlice[0]
-			paginationUlids[page] = ir_table{ulid: firstUlid, point: current}
+			//strconv.Itoa(page)
+			//	paginationUlids[strconv.Itoa(page)] = ir_table{ulid: firstUlid, point: current}
+			paginationUlids[strconv.Itoa(page)] = firstUlid
 			strSlice = nil
 
 		}
@@ -276,20 +288,39 @@ func TransmitUlidPagination(fileName string) {
 	}
 	page++
 	firstUlid = strSlice[0]
-	paginationUlids[page] = ir_table{ulid: firstUlid, point: current}
+	paginationUlids[strconv.Itoa(page)] = firstUlid
 
+	x, _ := xml.MarshalIndent(Map(paginationUlids), "", "  ")
+	fmt.Println(string(x))
+	conn.WriteMessage(websocket.TextMessage, x)
 	for key, value := range paginationUlids {
 		fmt.Println("Key:", key, "Value:", value)
 	}
+
 	fmt.Println("map", (paginationUlids))
 	fmt.Println("func", createKeyValuePairs(paginationUlids))
 	countline = 0
 	strSlice = nil
-	taillog.Stop()
+	//taillog.Stop()
 
 }
+func (m Map) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
+	if len(m) == 0 {
+		return nil
+	}
 
-func createKeyValuePairs(m map[int]ir_table) string {
+	err := e.EncodeToken(start)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range m {
+		e.Encode(xmlMapEntry{XMLName: xml.Name{Local: k}, Value: v})
+	}
+
+	return e.EncodeToken(start.End())
+}
+func createKeyValuePairs(m map[string]string) string {
 	b := new(bytes.Buffer)
 	for key, value := range m {
 		fmt.Fprintf(b, "%v=\"%v\"\n", key, value)
