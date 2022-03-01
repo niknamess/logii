@@ -24,14 +24,23 @@ import (
 	//"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
+type ir_table struct {
+	page  int
+	point int64
+}
+
+var paginationUlids = map[string]ir_table{}
+
 var (
 	// FileList - list of files that were parsed from the provided config
+	page      int    = 0
+	firstUlid string = " "
+	FileName  []string
+	FileList  []string
+	visited   map[string]bool
+	//paginationUlids map[string]int64
 
-	firstUlid       string
-	FileName        []string
-	FileList        []string
-	visited         map[string]bool
-	paginationUlids = make(map[string]int64)
+	//paginationUlids = make(map[string]int64)
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
 	indexMap        = make(map[string]bool)
@@ -53,18 +62,22 @@ type FileStruct struct {
 // TailFile - Accepts a websocket connection and a filename and tails the
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
+
 func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, command int) {
+	//paginationUlids = make(map[string]int64)
+	fmt.Println("Fname", Fname)
 	var strSlice []string
 	fileN := filepath.Base(fileName)
-	if Fname != fileName {
+	if Fname != fileName && Fname != "" {
 		Fname = fileName
 		lookFor = ""
 		//currentUlid = ""
 		current = 638
 		countSearch = 0
 		//currentPred = 638
-		firstUlid = ""
+		firstUlid = " "
 		paginationUlids = nil
+		page = 0
 	}
 	fmt.Println("Command", command)
 	if command == -1 {
@@ -141,6 +154,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
 			if countline == 1000 {
+				page++
 				fmt.Println("Current", current)
 				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 				countline = 0
@@ -149,14 +163,14 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 				firstUlid = strSlice[0]
 				fmt.Println("firstUlid", firstUlid)
 				fmt.Println("current", current)
-				paginationUlids[firstUlid] = current
+				paginationUlids[firstUlid] = ir_table{page: page, point: current}
 
 				strSlice = nil
 				fmt.Println(paginationUlids)
 				for key, value := range paginationUlids {
 					fmt.Println("Key:", key, "Value:", value)
 				}
-				println(createKeyValuePairs(paginationUlids))
+				//	println(createKeyValuePairs(paginationUlids))
 				//transmit := createKeyValuePairs(paginationUlids)
 
 				//	fmt.Println("transmit", transmit)
@@ -169,7 +183,16 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		}
 
 		//if status == true {
+		page++
 		firstUlid = strSlice[0]
+		fmt.Println("firstUlid", firstUlid)
+		fmt.Println("current", current)
+		paginationUlids[firstUlid] = ir_table{page: page, point: current}
+		fmt.Println(paginationUlids)
+		for key, value := range paginationUlids {
+			fmt.Println("Key:", key, "Value:", value)
+		}
+		//println(createKeyValuePairs(paginationUlids))
 		fmt.Println("firstUlid", firstUlid)
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 		//transmit := createKeyValuePairs(paginationUlids)
@@ -228,7 +251,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 				countCheck++
 				//currentUlid = v.XML_RECORD_ROOT[0].XML_ULID
 				strSlice = append(strSlice, v.XML_RECORD_ROOT[0].XML_ULID)
-				if countCheck == 100 {
+				if countCheck == 1000 {
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
@@ -237,7 +260,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 					fmt.Println("firstUlid", firstUlid)
 					strSlice = nil
 					return
-				} else if len(UlidC) == i-1 && countCheck < 100 {
+				} else if len(UlidC) == i-1 && countCheck < 1000 {
 					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 					countCheck = 0
 					commoncsv = logenc.LogList{}
