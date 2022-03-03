@@ -429,10 +429,11 @@ function ParseXmlMap(str) {
     var parser, xmlDoc, tablemap;
 
     parser = new DOMParser();
-    xmlDoc = parser.parseFromString(str, "application/xml").documentElement;
+    xmlDoc = parser.parseFromString(str, "text/xml");
 
     // var nodes = xmlDoc.querySelectorAll("*");
-    map = xmlDoc.getElementsByTagName("Map");
+    map = xmlDoc.getElementsByTagName("*");
+    console.log("Map : ", map)
     for (i = 0; i < map.length; i++) {
         tablemap +=
             console.log("TageName : ", map[i])

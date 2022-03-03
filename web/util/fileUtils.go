@@ -277,7 +277,7 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 		if countline == 500 {
 			page++
 			countline = 0
-			firstUlid = strSlice[0]
+			firstUlid = strSlice[1]
 			//strconv.Itoa(page)
 			//	paginationUlids[strconv.Itoa(page)] = ir_table{ulid: firstUlid, point: current}
 			paginationUlids[strconv.Itoa(page)] = firstUlid
@@ -287,12 +287,12 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 		go taillog.StopAtEOF() //end tail and stop service
 	}
 	page++
-	firstUlid = strSlice[0]
+	firstUlid = strSlice[1]
 	paginationUlids[strconv.Itoa(page)] = firstUlid
 
 	x, _ := xml.MarshalIndent(Map(paginationUlids), "", "  ")
 	fmt.Println(string(x))
-	conn.WriteMessage(websocket.TextMessage, x)
+	conn.WriteMessage(websocket.TextMessage, []byte(string(x)))
 	for key, value := range paginationUlids {
 		fmt.Println("Key:", key, "Value:", value)
 	}
