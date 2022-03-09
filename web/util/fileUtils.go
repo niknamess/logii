@@ -13,7 +13,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -125,6 +124,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 		}
 	}
+
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	//lineCounter(fileName)
 	taillog, err := tail.TailFile(fileName,
@@ -148,12 +148,12 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		)
 		TransmitUlidPagination(conn, fileName)
 		for line := range taillog.Lines {
-
+			current, _ = taillog.Tell()
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
 			if countline == 500 {
-
+				//current, _ = taillog.Tell()
 				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 				countline = 0
 				commoncsv = logenc.LogList{}
@@ -280,7 +280,7 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 			firstUlid = strSlice[1]
 			//strconv.Itoa(page)
 			//	paginationUlids[strconv.Itoa(page)] = ir_table{ulid: firstUlid, point: current}
-			paginationUlids[strconv.Itoa(page)] = firstUlid
+			paginationUlids[logenc.Convert1to1000(page)] = firstUlid
 			strSlice = nil
 
 		}
@@ -288,9 +288,9 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 	}
 	page++
 	firstUlid = strSlice[1]
-	paginationUlids[strconv.Itoa(page)] = firstUlid
+	paginationUlids[logenc.Convert1to1000(page)] = firstUlid
 
-	x, _ := xml.MarshalIndent(Map(paginationUlids), "", "  ")
+	x, _ := xml.MarshalIndent(Map(paginationUlids), " ", "  ")
 	fmt.Println(string(x))
 	conn.WriteMessage(websocket.TextMessage, []byte(string(x)))
 	for key, value := range paginationUlids {

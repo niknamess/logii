@@ -12,6 +12,19 @@ const inputform = document.getElementById('search_string');
 const textList = document.getElementById('listfile');
 const buttonNext = document.getElementById('buttonNext');
 const buttonPrev = document.getElementById('buttonPrev');
+//
+const prevButton = document.getElementById('button_prev');
+const nextButton = document.getElementById('button_next');
+const clickPageNumber = document.querySelectorAll('.clickPageNumber');
+/* let current_page = 1;
+this.init = function() {
+        changePage(1);
+        pageNumbers();
+        selectedPage();
+        clickPage();
+        addEventListeners();
+    } */
+//
 
 var countRows = 0
 var currentPage = 1;
@@ -28,6 +41,7 @@ var statusS = "empty";
 var typePage = 0;
 
 var ws;
+var pageMap;
 
 $(document).ready(function() {
     $('#MyTable').DataTable({
@@ -87,7 +101,7 @@ buttonPrev.addEventListener('click', event => {
             //if (currentPage > 1) {
 
             Null();
-            initWS(lastItem, statusS, -1)
+            initWS(lastItem, statusS)
             typePage = -1;
             //}
             console.log("Page", currentPage, "prev")
@@ -104,12 +118,26 @@ inputform.addEventListener('keypress', function(e) {
         setTimeout(
             () => {
                 Null()
-                initWS(lastItem, statusS, )
+                initWS(lastItem, statusS)
                 Null()
             },
             1 * 200
         );
     }
+});
+
+document.getElementById('pagination11').addEventListener('click', event => {
+    setTimeout(
+        () => {
+            console.log("Work")
+                // console.log("text", buttonPagination.textContent)
+                /* Null()
+                initWS(lastItem, statusS)
+                Null() */
+                // window.location.reload();
+        },
+        1 * 200
+    );
 });
 
 function editInf() {
@@ -271,9 +299,9 @@ function initWS(file, type) {
 
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
-    var mapContainer = angular.element(document.querySelector("#mapContainer"));
+    //var mapContainer = angular.element(document.querySelector("#mapContainer"));
     var sysMsgAll = angular.element(document.querySelector("#sysMsgAll"));
-    var loading = angular.element(document.querySelector("#loading"));
+    //var loading = angular.element(document.querySelector("#loading"));
     var count = 0
         /* var cntinfo = angular.element(document.querySelector("#cntinfo"));
     var cnterror = angular.element(document.querySelector("#cnterror"));
@@ -311,13 +339,18 @@ function initWS(file, type) {
         xmlDoc = parser.parseFromString(str, "text/xml");
         loglist = xmlDoc.getElementsByTagName("loglist");
         map = xmlDoc.getElementsByTagName("Map");
+
         //console.log("It is str", str)
         k2 = isEmpty(loglist);
         k3 = isEmpty(map);
         if (k3 == false) {
-            console.log(str)
+            //console.log(map)
+            //console.log(str)
+            PageMap = str
             str = ParseXmlMap(str)
-            mapContainer.append(str)
+            console.log("Map:::", str)
+            quotation("mapContainer", str)
+                //mapContainer.append(str)
 
         }
         if (k2 == false) {
@@ -364,7 +397,7 @@ function initWS(file, type) {
             } else { */
             //loading.append("<div class=\"textL\">Indexing complated!</div>");
             // } else
-            sysMsgAll.append("<hr>" + str + "</hr>")
+            //sysMsgAll.append("<hr>" + str + "</hr>")
         }
 
 
@@ -427,20 +460,41 @@ function ParseXml(str, type) {
 
 function ParseXmlMap(str) {
     var parser, xmlDoc, tablemap;
-
+    //var index = 0
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(str, "text/xml");
 
-    // var nodes = xmlDoc.querySelectorAll("*");
-    map = xmlDoc.getElementsByTagName("*");
-    console.log("Map : ", map)
+    //var nodes = xmlDoc.querySelectorAll("*");
+    map = xmlDoc.getElementsByTagName("Map")[0].childNodes;
+    //var children = map.children;
+    //console.log("children : ", children)
+    //var nodes = map.getElementsByTagName("*");
+    //console.log("Map : ", map)
+    //console.log("Map : ", map)
+    let selectedPage = function() {
+        let page_number = document.getElementById('page_number').getElementsByClassName('clickPageNumber');
+        for (let i = 0; i < page_number.length; i++) {
+            if (i == current_page - 1) {
+                page_number[i].style.opacity = "1.0";
+            } else {
+                page_number[i].style.opacity = "0.5";
+            }
+        }
+    }
     for (i = 0; i < map.length; i++) {
-        tablemap +=
-            console.log("TageName : ", map[i])
-        "<tr> <td><span>" + map[i] + "</span></td>" + "</tr>";
+        //console.log(x[i].getAttribute("1"))
+        //console.log(x[i].getAttribute("2"))
+        // if (map[i].tagName != "undefined") {
+        if (i % 2 != 0) {
+
+            tablemap +=
+                "<button id = " + "pagination" + " class=" + map[i].tagName + ">" + map[i].tagName + "</button>";
+        }
 
     }
-
+    var tablemap = tablemap.replace('undefined', '');
+    //console.log("EndVSr", tablemap)
+    //console.log("Replace", ret)
 
     return tablemap
 }
