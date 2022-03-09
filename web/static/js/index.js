@@ -339,10 +339,20 @@ function initWS(file, type) {
         xmlDoc = parser.parseFromString(str, "text/xml");
         loglist = xmlDoc.getElementsByTagName("loglist");
         map = xmlDoc.getElementsByTagName("Map");
+        countpage = xmlDoc.getElementsByTagName("countpage");
 
         //console.log("It is str", str)
         k2 = isEmpty(loglist);
         k3 = isEmpty(map);
+        k4 = isEmpty(countpage);
+        if (k4 == false) {
+            //console.log(map)
+            //console.log(str)
+            console.log("countpage:", str)
+
+            //mapContainer.append(str)
+
+        }
         if (k3 == false) {
             //console.log(map)
             //console.log(str)
@@ -460,27 +470,10 @@ function ParseXml(str, type) {
 
 function ParseXmlMap(str) {
     var parser, xmlDoc, tablemap;
-    //var index = 0
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(str, "text/xml");
-
-    //var nodes = xmlDoc.querySelectorAll("*");
     map = xmlDoc.getElementsByTagName("Map")[0].childNodes;
-    //var children = map.children;
-    //console.log("children : ", children)
-    //var nodes = map.getElementsByTagName("*");
-    //console.log("Map : ", map)
-    //console.log("Map : ", map)
-    let selectedPage = function() {
-        let page_number = document.getElementById('page_number').getElementsByClassName('clickPageNumber');
-        for (let i = 0; i < page_number.length; i++) {
-            if (i == current_page - 1) {
-                page_number[i].style.opacity = "1.0";
-            } else {
-                page_number[i].style.opacity = "0.5";
-            }
-        }
-    }
+
     for (i = 0; i < map.length; i++) {
         //console.log(x[i].getAttribute("1"))
         //console.log(x[i].getAttribute("2"))

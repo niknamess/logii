@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -248,6 +249,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 }
 
 func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
+	var CountPage string
 	paginationUlids = make(map[string]string)
 	var (
 		strSlice []string
@@ -287,6 +289,8 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 		go taillog.StopAtEOF() //end tail and stop service
 	}
 	page++
+	CountPage = "<countpage>" + strconv.Itoa(page) + "</countpage>"
+	conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
 	firstUlid = strSlice[1]
 	paginationUlids[logenc.Convert1to1000(page)] = firstUlid
 
