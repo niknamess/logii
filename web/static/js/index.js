@@ -304,11 +304,11 @@ function initWS(file, type) {
     //var loading = angular.element(document.querySelector("#loading"));
     var count = 0
         /* var cntinfo = angular.element(document.querySelector("#cntinfo"));
-    var cnterror = angular.element(document.querySelector("#cnterror"));
-    var cntwrng = angular.element(document.querySelector("#cntwrng"));
-    var ctndbg = angular.element(document.querySelector("#ctndbg"));
-    var cntall = angular.element(document.querySelector("#cntall"));
- */
+        var cnterror = angular.element(document.querySelector("#cnterror"));
+        var cntwrng = angular.element(document.querySelector("#cntwrng"));
+        var ctndbg = angular.element(document.querySelector("#ctndbg"));
+        var cntall = angular.element(document.querySelector("#cntall"));
+        */
 
     container.html("")
     socket.onopen = function() {
@@ -348,7 +348,9 @@ function initWS(file, type) {
         if (k4 == false) {
             //console.log(map)
             //console.log(str)
-            console.log("countpage:", str)
+            console.log("countpage:", str);
+            console.log("length", ParseCount(str));
+            numPages = parseInt(ParseCount(str));
 
             //mapContainer.append(str)
 
@@ -358,7 +360,7 @@ function initWS(file, type) {
             //console.log(str)
             PageMap = str
             str = ParseXmlMap(str)
-            console.log("Map:::", str)
+                //console.log("Map:::", str)
             quotation("mapContainer", str)
                 //mapContainer.append(str)
 
@@ -492,6 +494,16 @@ function ParseXmlMap(str) {
     return tablemap
 }
 
+function ParseCount(str) {
+    var parser, xmlDoc, result
+    parser = new DOMParser();
+    xmlDoc = parser.parseFromString(str, "text/xml");
+    content = xmlDoc.getElementsByTagName("countpage")[0];
+    contentValue = content.childNodes[0];
+    result = contentValue.nodeValue;
+    return result
+}
+
 
 
 
@@ -558,3 +570,5 @@ function Color(type) {
     countAll++
     return color
 }
+
+//PAGINATION
