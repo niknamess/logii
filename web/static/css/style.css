@@ -109,17 +109,16 @@
 }
 
 .pagtest {
-    position: fixed;
+    position: relative;
+    top: 70px;
+    display: block;
+    left: 38%;
     /* Фиксированное положение */
-    right: 35%;
     /* Расстояние от правого края окна браузера */
-    top: 84%;
+    /*top: 84%;*/
     /* Расстояние сверху */
-    padding: 10px;
     /* Поля вокруг текста */
-    background: #ffe;
     /* Цвет фона */
-    border: 1px solid #333;
     /* Параметры рамки */
 }
 

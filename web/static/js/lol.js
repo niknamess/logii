@@ -1,4 +1,4 @@
-const pageNumbers = (total, max, current) => {
+/* const pageNumbers = (total, max, current) => {
     const half = Math.floor(max / 2);
     let to = max;
 
@@ -108,10 +108,10 @@ function PaginationButton(totalPages, maxPagesVisible = 10, currentPage = 1) {
     }
 }
 
-const paginationButtons = new PaginationButton(20, 5);
+/* const paginationButtons = new PaginationButton(20, 5);
 
 paginationButtons.render();
 
 paginationButtons.onChange(e => {
     console.log('-- changed', e.target.value)
-});
+}); */
