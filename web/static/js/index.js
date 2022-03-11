@@ -54,7 +54,7 @@ var standartform = "";
 var lastItem;
 var statusS = "empty";
 var typePage = 0;
-
+var numPages;
 var ws;
 var pageMap;
 
@@ -338,9 +338,10 @@ function initWS(file, type) {
         }
         //console.log("page", page)
         //if (page = "prev") {
-        console.log("Test", typePage)
-        socket.send(typePage)
-            // }
+        console.log("Test", typePage);
+        //console.log("numPages ", numPages);
+        socket.send(typePage);
+        //socket.close;
 
     }
 
@@ -365,13 +366,20 @@ function initWS(file, type) {
             //console.log(str)
             console.log("countpage:", str);
             console.log("length", ParseCount(str));
+            //clear
+            $(".pagtest").empty();
             numPages = parseInt(ParseCount(str));
+
             const paginationButtons = new PaginationButton(numPages, 5);
 
             paginationButtons.render();
 
             paginationButtons.onChange(e => {
-                console.log('-- changed', e.target.value)
+                // socket.onopen;
+                socket.send(e.target.value);
+                //socket.send("LOL");
+                console.log(e);
+                console.log('-- changed', e.target.value);
             });
         }
         if (k3 == false) {
@@ -387,10 +395,7 @@ function initWS(file, type) {
         if (k2 == false) {
 
             count++;
-            // console.log("countRows", countRows);
-            //console.log("currentPage", currentPage);
-            //console.log("count", count);
-            // container.append(str);
+
             if (count == currentPage) {
                 //console.log(str)
                 str = ParseXml(str, type)
