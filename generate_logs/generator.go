@@ -89,7 +89,7 @@ func ProcGenN(count int, FileSize int64) int {
 
 		rand.Seed(time.Now().UnixNano())
 
-		file, err := os.OpenFile("./genrlogs./gen_logs_coded"+label+filesFrom, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		file, err := os.OpenFile("./repdata/gen_logs_coded"+label+filesFrom, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -103,7 +103,7 @@ func ProcGenN(count int, FileSize int64) int {
 		if fi.Size() >= FileSize {
 			countFile++
 			//fmt.Println(fi.Size())
-			logenc.WriteFileSum("./genrlogs./gen_logs_coded"+label+filesFrom, filesFrom, "./genrlogs./")
+			logenc.WriteFileSum("./repdata/gen_logs_coded"+label+filesFrom, filesFrom, "./repdata/")
 			label = strconv.Itoa(countFile)
 
 		}

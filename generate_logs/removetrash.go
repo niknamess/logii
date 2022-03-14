@@ -10,7 +10,7 @@ import (
 //Remove file in dir
 func Example() {
 	Remove("./genrlogs./", "gen_logs_coded")
-	//Remove("./repdata/", "gen_logs_coded")
+	Remove("./repdata/", "gen_logs_coded")
 }
 
 func Remove(dirpath string, lineS string) {
