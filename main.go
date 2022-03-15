@@ -81,7 +81,7 @@ func main() {
 	}
 
 	if *flagGen {
-		generator.ProcGenN(10, 2000)
+		generator.ProcGenN(10, 20000)
 		return
 	}
 

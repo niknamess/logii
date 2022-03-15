@@ -172,7 +172,7 @@ func procFileWrite(file string) {
 
 	filew, err1 := os.OpenFile("./writedeclog/"+fileN+".log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err1 != nil {
-		log.Fatal(err1)
+		log.Fatal("procFileWrite error", err1)
 	}
 
 	Logger = log.New(filew, "", 0)
@@ -422,7 +422,10 @@ func FileMD5(path string) string {
 	h := md5.New()
 	f, err := os.Open(path)
 	if err != nil {
-		panic(err)
+		fmt.Println("FileMD5", err)
+		//f.Close()
+		return "null"
+
 	}
 	defer f.Close()
 	_, err = io.Copy(h, f)

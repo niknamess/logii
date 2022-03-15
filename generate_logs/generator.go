@@ -81,7 +81,7 @@ func ProcGenN(count int, FileSize int64) int {
 
 	filesFrom := string(util.GetOutboundIP()[len(util.GetOutboundIP())-3:])
 	//	last3  := string(s[len(s)-3:])
-	logenc.CreateDir("./genrlogs", "")
+	logenc.CreateDir("./repdata", "")
 
 	for {
 
@@ -103,7 +103,7 @@ func ProcGenN(count int, FileSize int64) int {
 		if fi.Size() >= FileSize {
 			countFile++
 			//fmt.Println(fi.Size())
-			logenc.WriteFileSum("./repdata/gen_logs_coded"+label+filesFrom, filesFrom, "./repdata/")
+			//logenc.WriteFileSum("./repdata/gen_logs_coded"+label+filesFrom, filesFrom, "./repdata/")
 			label = strconv.Itoa(countFile)
 
 		}

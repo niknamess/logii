@@ -550,7 +550,7 @@ func GetFiles(address string, port string) error {
 			file, err := os.OpenFile("./testsave/"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 			if err != nil {
 
-				log.Fatal(err)
+				log.Fatal("Getfiles", err)
 				//file.Close()
 				//return
 			}
@@ -576,8 +576,11 @@ func GetFiles(address string, port string) error {
 			if contain && logenc.CheckFileSum("./testsave/"+fileName, "rep", "") {
 				signature = true
 
-				fileS, _ := os.OpenFile("./"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+				fileS, err := os.OpenFile("./"+fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+				if err != nil {
 
+					log.Println("Open for copy", err)
+				}
 				defer fileS.Close()
 				_, err = io.Copy(fileS, resp.Body)
 				if err != nil {
@@ -585,6 +588,7 @@ func GetFiles(address string, port string) error {
 					log.Println("Copy", err)
 				}
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
+				log.Println("*1")
 				logenc.DeleteOldsFiles("./testsave/", fileName, "")
 
 			} else if !contain {
@@ -598,16 +602,20 @@ func GetFiles(address string, port string) error {
 			if signature && !contain {
 				last3 := fileName[len(fileName)-3:]
 				if logenc.CheckFileSum("./testsave/"+fileName, last3, "") {
+					log.Println("*2")
 					logenc.DeleteOldsFiles("./repdata/", fileName, "")
 					logenc.Replication("./testsave/" + fileName)
 					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 					fmt.Println("Merge", fileName)
+
+					log.Println("*3")
 					logenc.DeleteOldsFiles("./testsave/", fileName, "")
 
 				} else {
 					logenc.Replication("./testsave/" + fileName)
 					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 					fmt.Println("Merge", fileName)
+					log.Println("*4")
 					logenc.DeleteOldsFiles("./testsave/", fileName, "")
 				}
 
@@ -615,6 +623,7 @@ func GetFiles(address string, port string) error {
 				logenc.Replication("./testsave/" + fileName)
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 				fmt.Println("Merge", fileName)
+				log.Println("*5")
 				logenc.DeleteOldsFiles("./testsave/", fileName, "")
 			}
 
@@ -677,7 +686,7 @@ func FindOldestfile(dir string) {
 	var cutoff = time.Hour
 	fileInfo, err := ioutil.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal("FindOldestfile", err.Error())
 	}
 	now := time.Now()
 	//fmt.Println(now)
@@ -696,7 +705,7 @@ func DeleteFile90(dir string) {
 	var cutoff = 24 * time.Hour * 90
 	fileInfo, err := ioutil.ReadDir(dir)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal("DeleteFile90", err.Error())
 	}
 	now := time.Now()
 	//fmt.Println(now)

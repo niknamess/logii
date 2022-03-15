@@ -70,6 +70,13 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 
 	}
 	//go util.DeleteFile90("./repdata")
+	infoip, err := ioutil.ReadFile("config.toml")
+	if err != nil {
+
+		log.Fatal(err)
+	}
+	//toml.Unmarshal(infoip,Config)
+	fmt.Println("ip", string(infoip))
 	go func() {
 		time.Sleep(time.Second * 55)
 		util.DiskInfo("./repdata")
@@ -200,10 +207,17 @@ func reconect(address string) {
 func EnterIp() {
 	var data []byte
 	for {
+
 		fmt.Print("Enter IP:  ")
 		fmt.Scanln(&limit)
 
 		if limit == "stop" {
+			ipaddr = append(ipaddr, "localhost")
+			limitSlice, _ := CheckConfig()
+			ipaddr = append(ipaddr, limitSlice...)
+			ipaddr = removeDuplicateStr(ipaddr)
+			config := Config{DataBase: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
+			data, _ = toml.Marshal(&config)
 			break
 		} else if util.CheckIPAddress(limit) {
 			ipaddr = append(ipaddr, limit)
@@ -211,9 +225,12 @@ func EnterIp() {
 			ipaddr = append(ipaddr, limitSlice...)
 			ipaddr = removeDuplicateStr(ipaddr)
 			config := Config{DataBase: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
+
 			data, _ = toml.Marshal(&config)
 		}
 	}
+
+	//fmt.Println("data", string(data))
 	err3 := ioutil.WriteFile("config.toml", data, 0666)
 
 	if err3 != nil {
@@ -256,6 +273,7 @@ func removeDuplicateStr(strSlice []string) []string {
 }
 
 func EnterIpReady(ipmas []string) {
+
 	var data []byte
 	ipaddr = ipmas
 	limitSlice, _ := CheckConfig()
@@ -265,6 +283,7 @@ func EnterIpReady(ipmas []string) {
 	data, _ = toml.Marshal(&config)
 
 	//TODO
+
 	err3 := ioutil.WriteFile("config.toml", data, 0666)
 
 	if err3 != nil {

@@ -196,7 +196,7 @@ func CopyFile(dirpath string, path string, label string, fileOs *os.File) {
 	fileN := filepath.Base(path)
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
-		log.Println(err)
+		log.Println("CopyFile error", err)
 		return
 	}
 	defer file.Close()
@@ -307,14 +307,14 @@ func Replication(path string) {
 	fileN := filepath.Base(path)
 	original, err := os.Open(path)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("Replication OpenFile", err)
 	}
 	defer original.Close()
 
 	files, err := ioutil.ReadDir(dirpath)
 	if err != nil {
 
-		log.Fatal(err)
+		log.Fatal("ReadDir", err)
 	}
 
 	ok, err := IsDirEmpty(dirpath)

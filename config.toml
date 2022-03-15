@@ -1,0 +1,10 @@
+
+[Db]
+  Host = []
+  Port = ""
+  hostname = []
+
+[database]
+  Host = []
+  Port = "10015"
+  hostname = ["localhost", "192.168.0.213", "192.168.0.214", "192.168.0.211"]
