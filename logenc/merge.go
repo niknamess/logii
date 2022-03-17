@@ -307,7 +307,8 @@ func Replication(path string) {
 	fileN := filepath.Base(path)
 	original, err := os.Open(path)
 	if err != nil {
-		log.Fatal("Replication OpenFile", err)
+		fmt.Println("Replication OpenFile ", err)
+		return
 	}
 	defer original.Close()
 

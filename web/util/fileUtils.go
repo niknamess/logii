@@ -162,7 +162,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 				taillog.Stop()
 				return
 			}
-			go taillog.StopAtEOF() //end tail and stop service
+			//go taillog.StopAtEOF() //end tail and stop service
 
 		}
 
@@ -534,6 +534,7 @@ func GetFiles(address string, port string) error {
 
 	}
 	for _, v := range logenc.GetLinks(resp.Body) {
+		fmt.Println(address)
 
 		fullURLFile := "http://" + address + ":" + port + "/vfs/data/" + v
 

@@ -17,6 +17,8 @@ const prevButton = document.getElementById('button_prev');
 const nextButton = document.getElementById('button_next');
 const clickPageNumber = document.querySelectorAll('.clickPageNumber');
 
+const buttonPage = document.getElementById('page');
+
 const pageNumbers = (total, max, current) => {
         const half = Math.floor(max / 2);
         let to = max;
@@ -57,6 +59,8 @@ var typePage = 0;
 var numPages;
 var ws;
 var pageMap;
+var Page;
+
 
 $(document).ready(function() {
     $('#MyTable').DataTable({
@@ -95,6 +99,17 @@ buttonR.addEventListener('click', event => {
         1 * 200
     );
 });
+
+
+buttonPage.addEventListener('click', event => {
+    setTimeout(
+        () => {
+            window.location.reload();
+        },
+        1 * 200
+    );
+});
+
 buttonNext.addEventListener('click', event => {
     setTimeout(
         () => {
@@ -340,7 +355,9 @@ function initWS(file, type) {
         //if (page = "prev") {
         console.log("Test", typePage);
         //console.log("numPages ", numPages);
+        console.log("OnOpen connection", socket.readyState);
         socket.send(typePage);
+        console.log("Open connection", socket.readyState);
         //socket.close;
 
     }
@@ -378,6 +395,7 @@ function initWS(file, type) {
                 // socket.onopen;
                 socket.send(e.target.value);
                 //socket.send("LOL");
+                console.log("Onmessage connection", socket.readyState);
                 console.log(e);
                 console.log('-- changed', e.target.value);
             });
@@ -437,7 +455,6 @@ function initWS(file, type) {
         }
 
 
-
         //container.append(standartform);
 
     }
@@ -452,6 +469,102 @@ function initWS(file, type) {
 
     return socket;
 }
+
+
+
+function initWSPage(file) {
+
+    var observer = new MutationObserver(function(_mutations, me) {
+        // `mutations` is an array of mutations that occurred
+        // `me` is the MutationObserver instance
+        start = document.getElementById('Foxtrot');
+        if (start) {
+            handleCanvas(start);
+            me.disconnect(); // stop observing
+            return;
+        }
+    });
+
+    // start observin
+    observer.observe(document, {
+        childList: true,
+        subtree: true
+    });
+
+
+    var ws_proto = "ws:"
+    if (window.location.protocol === "https:") {
+        ws_proto = "wss:"
+    }
+    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
+    var container = angular.element(document.querySelector("#container"));
+    var sysMsgAll = angular.element(document.querySelector("#sysMsgAll"));
+    container.html("")
+    socket.onopen = function(e) {
+
+        strf = file
+        if (strf.indexOf("undefined") != 0) {
+
+            container.append("TODO:");
+
+        }
+
+        console.log("Test", typePage);
+        console.log("OnOpen connection", socket.readyState);
+        socket.send(typePage);
+        console.log("Open connection", socket.readyState);
+        console.log(str = e.data.trim());
+    }
+
+    socket.onmessage = function(e) {
+        var loglist
+        var map
+        str = e.data.trim();
+
+
+        parser = new DOMParser();
+        xmlDoc = parser.parseFromString(str, "text/xml");
+        loglist = xmlDoc.getElementsByTagName("loglist");
+        map = xmlDoc.getElementsByTagName("Map");
+        countpage = xmlDoc.getElementsByTagName("countpage");
+
+        //console.log("It is str", str)
+        k2 = isEmpty(loglist);
+        k3 = isEmpty(map);
+        k4 = isEmpty(countpage);
+        if (k4 == false) {
+            console.log("countpage:", str);
+            console.log("length", ParseCount(str));
+            //clear
+            $(".pagtest").empty();
+            numPages = parseInt(ParseCount(str));
+
+            const paginationButtons = new PaginationButton(numPages, 5);
+            paginationButtons.render();
+            paginationButtons.onChange(e => {
+                socket.send(e.target.value);
+                console.log("Onmessage connection", socket.readyState);
+                console.log(e);
+                Page = e.target.value;
+                console.log('-- changed', e.target.value);
+            });
+        }
+
+
+    }
+    socket.onclose = function() {
+        quotation("sysMsgAll", "<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+        // sysMsgAll.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
+    }
+    socket.onerror = function(e) {
+        sysMsgAll.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
+    }
+
+    return socket;
+}
+
+
+
 
 
 function ParseXml(str, type) {
@@ -619,6 +732,7 @@ function PaginationButton(totalPages, maxPagesVisible = 10, currentPage = 1) {
         const buttonElement = document.createElement('button');
         buttonElement.textContent = label;
         buttonElement.className = `page-btn ${cls}`;
+        buttonElement.id = `page`
         buttonElement.disabled = disabled;
         buttonElement.addEventListener('click', e => {
             handleClick(e);
@@ -664,6 +778,8 @@ function PaginationButton(totalPages, maxPagesVisible = 10, currentPage = 1) {
         }
 
         buttons.set(button, onPageButtonUpdate(index));
+
+
     });
 
     buttons.set(
