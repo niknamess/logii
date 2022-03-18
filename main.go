@@ -45,6 +45,7 @@ func main() {
 	flagServ := flag.String("z", "", "server")
 	flagWrite := flag.String("w", "", "write_logs")
 	flagGen := flag.Bool("g", false, "generate_logs")
+	flagGenF := flag.Bool("t", false, "generate_logs_in_file")
 	flagWeb := flag.String("p", "", "web_interface")
 	flagProm := flag.String("m", "", "prometheus")
 	flagVFC := flag.String("v", "", "vfc")
@@ -84,6 +85,11 @@ func main() {
 		generator.ProcGenN(10, 20000)
 		return
 	}
+	if *flagGenF {
+		generator.ProcGenWiteF()
+		return
+	}
+	//generator.ProcGenWiteF()
 
 	if len(*flagWeb) > 0 {
 		fmt.Println(*flagWeb)

@@ -64,7 +64,7 @@ type Map map[string]string
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
 
-func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, command int) {
+func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, page int) {
 	//paginationUlids = make(map[string]int64)
 	fmt.Println("Fname", Fname)
 	var (
@@ -83,8 +83,8 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			delete(paginationUlids, k)
 		}
 	}
-	fmt.Println("Command", command)
-	if command == -1 {
+	fmt.Println("Command", page)
+	if page == -1 {
 		//For search it is work
 		if countSearch >= 1999 && (lookFor != "" && lookFor != " " && lookFor != "Search") {
 			countSearch = countSearch - 2000
@@ -153,15 +153,18 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+			commoncsv = logenc.LogList{}
 			if countline == 500 {
 				//current, _ = taillog.Tell()
-				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+				//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 				countline = 0
 				commoncsv = logenc.LogList{}
 
 				taillog.Stop()
 				return
 			}
+			go taillog.StopAtEOF()
 			//go taillog.StopAtEOF() //end tail and stop service
 
 		}

@@ -290,12 +290,15 @@ func ProcMapFile(file string) map[string]LogList {
 				wg.Add(1)
 				defer wg.Done()
 				data = ProcLineDecodeXML(line)
-				//datas = ProcLineCSVLoglost(line)
+				//datas = ProcLineCSVLoglost(line)\
+				mu.Lock()
 				if len(data.XML_RECORD_ROOT) > 0 {
-					mu.Lock()
+					//mu.Lock()
+
 					SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = data
-					mu.Unlock()
+					//mu.Unlock()
 				}
+				mu.Unlock()
 			}(line)
 
 		}

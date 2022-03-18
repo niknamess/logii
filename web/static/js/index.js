@@ -104,6 +104,7 @@ buttonR.addEventListener('click', event => {
 buttonPage.addEventListener('click', event => {
     setTimeout(
         () => {
+            console.log("Page")
             window.location.reload();
         },
         1 * 200
@@ -341,7 +342,7 @@ function initWS(file, type) {
         */
 
     container.html("")
-    socket.onopen = function() {
+    socket.onopen = function(e) {
 
         //var filename = file.replace(/^.*[\\\/]/, '')
         //container.append("<p><b>Tailing file: " + filename + "</b></p>");
@@ -351,22 +352,25 @@ function initWS(file, type) {
             container.append("TODO:");
 
         }
+        //str = e.data.trim();
+        //console.log("str", e);
         //console.log("page", page)
         //if (page = "prev") {
-        console.log("Test", typePage);
+        //console.log("Test", typePage);
         //console.log("numPages ", numPages);
-        console.log("OnOpen connection", socket.readyState);
+        // console.log("Websocket status connection before", socket.readyState);
         socket.send(typePage);
-        console.log("Open connection", socket.readyState);
+        //console.log("Websocket status connection after", socket.readyState);
         //socket.close;
 
     }
 
     socket.onmessage = function(e) {
+        //  console.log("Websocket status connection onmessage 1", socket.readyState);
         var loglist
         var map
         str = e.data.trim();
-
+        // console.log("Websocket status connection onmessage 2", socket.readyState);
 
         parser = new DOMParser();
         xmlDoc = parser.parseFromString(str, "text/xml");
@@ -378,11 +382,12 @@ function initWS(file, type) {
         k2 = isEmpty(loglist);
         k3 = isEmpty(map);
         k4 = isEmpty(countpage);
+        //  console.log("Websocket status connection onmessage 3", socket.readyState);
         if (k4 == false) {
             //console.log(map)
             //console.log(str)
-            console.log("countpage:", str);
-            console.log("length", ParseCount(str));
+            //console.log("countpage:", str);
+            //  console.log("length", ParseCount(str));
             //clear
             $(".pagtest").empty();
             numPages = parseInt(ParseCount(str));
@@ -392,43 +397,38 @@ function initWS(file, type) {
             paginationButtons.render();
 
             paginationButtons.onChange(e => {
-                // socket.onopen;
+                console.log("socket send");
                 socket.send(e.target.value);
-                //socket.send("LOL");
-                console.log("Onmessage connection", socket.readyState);
+                console.log("Websocket status connection", socket.readyState);
+                // console.log("Onmessage connection", socket.readyState);
                 console.log(e);
                 console.log('-- changed', e.target.value);
             });
         }
         if (k3 == false) {
-            //console.log(map)
-            //console.log(str)
+            //console.log("Websocket status connection onmessage 4", socket.readyState);
             PageMap = str
             str = ParseXmlMap(str)
-                //console.log("Map:::", str)
             quotation("mapContainer", str)
-                //mapContainer.append(str)
 
         }
         if (k2 == false) {
 
-            count++;
 
-            if (count == currentPage) {
-                //console.log(str)
-                str = ParseXml(str, type)
-                if (countRows <= 2000) {
-                    countRows = 0
-                    container.append(str);
-                    socket.close();
-                }
-            }
+            //console.log(str)
+            str = ParseXml(str, type)
+            container.append(str);
+            //console.log("Websocket status connection onmessage 5", socket.readyState);
+            // socket.close();
+
+
             quotation("cntinfo", "INFO:" + countInf);
             quotation("cnterror", "Error:" + countErr);
             quotation("cntwrng", "Warning:" + countWar);
             quotation("ctndbg", "Debug:" + countDbg);
             quotation("cntall", "All:" + countAll);
             //countRows = 0;
+            // console.log("Websocket status connection onmessage 6", socket.readyState);
         } else {
             /* if (str == "Indexing file, please wait") {
                 loading.append(" <div id =\"load\" class=\"center\">" +
@@ -510,9 +510,9 @@ function initWSPage(file) {
         }
 
         console.log("Test", typePage);
-        console.log("OnOpen connection", socket.readyState);
+        console.log("Websocket status connection before", socket.readyState);
         socket.send(typePage);
-        console.log("Open connection", socket.readyState);
+        console.log("Websocket status connection after", socket.readyState);
         console.log(str = e.data.trim());
     }
 
@@ -543,7 +543,7 @@ function initWSPage(file) {
             paginationButtons.render();
             paginationButtons.onChange(e => {
                 socket.send(e.target.value);
-                console.log("Onmessage connection", socket.readyState);
+                console.log("Websocket status connection", socket.readyState);
                 console.log(e);
                 Page = e.target.value;
                 console.log('-- changed', e.target.value);
@@ -754,6 +754,7 @@ function PaginationButton(totalPages, maxPagesVisible = 10, currentPage = 1) {
             btn.classList.add('active');
             currentPageBtn = btn;
             currentPageBtn.focus();
+            console.log("Page selected ")
         }
     };
 

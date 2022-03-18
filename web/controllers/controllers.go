@@ -36,6 +36,8 @@ var (
 	startUnixTime int64
 	endUnixTime   int64
 	pointH        string
+	page          = 1
+	timer         int
 )
 
 type MyStruct struct {
@@ -136,20 +138,30 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	//
+	go func() {
+		for {
+			if logenc.CheckFileSum(filename, "", "") == true {
+				Indexing(conn, filename)
+			}
+		}
+	}()
+
 	// If the file is found, only then start tailing the file.
 	// This is to prevent arbitrary file access. Otherwise send a 403 status
 	// This should take care of stacking of filenames as it would first
 	// be searched as a string in the index, if not found then rejected.
-	msgType, msg, _ := conn.ReadMessage()
+	/* msgType, msg, _ := conn.ReadMessage()
 	fmt.Println("msgType", msgType)
 	fmt.Println("msg", string(msg[:]))
-	fmt.Println(msg)
+	fmt.Println(msg) */
 
-	command, _ := strconv.Atoi(string(msg[:]))
+	//command, _ := strconv.Atoi(string(msg[:]))
+	go followThePage(conn)
 
 	if ok {
 
-		util.TailFile(conn, filename, search, SearchMap, command)
+		util.TailFile(conn, filename, search, SearchMap, page)
 
 	}
 
@@ -160,6 +172,37 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	//w.WriteHeader(http.StatusUnauthorized)
 }
+
+//TODO: For pagination
+func followThePage(conn *websocket.Conn) {
+	for {
+
+		msgType, msg, _ := conn.ReadMessage()
+		fmt.Println("msgType", msgType)
+		fmt.Println("msg", string(msg[:]))
+		fmt.Println(msg)
+		page, _ = strconv.Atoi(string(msg[:]))
+
+	}
+}
+
+/* func checkChangeFile(conn *websocket.Conn, fileaddr string) {
+	// Определяем тикер
+	ticker := time.NewTicker(time.Millisecond * 500)
+	// Триггер тикера
+	go func() {
+		for t := range ticker.C {
+			fmt.Println(t)
+			if logenc.CheckFileSum(fileaddr, "", "") == true {
+				Indexing(conn, fileaddr)
+			}
+		}
+	}()
+
+	time.Sleep(time.Second * 20)
+	// Остановить тикер
+	ticker.Stop()
+} */
 
 func SearchHandler(_ http.ResponseWriter, r *http.Request) {
 	search = r.URL.Query().Get("search_string")
