@@ -209,6 +209,8 @@ func CopyFile(dirpath string, path string, label string, fileOs *os.File) {
 	}
 }
 
+//:TODO
+//Rewrite Merge
 func Merge(dirpath string, path string) {
 	fileN := filepath.Base(path)
 	//var wg sync.WaitGroup

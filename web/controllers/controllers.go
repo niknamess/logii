@@ -250,11 +250,11 @@ func Indexing(conn *websocket.Conn, fileaddr string) {
 		fileN := filepath.Base(fileaddr)
 		fmt.Println(fileaddr)
 		go logenc.Replication(fileaddr)
-		go func() {
-			conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
-			bleveSI.ProcBleve(fileN, fileaddr)
-			conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
-		}()
+		//go func() {
+		conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
+		bleveSI.ProcBleve(fileN, fileaddr)
+		conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
+		//}()
 		SearchMap = logenc.ProcMapFile(fileaddr)
 	}
 }
