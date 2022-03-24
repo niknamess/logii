@@ -26,7 +26,7 @@ import (
 	//"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
-var paginationUlids map[string]string
+var paginationUlids map[int]string
 
 var (
 	FileName []string
@@ -40,6 +40,8 @@ var (
 	current     int64 = 638
 	Fname       string
 	countSearch int
+	currentfile string
+	page        int = 0
 )
 
 type FileStruct struct {
@@ -59,7 +61,7 @@ type Map map[string]string
 // file and writes the changes into the connection. Recommended to run on
 // a thread as this is blocking in nature
 
-func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, page int) {
+func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) {
 	//paginationUlids = make(map[string]int64)
 	fmt.Println("Fname", Fname)
 	var (
@@ -95,36 +97,45 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 		return
 	}
-
+	currentfile = fileN
+	page = 0
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		var (
-			commoncsv logenc.LogList
-			//countline int = 0
+			//commoncsv logenc.LogList
+			countline int = 0
 		)
 		TransmitUlidPagination(conn, fileName)
+
 		for line := range taillog.Lines {
+			go followCodeStatus(conn)
 			current, _ = taillog.Tell()
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			//commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-			//countline++
+			countline++
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-			commoncsv = logenc.LogList{}
-			//if countline == 500 {
-			//current, _ = taillog.Tell()
-			//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-			//	countline = 0
+			//fmt.Println("sssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
 			//commoncsv = logenc.LogList{}
+			//fmt.Println(currentfile)
+			//fmt.Println(fileN)
+			if currentfile != fileN {
+				taillog.Stop()
+			}
+			if countline == 500 {
+				//current, _ = taillog.Tell()
+				//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+				//	countline = 0
+				//commoncsv = logenc.LogList{}
 
-			//taillog.Stop()
-			//return
-			//}
+				taillog.Stop()
+				//return
+			}
 			//go taillog.StopAtEOF()
 			//go taillog.StopAtEOF() //end tail and stop service
 
 		}
 
-		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-		commoncsv = logenc.LogList{}
+		//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+		//commoncsv = logenc.LogList{}
 		//countline = 0
 		strSlice = nil
 		//taillog.Stop()
@@ -205,9 +216,29 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 }
 
+func followCodeStatus(conn *websocket.Conn) {
+
+	msgType, msg, err := conn.ReadMessage()
+	if err != nil {
+		log.Println(err, "followCodeStatus")
+		return
+	}
+	fmt.Println("msgType", msgType)
+	//fmt.Println("msg", string(msg[:]))
+	//fmt.Println(msg)
+	page, err = strconv.Atoi(string(msg[:]))
+	if err != nil {
+		currentfile = string(msg)
+	}
+	fmt.Println("Page", page)
+
+	//code, _ = strconv.Atoi(string(msg[:]))
+
+}
+
 func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 	var CountPage string
-	paginationUlids = make(map[string]string)
+	paginationUlids = make(map[int]string)
 	var (
 		strSlice []string
 
@@ -239,7 +270,7 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 			firstUlid = strSlice[1]
 			//strconv.Itoa(page)
 			//	paginationUlids[strconv.Itoa(page)] = ir_table{ulid: firstUlid, point: current}
-			paginationUlids[logenc.Convert1to1000(page)] = firstUlid
+			paginationUlids[page] = firstUlid
 			strSlice = nil
 
 		}
@@ -249,17 +280,18 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 	CountPage = "<countpage>" + strconv.Itoa(page) + "</countpage>"
 	conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
 	firstUlid = strSlice[1]
-	paginationUlids[logenc.Convert1to1000(page)] = firstUlid
+	//paginationUlids[logenc.Convert1to1000(page)] = firstUlid
+	paginationUlids[page] = firstUlid
 
-	x, _ := xml.MarshalIndent(Map(paginationUlids), " ", "  ")
-	fmt.Println(string(x))
-	conn.WriteMessage(websocket.TextMessage, []byte(string(x)))
+	//x, _ := xml.MarshalIndent(Map(paginationUlids), " ", "  ")
+	//fmt.Println(string(x))
+	//conn.WriteMessage(websocket.TextMessage, []byte(string(x)))
 	for key, value := range paginationUlids {
 		fmt.Println("Key:", key, "Value:", value)
 	}
 
 	fmt.Println("map", (paginationUlids))
-	fmt.Println("func", createKeyValuePairs(paginationUlids))
+	//fmt.Println("func", createKeyValuePairs(paginationUlids))
 	countline = 0
 	strSlice = nil
 	//taillog.Stop()

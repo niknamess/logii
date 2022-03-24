@@ -361,7 +361,7 @@ function initWS(file, type) {
         //console.log("Test", typePage);
         //console.log("numPages ", numPages);
         // console.log("Websocket status connection before", socket.readyState);
-        socket.send(typePage);
+        socket.send(file.replace(/^.*[\\\/]/, ''));
         //console.log("Websocket status connection after", socket.readyState);
         //socket.close;
 
@@ -471,101 +471,6 @@ function initWS(file, type) {
 
     return socket;
 }
-
-
-
-function initWSPage(file) {
-
-    var observer = new MutationObserver(function(_mutations, me) {
-        // `mutations` is an array of mutations that occurred
-        // `me` is the MutationObserver instance
-        start = document.getElementById('Foxtrot');
-        if (start) {
-            handleCanvas(start);
-            me.disconnect(); // stop observing
-            return;
-        }
-    });
-
-    // start observin
-    observer.observe(document, {
-        childList: true,
-        subtree: true
-    });
-
-
-    var ws_proto = "ws:"
-    if (window.location.protocol === "https:") {
-        ws_proto = "wss:"
-    }
-    var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
-    var container = angular.element(document.querySelector("#container"));
-    var sysMsgAll = angular.element(document.querySelector("#sysMsgAll"));
-    container.html("")
-    socket.onopen = function(e) {
-
-        strf = file
-        if (strf.indexOf("undefined") != 0) {
-
-            container.append("TODO:");
-
-        }
-
-        console.log("Test", typePage);
-        console.log("Websocket status connection before", socket.readyState);
-        socket.send(typePage);
-        console.log("Websocket status connection after", socket.readyState);
-        console.log(str = e.data.trim());
-    }
-
-    socket.onmessage = function(e) {
-        var loglist
-        var map
-        str = e.data.trim();
-
-
-        parser = new DOMParser();
-        xmlDoc = parser.parseFromString(str, "text/xml");
-        loglist = xmlDoc.getElementsByTagName("loglist");
-        map = xmlDoc.getElementsByTagName("Map");
-        countpage = xmlDoc.getElementsByTagName("countpage");
-
-        //console.log("It is str", str)
-        k2 = isEmpty(loglist);
-        k3 = isEmpty(map);
-        k4 = isEmpty(countpage);
-        if (k4 == false) {
-            console.log("countpage:", str);
-            console.log("length", ParseCount(str));
-            //clear
-            $(".pagtest").empty();
-            numPages = parseInt(ParseCount(str));
-
-            const paginationButtons = new PaginationButton(numPages, 5);
-            paginationButtons.render();
-            paginationButtons.onChange(e => {
-                socket.send(e.target.value);
-                console.log("Websocket status connection", socket.readyState);
-                console.log(e);
-                Page = e.target.value;
-                console.log('-- changed', e.target.value);
-            });
-        }
-
-
-    }
-    socket.onclose = function() {
-        quotation("sysMsgAll", "<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
-        // sysMsgAll.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
-    }
-    socket.onerror = function(e) {
-        sysMsgAll.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
-    }
-
-    return socket;
-}
-
-
 
 
 

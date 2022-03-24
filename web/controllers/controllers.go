@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"strconv"
 	"time"
 
 	//"encoding/json"
@@ -36,8 +35,6 @@ var (
 	startUnixTime int64
 	endUnixTime   int64
 	pointH        string
-	page          = 1
-	timer         int
 )
 
 type MyStruct struct {
@@ -157,11 +154,11 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(msg) */
 
 	//command, _ := strconv.Atoi(string(msg[:]))
-	go followThePage(conn)
+	//go followThePage(conn)
 
 	if ok {
 
-		util.TailFile(conn, filename, search, SearchMap, page)
+		util.TailFile(conn, filename, search, SearchMap)
 
 	}
 
@@ -174,7 +171,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 //TODO: For pagination
-func followThePage(conn *websocket.Conn) {
+/* func followThePage(conn *websocket.Conn) {
 
 	msgType, msg, _ := conn.ReadMessage()
 	fmt.Println("msgType", msgType)
@@ -182,7 +179,7 @@ func followThePage(conn *websocket.Conn) {
 	fmt.Println(msg)
 	page, _ = strconv.Atoi(string(msg[:]))
 
-}
+} */
 
 /* func checkChangeFile(conn *websocket.Conn, fileaddr string) {
 	// Определяем тикер
