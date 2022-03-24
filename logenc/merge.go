@@ -160,29 +160,29 @@ func CreateDir(dirpath string, path string) {
 	}
 }
 
-func DeleteOldsFiles(dirpath string, path string, labels string) {
+func DeleteOldsFiles(path string, labels string) {
 	fileN := filepath.Base(path)
-	log.Println("RemoveOldfile:", dirpath+fileN+labels)
+	log.Println("RemoveOldfile:", path+fileN+labels)
 	//err := os.Remove(dirpath + "/" + fileN + labels)
-	err := os.Remove(dirpath + fileN + labels)
+	err := os.Remove(path + fileN + labels)
 	if err != nil {
 		log.Println("DeleteOldsFiles err:", err)
 	}
 
 }
 
-func RenameFile(dirpath string, path string, label string) {
+func RenameFile(path string, label string) {
 	fileN := filepath.Base(path)
-	Original_Path := dirpath + fileN
-	New_Path := dirpath + fileN + label
+	Original_Path := path + fileN
+	New_Path := path + fileN + label
 	e := os.Rename(Original_Path, New_Path)
 	if e != nil {
 		log.Println("RenameFile:", e)
 	}
 }
 
-func OpenCreateFile(dirpath string, path string, label string) {
-	fileN := filepath.Base(path)
+func OpenCreateFile(dirpath string, label string) {
+	fileN := filepath.Base(dirpath)
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 	if err != nil {
@@ -192,8 +192,8 @@ func OpenCreateFile(dirpath string, path string, label string) {
 	file.Close()
 }
 
-func CopyFile(dirpath string, path string, label string, fileOs *os.File) {
-	fileN := filepath.Base(path)
+func CopyFile(dirpath string, label string, fileOs *os.File) {
+	fileN := filepath.Base(dirpath)
 	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Println("CopyFile error", err)
@@ -226,17 +226,18 @@ func Merge(dirpath string, path string) {
 	if !CheckFileSum(path, "rep", "") {
 		return
 	} else {
-		RenameFile(dirpath, path, "old")
-		CopyFile(dirpath, path, "new", original)
-		OpenCreateFile(dirpath, path, "old")
+		//RenameFile(dirpath, path, "old")
+		RenameFile(path, "new")
+		//CopyFile(dirpath, "new", original)
+		//OpenCreateFile(dirpath, "")
 		fileNew, err := os.OpenFile(dirpath+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 
 		if err != nil {
 			log.Fatal("Open in Merge", err)
 		}
-		FC, _ := os.Open(dirpath + fileN + "new")
+		FC, _ := os.Open("./testsave/" + fileN + "new")
 		defer FC.Close()
-		FN, _ := os.Open(dirpath + fileN + "old")
+		FN, _ := os.Open(dirpath + fileN)
 		defer FN.Close()
 		scanner1 := bufio.NewScanner(FN)
 		scanner2 := bufio.NewScanner(FC)
@@ -280,8 +281,8 @@ func Merge(dirpath string, path string) {
 
 		//f.Close()
 		fileNew.Close()
-		DeleteOldsFiles(dirpath, path, "old")
-		DeleteOldsFiles(dirpath, path, "new")
+		//DeleteOldsFiles(dirpath, path, "old")
+		DeleteOldsFiles(path, "new")
 	}
 
 }
@@ -303,8 +304,8 @@ func IsDirEmpty(name string) (bool, error) {
 }
 
 func Replication(path string) {
-	var dirpath string = "./repdata/"
-	CreateDir(dirpath, "")
+	var reppath string = "./repdata/"
+	CreateDir(reppath, "")
 
 	fileN := filepath.Base(path)
 	original, err := os.Open(path)
@@ -314,27 +315,27 @@ func Replication(path string) {
 	}
 	defer original.Close()
 
-	files, err := ioutil.ReadDir(dirpath)
+	files, err := ioutil.ReadDir(reppath)
 	if err != nil {
 
 		log.Fatal("ReadDir", err)
 	}
 
-	ok, err := IsDirEmpty(dirpath)
+	ok, err := IsDirEmpty(reppath)
 	if err != nil {
 		fmt.Println("DirEmpty", err)
 
 	}
 	if ok {
 		//CreateDir(path)
-		CopyFile(dirpath, path, "", original)
-		WriteFileSum(dirpath+fileN, "rep", "")
+		CopyFile(reppath, "", original)
+		WriteFileSum(reppath+fileN, "rep", "")
 	} else {
 		for _, f := range files {
 			//fmt.Println(f.Name())
 			if f.Name() == fileN {
-				Merge(dirpath, path)
-				WriteFileSum(dirpath+fileN, "rep", "")
+				Merge(reppath, path)
+				WriteFileSum(reppath+fileN, "rep", "")
 
 				return
 			}
@@ -342,7 +343,7 @@ func Replication(path string) {
 	}
 	if !ok {
 		//CreateDir(path)
-		CopyFile(dirpath, path, "", original)
+		CopyFile(reppath, "", original)
 		WriteFileSum(path, "rep", "")
 	}
 

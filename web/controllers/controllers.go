@@ -175,15 +175,13 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 //TODO: For pagination
 func followThePage(conn *websocket.Conn) {
-	for {
 
-		msgType, msg, _ := conn.ReadMessage()
-		fmt.Println("msgType", msgType)
-		fmt.Println("msg", string(msg[:]))
-		fmt.Println(msg)
-		page, _ = strconv.Atoi(string(msg[:]))
+	msgType, msg, _ := conn.ReadMessage()
+	fmt.Println("msgType", msgType)
+	fmt.Println("msg", string(msg[:]))
+	fmt.Println(msg)
+	page, _ = strconv.Atoi(string(msg[:]))
 
-	}
 }
 
 /* func checkChangeFile(conn *websocket.Conn, fileaddr string) {
@@ -248,12 +246,12 @@ func Indexing(conn *websocket.Conn, fileaddr string) {
 		return
 	} else {
 		fileN := filepath.Base(fileaddr)
-		fmt.Println(fileaddr)
-		go logenc.Replication(fileaddr)
+		//fmt.Println(fileaddr)
+		//logenc.Replication(fileaddr)
 		//go func() {
-		conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
+		//conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
 		bleveSI.ProcBleve(fileN, fileaddr)
-		conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
+		//conn.WriteMessage(websocket.TextMessage, []byte("Indexing complated"))
 		//}()
 		SearchMap = logenc.ProcMapFile(fileaddr)
 	}
@@ -279,7 +277,7 @@ func ViewDir(conn *websocket.Conn, search string) {
 	for i := 0; i < countFiles; i++ {
 		fileaddr := fileList["FileList"][i]
 		fileN := filepath.Base(fileaddr)
-		go logenc.Replication(fileaddr)
+		//go logenc.Replication(fileaddr)
 		bleveSI.ProcBleve(fileN, fileaddr)
 		util.TailDir(conn, fileaddr, search, SearchMap, startUnixTime, endUnixTime)
 		//conn.WriteMessage(websocket.TextMessage, []byte(filepath.Base(fileList["FileList"][i])))

@@ -274,6 +274,8 @@ func ProcLineDecodeXMLType(line string) (typem string) {
 func ProcMapFile(file string) map[string]LogList {
 	//func ProcMapFile(file string) {
 	if len(file) <= 0 {
+		log.Println("ProcMapFile file = 0")
+
 		return nil
 	}
 	ch := make(chan string, 100)
@@ -286,19 +288,21 @@ func ProcMapFile(file string) map[string]LogList {
 			if !ok {
 				break
 			}
+			wg.Add(1)
 			go func(line string) {
-				wg.Add(1)
-				defer wg.Done()
+				//wg.Add(1)
+				//defer wg.Done()
 				data = ProcLineDecodeXML(line)
 				//datas = ProcLineCSVLoglost(line)\
-				mu.Lock()
+				//mu.Lock()
 				if len(data.XML_RECORD_ROOT) > 0 {
-					//mu.Lock()
+					mu.Lock()
 
 					SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = data
-					//mu.Unlock()
+					mu.Unlock()
 				}
-				mu.Unlock()
+				//mu.Unlock()
+				defer wg.Done()
 			}(line)
 
 		}
@@ -309,8 +313,9 @@ func ProcMapFile(file string) map[string]LogList {
 	if err != nil {
 		log.Fatalf("ReadLines: %s", err)
 	}
-	wg.Wait()
+
 	close(ch)
+	wg.Wait()
 	return SearchMap
 }
 

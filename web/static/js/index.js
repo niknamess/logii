@@ -279,7 +279,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         lastItem = file;
 
 
-        console.log(file)
+        console.log(filename)
         $scope.showCard = false;
         angular.element(document.querySelector("#filename")).html("File: " + filename)
 
@@ -352,6 +352,8 @@ function initWS(file, type) {
             container.append("TODO:");
 
         }
+        console.log(file);
+
         //str = e.data.trim();
         //console.log("str", e);
         //console.log("page", page)

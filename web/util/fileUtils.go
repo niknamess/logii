@@ -26,11 +26,6 @@ import (
 	//"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
-type ir_table struct {
-	ulid  string
-	point int64
-}
-
 var paginationUlids map[string]string
 
 var (
@@ -84,47 +79,6 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		}
 	}
 	fmt.Println("Command", page)
-	if page == -1 {
-		//For search it is work
-		if countSearch >= 1999 && (lookFor != "" && lookFor != " " && lookFor != "Search") {
-			countSearch = countSearch - 2000
-			fmt.Println("Сравнение countSearch", countSearch)
-		} else {
-			countSearch = 0
-		}
-
-		// /fmt.Println("CurrentIndex", PreviousPageall(fileName))
-
-		// если шаг назад...
-		/* if countSearch >= 999 {
-			countSearch = countSearch -
-		}
-		*/
-		if lookFor == "" || lookFor == " " || lookFor == "Search" {
-			tailFirst, err := tail.TailFile(fileName,
-				tail.Config{
-					Follow: true,
-					Location: &tail.SeekInfo{
-						Whence: io.SeekStart, //!!!
-
-					},
-				})
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
-				return
-			}
-			for line := range tailFirst.Lines {
-				fmt.Println("firstUlid firstUlid", firstUlid)
-				if firstUlid == logenc.ProcLineDecodeXMLUlid(line.Text) {
-					current, _ = tailFirst.Tell()
-					fmt.Println("Сравнение current", current)
-					break
-
-				}
-			}
-
-		}
-	}
 
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	//lineCounter(fileName)
@@ -145,35 +99,35 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 		var (
 			commoncsv logenc.LogList
-			countline int = 0
+			//countline int = 0
 		)
 		TransmitUlidPagination(conn, fileName)
 		for line := range taillog.Lines {
 			current, _ = taillog.Tell()
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-			countline++
-			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+			//commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+			//countline++
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
 			commoncsv = logenc.LogList{}
-			if countline == 500 {
-				//current, _ = taillog.Tell()
-				//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-				countline = 0
-				commoncsv = logenc.LogList{}
+			//if countline == 500 {
+			//current, _ = taillog.Tell()
+			//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+			//	countline = 0
+			//commoncsv = logenc.LogList{}
 
-				taillog.Stop()
-				return
-			}
-			go taillog.StopAtEOF()
+			//taillog.Stop()
+			//return
+			//}
+			//go taillog.StopAtEOF()
 			//go taillog.StopAtEOF() //end tail and stop service
 
 		}
 
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 		commoncsv = logenc.LogList{}
-		countline = 0
+		//countline = 0
 		strSlice = nil
-		taillog.Stop()
+		//taillog.Stop()
 		//fmt.Println("lastulid", lastulid)
 		return
 
@@ -571,7 +525,7 @@ func GetFiles(address string, port string) error {
 			resp, err := client.Get(fullURLFile)
 			if err != nil {
 
-				logenc.DeleteOldsFiles("./testsave/", fileName, "")
+				logenc.DeleteOldsFiles("./testsave/"+fileName, "")
 				return
 				//log.Fatal(err)
 			}
@@ -593,7 +547,7 @@ func GetFiles(address string, port string) error {
 				}
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 				log.Println("*1")
-				logenc.DeleteOldsFiles("./testsave/", fileName, "")
+				logenc.DeleteOldsFiles("./testsave/"+fileName, "")
 
 			} else if !contain {
 				_, err = io.Copy(file, resp.Body)
@@ -607,20 +561,20 @@ func GetFiles(address string, port string) error {
 				last3 := fileName[len(fileName)-3:]
 				if logenc.CheckFileSum("./testsave/"+fileName, last3, "") {
 					log.Println("*2")
-					logenc.DeleteOldsFiles("./repdata/", fileName, "")
+					logenc.DeleteOldsFiles("./repdata/"+fileName, "")
 					logenc.Replication("./testsave/" + fileName)
 					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 					fmt.Println("Merge", fileName)
 
 					log.Println("*3")
-					logenc.DeleteOldsFiles("./testsave/", fileName, "")
+					logenc.DeleteOldsFiles("./testsave/"+fileName, "")
 
 				} else {
 					logenc.Replication("./testsave/" + fileName)
 					logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 					fmt.Println("Merge", fileName)
 					log.Println("*4")
-					logenc.DeleteOldsFiles("./testsave/", fileName, "")
+					logenc.DeleteOldsFiles("./testsave/"+fileName, "")
 				}
 
 			} else if !signature && !contain {
@@ -628,7 +582,7 @@ func GetFiles(address string, port string) error {
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 				fmt.Println("Merge", fileName)
 				log.Println("*5")
-				logenc.DeleteOldsFiles("./testsave/", fileName, "")
+				logenc.DeleteOldsFiles("./testsave/"+fileName, "")
 			}
 
 		}()
@@ -701,7 +655,7 @@ func FindOldestfile(dir string) {
 
 		}
 	}
-	logenc.DeleteOldsFiles(dir, name, "")
+	logenc.DeleteOldsFiles(dir+name, "")
 }
 
 func DeleteFile90(dir string) {
@@ -717,7 +671,7 @@ func DeleteFile90(dir string) {
 		//fmt.Println(info.Name())
 		if diff := now.Sub(info.ModTime()); diff > cutoff {
 			fmt.Printf("Deleting %s which is %s old\n", info.Name(), diff)
-			logenc.DeleteOldsFiles(dir, info.Name(), "")
+			logenc.DeleteOldsFiles(dir+info.Name(), "")
 
 		}
 	}

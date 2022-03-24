@@ -24,7 +24,7 @@ func Remove(dirpath string, lineS string) {
 		//fmt.Println(fileN)
 		contain := strings.Contains(fileN, lineS)
 		if contain {
-			logenc.DeleteOldsFiles(dirpath, fileN, "")
+			logenc.DeleteOldsFiles(dirpath+fileN, "")
 		}
 
 	}
