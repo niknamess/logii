@@ -105,18 +105,18 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			countline int = 0
 		)
 		TransmitUlidPagination(conn, fileName)
-
+		go followCodeStatus(conn)
 		for line := range taillog.Lines {
-			go followCodeStatus(conn)
+			//go followCodeStatus(conn)
 			current, _ = taillog.Tell()
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			//commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-			//fmt.Println("sssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
-			//commoncsv = logenc.LogList{}
-			//fmt.Println(currentfile)
-			//fmt.Println(fileN)
+			//	fmt.Println("sssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
+			//	commoncsv = logenc.LogList{}
+			//	fmt.Println(currentfile)
+			//	fmt.Println(fileN)
 			if currentfile != fileN {
 				taillog.Stop()
 			}
@@ -217,21 +217,22 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 }
 
 func followCodeStatus(conn *websocket.Conn) {
-
-	msgType, msg, err := conn.ReadMessage()
-	if err != nil {
-		log.Println(err, "followCodeStatus")
-		return
+	//Reset(conn)
+	for {
+		msgType, msg, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err, "followCodeStatus")
+			return
+		}
+		fmt.Println("msgType", msgType)
+		//fmt.Println("msg", string(msg[:]))
+		//fmt.Println(msg)
+		page, err = strconv.Atoi(string(msg[:]))
+		if err != nil {
+			currentfile = string(msg)
+		}
+		fmt.Println("Page", page)
 	}
-	fmt.Println("msgType", msgType)
-	//fmt.Println("msg", string(msg[:]))
-	//fmt.Println(msg)
-	page, err = strconv.Atoi(string(msg[:]))
-	if err != nil {
-		currentfile = string(msg)
-	}
-	fmt.Println("Page", page)
-
 	//code, _ = strconv.Atoi(string(msg[:]))
 
 }

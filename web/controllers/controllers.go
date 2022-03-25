@@ -172,7 +172,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 //TODO: For pagination
 /* func followThePage(conn *websocket.Conn) {
-
+for{
 	msgType, msg, _ := conn.ReadMessage()
 	fmt.Println("msgType", msgType)
 	fmt.Println("msg", string(msg[:]))
