@@ -33,7 +33,7 @@ const pageNumbers = (total, max, current) => {
 
     return Array.from({ length: Math.min(total, max) }, (_, i) => (i + 1) + from);
 }
-
+var countRows = 0
 var countWar = 0;
 var countErr = 0;
 var countInf = 0;
@@ -335,12 +335,19 @@ function initWS(file, type) {
         xmlDoc = parser.parseFromString(str, "text/xml");
         loglist = xmlDoc.getElementsByTagName("loglist");
         map = xmlDoc.getElementsByTagName("Map");
+        start = xmlDoc.getElementsByTagName("start");
         countpage = xmlDoc.getElementsByTagName("countpage");
 
         //console.log("It is str", str)
         k2 = isEmpty(loglist);
         k3 = isEmpty(map);
         k4 = isEmpty(countpage);
+        k5 = isEmpty(start)
+
+
+        if (k4 == false) {
+            console.log("Почалось");
+        }
 
         if (k4 == false) {
 

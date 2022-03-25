@@ -148,7 +148,7 @@ func Use(handler http.HandlerFunc, mid ...func(http.Handler) http.HandlerFunc) h
 
 func CheckFiles(address string, port string, ctx context.Context) {
 
-	for range time.Tick(time.Second * 3) {
+	for range time.Tick(time.Second * 2) {
 		if len(missadr) == 0 {
 			missadr = append(missadr, "nope")
 		}
@@ -180,7 +180,7 @@ func CheckFiles(address string, port string, ctx context.Context) {
 				wg.Add(1)
 				go reconect(address)
 				wg.Wait()
-				time.Sleep(time.Second * 5)
+				time.Sleep(time.Second * 20)
 				continue
 
 			}

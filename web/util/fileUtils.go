@@ -108,12 +108,13 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		go followCodeStatus(conn)
 		for line := range taillog.Lines {
 			//go followCodeStatus(conn)
+
 			current, _ = taillog.Tell()
+
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			//commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-			//	fmt.Println("sssssssssssssssssssssssssssssssssssssssssssssssssssssssss")
 			//	commoncsv = logenc.LogList{}
 			//	fmt.Println(currentfile)
 			//	fmt.Println(fileN)
@@ -705,6 +706,29 @@ func DeleteFile90(dir string) {
 	}
 
 }
+
+//Check 30 seconds file chancge
+//:TODO
+func FindNewChangeFile(dir string) {
+
+	var cutoff = 24 * time.Hour * 90
+	fileInfo, err := ioutil.ReadDir(dir)
+	if err != nil {
+		log.Fatal("DeleteFile90", err.Error())
+	}
+	now := time.Now()
+	//fmt.Println(now)
+	for _, info := range fileInfo {
+		//fmt.Println(info.Name())
+		if diff := now.Sub(info.ModTime()); diff > cutoff {
+			fmt.Printf("Deleting %s which is %s old\n", info.Name(), diff)
+			logenc.DeleteOldsFiles(dir+info.Name(), "")
+
+		}
+	}
+
+}
+
 func CheckIPAddress(ip string) bool {
 	/* if ip == "localhost" {
 		fmt.Printf("IP Address: %s - Valid\n", ip)
