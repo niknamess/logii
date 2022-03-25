@@ -95,7 +95,7 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 		time.Sleep(time.Second * 2)
 	}
 
-	go CheckFiles("localhost", "10015", ctxCF)
+	//go CheckFiles("localhost", "10015", ctxCF)
 
 	time.Sleep(time.Second * 10)
 
@@ -212,7 +212,7 @@ func EnterIp() {
 		fmt.Scanln(&limit)
 
 		if limit == "stop" {
-			ipaddr = append(ipaddr, "localhost")
+			//ipaddr = append(ipaddr, "localhost")
 			limitSlice, _ := CheckConfig()
 			ipaddr = append(ipaddr, limitSlice...)
 			ipaddr = removeDuplicateStr(ipaddr)

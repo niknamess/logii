@@ -162,9 +162,11 @@ func CreateDir(dirpath string, path string) {
 
 func DeleteOldsFiles(path string, labels string) {
 	fileN := filepath.Base(path)
-	log.Println("RemoveOldfile:", path+fileN+labels)
+	log.Println("RemoveOldfile fileN:", fileN)
+
+	log.Println("RemoveOldfile:", path+labels)
 	//err := os.Remove(dirpath + "/" + fileN + labels)
-	err := os.Remove(path + fileN + labels)
+	err := os.Remove(path + labels)
 	if err != nil {
 		log.Println("DeleteOldsFiles err:", err)
 	}
@@ -173,6 +175,8 @@ func DeleteOldsFiles(path string, labels string) {
 
 func RenameFile(path string, label string) {
 	fileN := filepath.Base(path)
+	log.Println("RenameFile fileN:", fileN)
+
 	Original_Path := path + fileN
 	New_Path := path + fileN + label
 	e := os.Rename(Original_Path, New_Path)
@@ -268,6 +272,7 @@ func Merge(dirpath string, path string) {
 
 		//f, _ := os.Create("test" + fileN)
 		ch3 := MergeLines(ch1, ch2)
+		//os.Truncate(dirpath+fileN, 0)
 		for val := range ch3 {
 
 			if len(val.XML_RECORD_ROOT) != 0 {
@@ -281,7 +286,7 @@ func Merge(dirpath string, path string) {
 
 		//f.Close()
 		fileNew.Close()
-		//DeleteOldsFiles(dirpath, path, "old")
+		DeleteOldsFiles(path, "")
 		DeleteOldsFiles(path, "new")
 	}
 
