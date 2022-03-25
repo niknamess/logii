@@ -148,13 +148,6 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	// This is to prevent arbitrary file access. Otherwise send a 403 status
 	// This should take care of stacking of filenames as it would first
 	// be searched as a string in the index, if not found then rejected.
-	/* msgType, msg, _ := conn.ReadMessage()
-	fmt.Println("msgType", msgType)
-	fmt.Println("msg", string(msg[:]))
-	fmt.Println(msg) */
-
-	//command, _ := strconv.Atoi(string(msg[:]))
-	//go followThePage(conn)
 
 	if ok {
 
@@ -162,12 +155,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	//util.TailFile(conn, filename, search, SearchMap, false)
-	//fmt.Println("LAstULID", currentUlid)
-	//search = ""
 	context.Clear(r)
-
-	//w.WriteHeader(http.StatusUnauthorized)
 }
 
 //TODO: For pagination

@@ -175,11 +175,6 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			//fmt.Println(v)
 			if found {
 
-				//:TODO create common structure
-				//PS: Merge xml structure
-				//:TODO map with xml structure
-				//structure <loglist> append <log></log>......<log></log></loglist>
-
 				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, v.XML_RECORD_ROOT...)
 				countCheck++
 				//currentUlid = v.XML_RECORD_ROOT[0].XML_ULID

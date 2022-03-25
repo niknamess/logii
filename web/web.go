@@ -282,8 +282,6 @@ func EnterIpReady(ipmas []string) {
 	config := Config{DataBase: DatabaseConfig{Hostt: ipaddr, Port: "10015"}}
 	data, _ = toml.Marshal(&config)
 
-	//TODO
-
 	err3 := ioutil.WriteFile("config.toml", data, 0666)
 
 	if err3 != nil {
