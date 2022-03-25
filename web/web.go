@@ -58,8 +58,8 @@ func ProcWeb(dir1 string, slice []string, ctx context.Context) (err error) {
 	generate_logs.Remove("./testsave/", "gen_logs_coded")
 	generate_logs.Remove("./testsave/", "md5")
 
-	logenc.CreateDir("./repdata/", "")
-	logenc.CreateDir("./testsave/", "")
+	logenc.CreateDir("./repdata/")
+	logenc.CreateDir("./testsave/")
 
 	kingpin.Parse()
 

@@ -20,31 +20,20 @@ const clickPageNumber = document.querySelectorAll('.clickPageNumber');
 const buttonPage = document.getElementById('page');
 
 const pageNumbers = (total, max, current) => {
-        const half = Math.floor(max / 2);
-        let to = max;
+    const half = Math.floor(max / 2);
+    let to = max;
 
-        if (current + half >= total) {
-            to = total;
-        } else if (current > half) {
-            to = current + half;
-        }
-
-        let from = Math.max(to - max, 0);
-
-        return Array.from({ length: Math.min(total, max) }, (_, i) => (i + 1) + from);
+    if (current + half >= total) {
+        to = total;
+    } else if (current > half) {
+        to = current + half;
     }
-    /* let current_page = 1;
-    this.init = function() {
-            changePage(1);
-            pageNumbers();
-            selectedPage();
-            clickPage();
-            addEventListeners();
-        } */
-    //
 
-var countRows = 0
-var currentPage = 1;
+    let from = Math.max(to - max, 0);
+
+    return Array.from({ length: Math.min(total, max) }, (_, i) => (i + 1) + from);
+}
+
 var countWar = 0;
 var countErr = 0;
 var countInf = 0;
@@ -101,17 +90,8 @@ buttonR.addEventListener('click', event => {
 });
 
 
-buttonPage.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            console.log("Page")
-            window.location.reload();
-        },
-        1 * 200
-    );
-});
 
-buttonNext.addEventListener('click', event => {
+/* buttonNext.addEventListener('click', event => {
     setTimeout(
         () => {
             //ws.close();
@@ -140,7 +120,7 @@ buttonPrev.addEventListener('click', event => {
         },
         1 * 200
     );
-});
+}); */
 
 
 inputform.addEventListener('keypress', function(e) {
@@ -330,50 +310,27 @@ function initWS(file, type) {
 
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
-    //var mapContainer = angular.element(document.querySelector("#mapContainer"));
     var sysMsgAll = angular.element(document.querySelector("#sysMsgAll"));
-    //var loading = angular.element(document.querySelector("#loading"));
     var count = 0
-        /* var cntinfo = angular.element(document.querySelector("#cntinfo"));
-        var cnterror = angular.element(document.querySelector("#cnterror"));
-        var cntwrng = angular.element(document.querySelector("#cntwrng"));
-        var ctndbg = angular.element(document.querySelector("#ctndbg"));
-        var cntall = angular.element(document.querySelector("#cntall"));
-        */
+
 
     container.html("")
     socket.onopen = function(e) {
-
-        //var filename = file.replace(/^.*[\\\/]/, '')
-        //container.append("<p><b>Tailing file: " + filename + "</b></p>");
         strf = file
         if (strf.indexOf("undefined") != 0) {
 
-            container.append("TODO:");
+            // container.append("Start table");
 
         }
         console.log(file);
-
-        //str = e.data.trim();
-        //console.log("str", e);
-        //console.log("page", page)
-        //if (page = "prev") {
-        //console.log("Test", typePage);
-        //console.log("numPages ", numPages);
-        // console.log("Websocket status connection before", socket.readyState);
         socket.send(file.replace(/^.*[\\\/]/, ''));
-        //console.log("Websocket status connection after", socket.readyState);
-        //socket.close;
 
     }
 
     socket.onmessage = function(e) {
-        //  console.log("Websocket status connection onmessage 1", socket.readyState);
         var loglist
         var map
         str = e.data.trim();
-        // console.log("Websocket status connection onmessage 2", socket.readyState);
-
         parser = new DOMParser();
         xmlDoc = parser.parseFromString(str, "text/xml");
         loglist = xmlDoc.getElementsByTagName("loglist");
@@ -384,13 +341,9 @@ function initWS(file, type) {
         k2 = isEmpty(loglist);
         k3 = isEmpty(map);
         k4 = isEmpty(countpage);
-        //  console.log("Websocket status connection onmessage 3", socket.readyState);
+
         if (k4 == false) {
-            //console.log(map)
-            //console.log(str)
-            //console.log("countpage:", str);
-            //  console.log("length", ParseCount(str));
-            //clear
+
             $(".pagtest").empty();
             numPages = parseInt(ParseCount(str));
 
@@ -429,9 +382,9 @@ function initWS(file, type) {
             quotation("cntwrng", "Warning:" + countWar);
             quotation("ctndbg", "Debug:" + countDbg);
             quotation("cntall", "All:" + countAll);
-            //countRows = 0;
-            // console.log("Websocket status connection onmessage 6", socket.readyState);
         } else {
+            //:TODO
+            //Loading 
             /* if (str == "Indexing file, please wait") {
                 loading.append(" <div id =\"load\" class=\"center\">" +
                     "<div class=\"wave\"></div>" +
@@ -661,7 +614,15 @@ function PaginationButton(totalPages, maxPagesVisible = 10, currentPage = 1) {
             btn.classList.add('active');
             currentPageBtn = btn;
             currentPageBtn.focus();
-            console.log("Page selected ")
+            console.log("Page selected ");
+            //управление выбранной кнокой (для теста кнопки)-> window.location.reload();
+            setTimeout(
+                () => {
+                    initWS(lastItem, statusS);
+                },
+                1 * 200
+            );
+
         }
     };
 

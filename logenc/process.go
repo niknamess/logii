@@ -167,7 +167,7 @@ func ProcWrite(dir string) {
 }
 
 func procFileWrite(file string) {
-	CreateDir("./writedeclog", "")
+	CreateDir("./writedeclog")
 	fileN := filepath.Base(file)
 
 	filew, err1 := os.OpenFile("./writedeclog/"+fileN+".log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)

@@ -8,12 +8,14 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	"github.com/oklog/ulid/v2"
 )
 
 var dlog bool = false
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 
 func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	res := make(chan LogList)
@@ -151,10 +153,10 @@ func MergeLines(ch1 chan LogList, ch2 chan LogList) chan LogList {
 	return res
 }
 
-func CreateDir(dirpath string, path string) {
-	fileN := filepath.Base(path)
+func CreateDir(dirpath string) {
+	//fileN := filepath.Base(path)
 	//Create a folder/directory at a full qualified path
-	err := os.MkdirAll(dirpath+fileN, os.ModePerm)
+	err := os.MkdirAll(dirpath, os.ModePerm)
 	if err != nil {
 		log.Println("CreateDir:", err)
 	}
@@ -197,8 +199,8 @@ func OpenCreateFile(dirpath string, label string) {
 }
 
 func CopyFile(dirpath string, label string, fileOs *os.File) {
-	fileN := filepath.Base(dirpath)
-	file, err := os.OpenFile(dirpath+fileN+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	//fileN := filepath.Base(dirpath)
+	file, err := os.OpenFile(dirpath+label, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Println("CopyFile error", err)
 		return
@@ -217,6 +219,7 @@ func CopyFile(dirpath string, label string, fileOs *os.File) {
 //Rewrite Merge
 func Merge(dirpath string, path string) {
 	fileN := filepath.Base(path)
+	fmt.Println("Merge", fileN)
 	//var wg sync.WaitGroup
 
 	ch1 := make(chan LogList, 100)
@@ -231,7 +234,7 @@ func Merge(dirpath string, path string) {
 		return
 	} else {
 		//RenameFile(dirpath, path, "old")
-		RenameFile(path, "new")
+		//RenameFile(path, "new")
 		//CopyFile(dirpath, "new", original)
 		//OpenCreateFile(dirpath, "")
 		fileNew, err := os.OpenFile(dirpath+fileN, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
@@ -239,7 +242,7 @@ func Merge(dirpath string, path string) {
 		if err != nil {
 			log.Fatal("Open in Merge", err)
 		}
-		FC, _ := os.Open("./testsave/" + fileN + "new")
+		FC, _ := os.Open("./testsave/" + fileN)
 		defer FC.Close()
 		FN, _ := os.Open(dirpath + fileN)
 		defer FN.Close()
@@ -272,25 +275,30 @@ func Merge(dirpath string, path string) {
 
 		//f, _ := os.Create("test" + fileN)
 		ch3 := MergeLines(ch1, ch2)
+		//RenameFile("./testsave/"+fileN+"new", RandStringRunes(4))
 		//os.Truncate(dirpath+fileN, 0)
+		exec.Command("/bin/bash", "-c", "echo > "+dirpath+fileN).Run()
+		count = 0
 		for val := range ch3 {
 
 			if len(val.XML_RECORD_ROOT) != 0 {
-
+				count++
 				xmlline := EncodeXML(val)
 				line := EncodeLine(xmlline)
+				//fmt.Println(xmlline)
 				//f.WriteString(line + "\n")
 				fileNew.WriteString(line + "\n")
 			}
 		}
-
+		fmt.Println("count>>>>>>>", count)
 		//f.Close()
 		fileNew.Close()
-		DeleteOldsFiles(path, "")
-		DeleteOldsFiles(path, "new")
+		//DeleteOldsFiles(path, "")
+		//DeleteOldsFiles(path, "new")
 	}
 
 }
+
 func IsDirEmpty(name string) (bool, error) {
 	f, err := os.Open(name)
 	if err != nil {
@@ -310,9 +318,10 @@ func IsDirEmpty(name string) (bool, error) {
 
 func Replication(path string) {
 	var reppath string = "./repdata/"
-	CreateDir(reppath, "")
+	CreateDir(reppath)
 
 	fileN := filepath.Base(path)
+	fmt.Println("Replication:", fileN)
 	original, err := os.Open(path)
 	if err != nil {
 		fmt.Println("Replication OpenFile ", err)
@@ -333,7 +342,8 @@ func Replication(path string) {
 	}
 	if ok {
 		//CreateDir(path)
-		CopyFile(reppath, "", original)
+		fmt.Println("Replication:", fileN)
+		CopyFile(reppath+fileN, "", original)
 		WriteFileSum(reppath+fileN, "rep", "")
 	} else {
 		for _, f := range files {
@@ -348,7 +358,7 @@ func Replication(path string) {
 	}
 	if !ok {
 		//CreateDir(path)
-		CopyFile(reppath, "", original)
+		CopyFile(reppath+fileN, "", original)
 		WriteFileSum(path, "rep", "")
 	}
 

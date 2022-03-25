@@ -81,7 +81,7 @@ func ProcGenN(count int, FileSize int64) int {
 
 	filesFrom := string(util.GetOutboundIP()[len(util.GetOutboundIP())-3:])
 	//	last3  := string(s[len(s)-3:])
-	logenc.CreateDir("./repdata", "")
+	logenc.CreateDir("./repdata")
 
 	for {
 
