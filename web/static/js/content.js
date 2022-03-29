@@ -1,6 +1,7 @@
 function handleCanvas(start) {
     start.focus();
     start.style.backgroundColor = 'green';
+    start.style.color = 'white';
     document.getElementById("message").innerHTML = start.cells.item(7).textContent
     document.getElementById("details").innerHTML = start.cells.item(8).textContent
     document.onkeydown = checkKey;

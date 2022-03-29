@@ -177,10 +177,10 @@ func CheckFiles(address string, port string, ctx context.Context) {
 				}
 
 				fmt.Println(missadr)
-				wg.Add(1)
+				//wg.Add(1)
 				go reconect(address)
-				wg.Wait()
-				time.Sleep(time.Second * 20)
+				//wg.Wait()
+				time.Sleep(time.Second * 5)
 				continue
 
 			}
@@ -191,7 +191,7 @@ func CheckFiles(address string, port string, ctx context.Context) {
 }
 
 func reconect(address string) {
-	defer wg.Done()
+	//defer wg.Done()
 
 	for i := range missadr {
 		if missadr[i] == address {

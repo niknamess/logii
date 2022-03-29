@@ -42,6 +42,7 @@ var (
 	countSearch int
 	currentfile string
 	page        int = 0
+	hashSumFile string
 )
 
 type FileStruct struct {
@@ -106,33 +107,56 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		)
 		TransmitUlidPagination(conn, fileName)
 		go followCodeStatus(conn)
+		hashSumFile = logenc.FileMD5(fileName)
+		//fmt.Println("Origin hashsum", logenc.FileMD5(fileName))
+
 		for line := range taillog.Lines {
 			//go followCodeStatus(conn)
+			//fmt.Println("Check", hashSumFile, logenc.FileMD5(fileName))
+			if hashSumFile != logenc.FileMD5(fileName) {
+				inf, _ := taillog.Tell()
+				log.Println("File change ", "OLD:", hashSumFile, "NEW:", logenc.FileMD5(fileName), "current tail:", inf)
+				hashSumFile = logenc.FileMD5(fileName)
+				//fmt.Println("---hashSumFile", hashSumFile)
+				//current = 0
+				conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
+				countline = 0
+			} else {
+				current, _ = taillog.Tell()
+				fmt.Println("---------", current)
+				csvsimpl := logenc.ProcLineDecodeXML(line.Text)
+				//commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
+				countline++
+				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
+				//	commoncsv = logenc.LogList{}
+				//	fmt.Println(currentfile)
+				//	fmt.Println(fileN)
+				if currentfile != fileN {
+					taillog.Stop()
+				}
+				if countline == 500 {
+					//current, _ = taillog.Tell()
+					//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+					//	countline = 0
+					//commoncsv = logenc.LogList{}
 
-			current, _ = taillog.Tell()
+					taillog.Stop()
 
+				}
+			}
+			//logenc.FileMD5(fileName)
+
+			/* current, _ = taillog.Tell()
+			fmt.Println("---------", current)
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			//commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
 			countline++
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-			//	commoncsv = logenc.LogList{}
-			//	fmt.Println(currentfile)
-			//	fmt.Println(fileN)
 			if currentfile != fileN {
 				taillog.Stop()
 			}
 			if countline == 500 {
-				//current, _ = taillog.Tell()
-				//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-				//	countline = 0
-				//commoncsv = logenc.LogList{}
-
 				taillog.Stop()
-				//return
-			}
-			//go taillog.StopAtEOF()
-			//go taillog.StopAtEOF() //end tail and stop service
-
+			} */
 		}
 
 		//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
@@ -709,12 +733,12 @@ func DeleteFile90(dir string) {
 
 //Check 30 seconds file chancge
 //:TODO
-func FindNewChangeFile(dir string) {
+/* func FindNewChangeFile(dir string) bool {
 
-	var cutoff = 24 * time.Hour * 90
+	var cutoff = 30 * time.Second
 	fileInfo, err := ioutil.ReadDir(dir)
 	if err != nil {
-		log.Fatal("DeleteFile90", err.Error())
+		log.Fatal("FindNewChangeFile", err.Error())
 	}
 	now := time.Now()
 	//fmt.Println(now)
@@ -722,12 +746,14 @@ func FindNewChangeFile(dir string) {
 		//fmt.Println(info.Name())
 		if diff := now.Sub(info.ModTime()); diff > cutoff {
 			fmt.Printf("Deleting %s which is %s old\n", info.Name(), diff)
-			logenc.DeleteOldsFiles(dir+info.Name(), "")
-
+			//logenc.DeleteOldsFiles(dir+info.Name(), "")
+			return true
 		}
 	}
 
-}
+	return false
+
+} */
 
 func CheckIPAddress(ip string) bool {
 	/* if ip == "localhost" {

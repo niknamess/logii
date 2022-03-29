@@ -345,8 +345,21 @@ function initWS(file, type) {
         k5 = isEmpty(start)
 
 
-        if (k4 == false) {
+        if (k5 == false) {
             console.log("Почалось");
+            clearBox("container")
+            countWar = 0;
+            countErr = 0;
+            countInf = 0;
+            countDbg = 0;
+            countAll = 0;
+            //clearBox("cntinfo")
+            //clearBox("cnterror")
+            //clearBox("cntwrng")
+            //clearBox("ctndbg")
+            //clearBox("cntall")
+
+
         }
 
         if (k4 == false) {
@@ -441,8 +454,10 @@ function ParseXml(str, type) {
     xmlDoc = parser.parseFromString(str, "application/xml");
     log = xmlDoc.getElementsByTagName("log");
     for (i = 0; i < log.length; i++) {
-        if (i == 0) {
+        if (i == 0 && countAll == 0) {
             heyho = "id='Foxtrot'"
+                /*  } else if (i == 0 && countAll == 1) {
+                     heyho = "id='follow'" */
         } else {
             heyho = ""
         }
@@ -625,7 +640,7 @@ function PaginationButton(totalPages, maxPagesVisible = 10, currentPage = 1) {
             //управление выбранной кнокой (для теста кнопки)-> window.location.reload();
             setTimeout(
                 () => {
-                    initWS(lastItem, statusS);
+                    //initWS(lastItem, statusS);
                 },
                 1 * 200
             );
@@ -684,4 +699,8 @@ function PaginationButton(totalPages, maxPagesVisible = 10, currentPage = 1) {
     this.onChange = (handler) => {
         paginationButtonContainer.addEventListener('change', handler);
     }
+}
+
+function clearBox(elementID) {
+    document.getElementById(elementID).innerHTML = "";
 }

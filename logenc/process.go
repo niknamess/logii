@@ -292,15 +292,25 @@ func ProcMapFile(file string) map[string]LogList {
 			go func(line string) {
 				//wg.Add(1)
 				//defer wg.Done()
-				data = ProcLineDecodeXML(line)
+				//fmt.Println("line:", line)
+				if len(line) != 0 {
+					data = ProcLineDecodeXML(line)
+					if len(data.XML_RECORD_ROOT) > 0 {
+						mu.Lock()
+						//fmt.Println("data:", data)
+						SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = data
+						mu.Unlock()
+					}
+				}
+				//data = ProcLineDecodeXML(line)
 				//datas = ProcLineCSVLoglost(line)\
 				//mu.Lock()
-				if len(data.XML_RECORD_ROOT) > 0 {
+				/* if len(data.XML_RECORD_ROOT) > 0 {
 					mu.Lock()
-
+					fmt.Println("data:", data)
 					SearchMap[data.XML_RECORD_ROOT[0].XML_ULID] = data
 					mu.Unlock()
-				}
+				} */
 				//mu.Unlock()
 				defer wg.Done()
 			}(line)
