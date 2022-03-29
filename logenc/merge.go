@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"time"
 
 	"github.com/oklog/ulid/v2"
 )
@@ -276,7 +275,7 @@ func Merge(dirpath string, path string) {
 		ch3 := MergeLines(ch1, ch2)
 		//RenameFile("./testsave/"+fileN+"new", RandStringRunes(4))
 		//os.Truncate(dirpath+fileN, 0)
-		time.Sleep(5 * time.Second)
+		//time.Sleep(15 * time.Second)
 		exec.Command("/bin/bash", "-c", "echo > "+dirpath+fileN).Run()
 		count = 0
 		for val := range ch3 {

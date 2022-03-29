@@ -35,9 +35,8 @@ var (
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap          = make(map[string]bool)
-	signature   bool  = false
-	current     int64 = 638
+	indexMap         = make(map[string]bool)
+	signature   bool = false
 	Fname       string
 	countSearch int
 	currentfile string
@@ -74,7 +73,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	if Fname != fileName {
 		Fname = fileName
 		lookFor = ""
-		current = 638
+		//current = 638
 		countSearch = 0
 		firstUlid = " "
 		for k := range paginationUlids {
@@ -84,87 +83,34 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	fmt.Println("Command", page)
 
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
-	//lineCounter(fileName)
-	taillog, err := tail.TailFile(fileName,
-		tail.Config{
-			Follow: true,
-			Location: &tail.SeekInfo{
-				Offset: current,
-				Whence: io.SeekStart, //!!!
-
-			},
-		})
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
-		return
-	}
 	currentfile = fileN
 	page = 0
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
-		var (
+		/* 	var (
 			//commoncsv logenc.LogList
 			countline int = 0
-		)
+		) */
 		TransmitUlidPagination(conn, fileName)
 		go followCodeStatus(conn)
 		hashSumFile = logenc.FileMD5(fileName)
 		//fmt.Println("Origin hashsum", logenc.FileMD5(fileName))
-
-		for line := range taillog.Lines {
-			//go followCodeStatus(conn)
-			//fmt.Println("Check", hashSumFile, logenc.FileMD5(fileName))
-			if hashSumFile != logenc.FileMD5(fileName) {
-				inf, _ := taillog.Tell()
-				log.Println("File change ", "OLD:", hashSumFile, "NEW:", logenc.FileMD5(fileName), "current tail:", inf)
-				hashSumFile = logenc.FileMD5(fileName)
-				//fmt.Println("---hashSumFile", hashSumFile)
-				//current = 0
-				conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
+		var currentpage int = 0
+		var countline int = 0
+		for {
+			if countline <= 500 && currentfile == fileN && currentpage == page {
+				countline = tailingLogsInFileAll(fileN, fileName, conn, 0, page)
+				//currentpage = page
+			} else if currentfile != fileN {
 				countline = 0
-			} else {
-				current, _ = taillog.Tell()
-				fmt.Println("---------", current)
-				csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-				//commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-				countline++
-				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-				//	commoncsv = logenc.LogList{}
-				//	fmt.Println(currentfile)
-				//	fmt.Println(fileN)
-				if currentfile != fileN {
-					taillog.Stop()
-				}
-				if countline == 500 {
-					//current, _ = taillog.Tell()
-					//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-					//	countline = 0
-					//commoncsv = logenc.LogList{}
+				break
+			} else if currentpage != page {
+				countline = 0
+				currentpage = page
 
-					taillog.Stop()
-
-				}
 			}
-			//logenc.FileMD5(fileName)
 
-			/* current, _ = taillog.Tell()
-			fmt.Println("---------", current)
-			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			countline++
-			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-			if currentfile != fileN {
-				taillog.Stop()
-			}
-			if countline == 500 {
-				taillog.Stop()
-			} */
 		}
 
-		//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-		//commoncsv = logenc.LogList{}
-		//countline = 0
-		strSlice = nil
-		//taillog.Stop()
-		//fmt.Println("lastulid", lastulid)
 		return
 
 	} else if len(UlidC) == 0 {
@@ -236,6 +182,71 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 }
 
+func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, current int64, page int) int {
+	var statusPagination bool = false
+	var countline int = 0
+	taillog, err := tail.TailFile(fileName,
+		tail.Config{
+			Follow: true,
+			Location: &tail.SeekInfo{
+				Offset: current,
+				Whence: io.SeekStart, //!!!
+
+			},
+		})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
+		return countline
+	}
+
+	for line := range taillog.Lines {
+
+		if currentfile != fileN {
+			taillog.Stop()
+			return countline
+		}
+
+		if hashSumFile != logenc.FileMD5(fileName) {
+			inf, _ := taillog.Tell()
+			log.Println("File change ", "OLD:", hashSumFile, "NEW:", logenc.FileMD5(fileName), "current tail:", inf)
+			hashSumFile = logenc.FileMD5(fileName)
+			conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
+			countline = 0
+			taillog.Stop()
+			return countline
+		} else if page != 0 {
+			//current, _ = taillog.Tell()
+			//fmt.Println("---------", current)
+			pagUlid := paginationUlids[page]
+			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
+			currentUlid := csvsimpl.XML_RECORD_ROOT[0].XML_ULID
+			if pagUlid == currentUlid {
+				statusPagination = true
+			}
+			if statusPagination {
+				countline++
+				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
+			}
+			if countline == 510 {
+				taillog.Stop()
+				return countline
+			}
+		} else {
+			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
+			countline++
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
+
+			if countline == 510 {
+				taillog.Stop()
+				return countline
+			}
+		}
+
+	}
+	return countline
+
+}
+
 func followCodeStatus(conn *websocket.Conn) {
 	//Reset(conn)
 	for {
@@ -281,7 +292,7 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 	}
 	for line := range taillog.Lines {
 
-		current, _ = taillog.Tell()
+		//current, _ = taillog.Tell()
 
 		strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
 		countline++
@@ -631,6 +642,7 @@ func GetFiles(address string, port string) error {
 				}
 
 			} else if !signature && !contain {
+				//time.Sleep(15 * time.Second)
 				logenc.Replication("./testsave/" + fileName)
 				logenc.WriteFileSum("./testsave/"+fileName, "rep", "")
 				fmt.Println("Merge", fileName)

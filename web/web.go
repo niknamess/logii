@@ -180,7 +180,7 @@ func CheckFiles(address string, port string, ctx context.Context) {
 				//wg.Add(1)
 				go reconect(address)
 				//wg.Wait()
-				time.Sleep(time.Second * 5)
+				time.Sleep(time.Second * 10)
 				continue
 
 			}
