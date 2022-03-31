@@ -40,7 +40,7 @@ func ProcGenWiteF() {
 		infof(LINE)
 
 		//time.Sleep(time.Nanosecond * 1000000)
-		time.Sleep(5000 * time.Millisecond)
+		time.Sleep(2000 * time.Millisecond)
 		fmt.Println("Message add :D" + RandStringRunes(3))
 
 	}

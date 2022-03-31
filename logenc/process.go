@@ -131,8 +131,12 @@ func ProcFile(file string) {
 		ch <- line
 	})
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		close(ch)
+		return
+		//log.Fatalf("ReadLines: %s", err)
 	}
+	close(ch)
 }
 
 func ProcDir(dir string) {
@@ -195,7 +199,9 @@ func procFileWrite(file string) {
 		ch <- line
 	})
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		close(ch)
+		return
 	}
 	close(ch)
 }
@@ -291,7 +297,7 @@ func ProcMapFile(file string) map[string]LogList {
 			wg.Add(1)
 			go func(line string) {
 				//wg.Add(1)
-				//defer wg.Done()
+				defer wg.Done()
 				//fmt.Println("line:", line)
 				if len(line) != 0 {
 					data = ProcLineDecodeXML(line)
@@ -312,7 +318,7 @@ func ProcMapFile(file string) map[string]LogList {
 					mu.Unlock()
 				} */
 				//mu.Unlock()
-				defer wg.Done()
+				//defer wg.Done()
 			}(line)
 
 		}
@@ -321,7 +327,9 @@ func ProcMapFile(file string) map[string]LogList {
 		ch <- line
 	})
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		close(ch)
+		return SearchMap
 	}
 
 	close(ch)
@@ -342,7 +350,9 @@ func ProcMapFileREZERV(file string) {
 		ch <- line
 	})
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		close(ch)
+		return
 	}
 	fmt.Println("run")
 	for {
@@ -362,6 +372,7 @@ func ProcMapFileREZERV(file string) {
 		}
 
 	}
+	close(ch)
 }
 
 func CheckFileSum(file string, typeS string, path string) bool {
