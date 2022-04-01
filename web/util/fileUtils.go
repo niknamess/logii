@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/big"
+	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -40,7 +41,7 @@ var (
 	countSearch int
 	currentfile string
 	page        int = 0
-	hashSumFile string
+	//hashSumFile string
 )
 
 type FileStruct struct {
@@ -84,43 +85,49 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	currentfile = fileN
 	page = 0
+	//first button on pagination
 	CountPage := "<countpage>" + strconv.Itoa(1) + "</countpage>"
 	conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
+
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
 
-		hashSumFile = logenc.FileMD5(fileName)
+		hashSumFilePag := logenc.FileMD5(fileName)
 
 		go func() {
 			TransmitUlidPagination(conn, fileName)
 			for {
-				if hashSumFile != logenc.FileMD5(fileName) {
+				if hashSumFilePag != logenc.FileMD5(fileName) {
 					TransmitUlidPagination(conn, fileName)
-					hashSumFile = logenc.FileMD5(fileName)
+					hashSumFilePag = logenc.FileMD5(fileName)
 				}
 
 			}
 		}()
 		//TransmitUlidPagination(conn, fileName)
-
+		//check message from client
 		go followCodeStatus(conn)
 
-		var currentpage int = 0
+		//var currentpage int = 0
 		var countline int = 0
+		go tailingLogsInFileAll(fileN, fileName, conn, 0, page)
+		hashSumFile := logenc.FileMD5(fileName)
 		for {
-			if countline <= 500 && currentfile == fileN && currentpage == page {
+			if hashSumFile != logenc.FileMD5(fileName) {
 				fmt.Println("if*1")
 				countline = tailingLogsInFileAll(fileN, fileName, conn, 0, page)
-				//currentpage = page
-			} else if currentfile != fileN {
+				fmt.Println(countline)
+			}
+			//currentpage = page
+			if currentfile != fileN {
 				fmt.Println("if*2")
 				countline = 0
 				break
-			} else if currentpage != page {
+			} /*  else if currentpage != page {
 				fmt.Println("if*3")
 				countline = 0
 				currentpage = page
 
-			}
+			} */
 
 		}
 
@@ -195,16 +202,34 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 }
 
+var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
+
+func RandStringRunes(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
 func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, current int64, page int) int {
+
 	var statusPagination bool = false
 	var countline int = 0
-	/* original, err := os.Open(fileName)
-	if err != nil {
-		fmt.Println("Replication OpenFile ", err)
-		return
-	}
+	hashSumFile := logenc.FileMD5(fileName)
 
-	logenc.CopyFile("./testsave/"+fileN, "copy",) */
+	/* go func() {
+		original, err := os.Open(fileName)
+		if err != nil {
+			fmt.Println("Replication OpenFile ", err)
+		}
+
+		logenc.CopyFile("/home/nik/projects/Course/logi2/web/testsave/"+fileN, "copy"+RandStringRunes(3), original)
+	}() */
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
@@ -218,22 +243,22 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 		return countline
 	}
-	hashSumFile = logenc.FileMD5(fileName)
+
 	for line := range taillog.Lines {
 
 		if currentfile != fileN {
 			taillog.Stop()
-			return countline
+			return 0
 		}
 
 		if hashSumFile != logenc.FileMD5(fileName) {
 			inf, _ := taillog.Tell()
 			log.Println("File change ", "OLD:", hashSumFile, "NEW:", logenc.FileMD5(fileName), "current tail:", inf)
-			hashSumFile = logenc.FileMD5(fileName)
+			//hashSumFile = logenc.FileMD5(fileName)
 			conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 			countline = 0
 			taillog.Stop()
-			return countline
+			break
 		} else if page != 0 {
 			//current, _ = taillog.Tell()
 			//fmt.Println("---------", current)
@@ -249,7 +274,7 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 			}
 			if countline == 510 {
 				taillog.Stop()
-				return countline
+				break
 			}
 		} else {
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
@@ -258,7 +283,7 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 
 			if countline == 510 {
 				taillog.Stop()
-				return countline
+				break
 			}
 		}
 
@@ -310,7 +335,7 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 		return
 	}
 
-	hashSumFile = logenc.FileMD5(fileName)
+	hashSumFile := logenc.FileMD5(fileName)
 	for line := range taillog.Lines {
 
 		if countline == 100 {
