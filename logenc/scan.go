@@ -2,7 +2,6 @@ package logenc
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -121,7 +120,9 @@ func (t *Scan) procFileSearch(file string, wg *sync.WaitGroup, countL *int32, nu
 
 	})
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		close(ch)
+		return
 	}
 
 	close(ch)

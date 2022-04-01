@@ -31,7 +31,7 @@ func bleveIndex(fileN string) (bleve.Index, error) {
 }
 func ProcBleve(fileN string, file string) {
 	var count int = 0
-	if logenc.CheckFileSum(file, "", "") == false {
+	if !logenc.CheckFileSum(file, "", "") {
 		return
 	}
 	var wg sync.WaitGroup
@@ -44,12 +44,12 @@ func ProcBleve(fileN string, file string) {
 	ch := make(chan string, 100)
 
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
+		wg.Add(1)
 		go func() {
-			wg.Add(1)
+			//wg.Add(1)
 			defer wg.Done()
 			batch := index.NewBatch()
 		brloop:
-
 			for {
 
 				select {
@@ -88,7 +88,9 @@ func ProcBleve(fileN string, file string) {
 		ch <- line
 	})
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		close(ch)
+		return
 	}
 	close(ch)
 	wg.Wait()

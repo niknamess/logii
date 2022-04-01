@@ -107,7 +107,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if savefiles == nil {
-		Indexing(conn, filename)
+		Indexing(filename)
 		savefiles = append(savefiles, filename)
 	} else {
 		for i := 0; i < len(savefiles); i++ {
@@ -120,7 +120,7 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 
 	}
 	if stringF {
-		Indexing(conn, filename)
+		Indexing(filename)
 		savefiles = append(savefiles, filename)
 
 	}
@@ -138,8 +138,8 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	//
 	go func() {
 		for {
-			if logenc.CheckFileSum(filename, "", "") == true {
-				Indexing(conn, filename)
+			if logenc.CheckFileSum(filename, "", "") {
+				Indexing(filename)
 			}
 		}
 	}()
@@ -225,7 +225,7 @@ func PointHandler(_ http.ResponseWriter, r *http.Request) {
 }
 
 //NOT fileUtils !!!
-func Indexing(conn *websocket.Conn, fileaddr string) {
+func Indexing(fileaddr string) {
 	//var SearchMap map[string]string
 	if fileaddr == "undefined" {
 		return

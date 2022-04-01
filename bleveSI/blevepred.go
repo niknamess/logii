@@ -3,7 +3,6 @@ package bleveSI
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 	"sync"
@@ -22,7 +21,7 @@ func ProcFileBreve(fileN string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileN + extension
-	if logenc.CheckFileSum(file, "", "") == false {
+	if !logenc.CheckFileSum(file, "", "") {
 		return
 	}
 
@@ -40,8 +39,9 @@ func ProcFileBreve(fileN string, file string) {
 	ch := make(chan string, 100)
 
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
+		wg.Add(1)
 		go func() {
-			wg.Add(1)
+			//wg.Add(1)
 			defer wg.Done()
 
 		brloop:
@@ -66,7 +66,9 @@ func ProcFileBreve(fileN string, file string) {
 		ch <- line
 	})
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		close(ch)
+		return
 	}
 	close(ch)
 	wg.Wait()
@@ -116,7 +118,7 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 	dir := "./blevestorage/"
 	extension := ".bleve"
 	metaname := dir + fileName + extension
-	if logenc.CheckFileSum(file, "", "") == false {
+	if !logenc.CheckFileSum(file, "", "") {
 		return
 	}
 
@@ -149,7 +151,9 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 	}
 
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		//close(ch)
+		return
 	}
 
 	var datas [pieces][]logenc.LogList
@@ -191,7 +195,7 @@ func ProcFileBreveSLOWLY(fileName string, file string) {
 //example Speed
 
 func ProcBleveScorch(fileN string, file string) {
-	if logenc.CheckFileSum(file, "", "") == false {
+	if !logenc.CheckFileSum(file, "", "") {
 		return
 	}
 	var wg sync.WaitGroup
@@ -203,8 +207,9 @@ func ProcBleveScorch(fileN string, file string) {
 	var data logenc.LogList
 	ch := make(chan string, 100)
 	for i := runtime.NumCPU() + 1; i > 0; i-- {
+		wg.Add(1)
 		go func() {
-			wg.Add(1)
+			//wg.Add(1)
 			defer wg.Done()
 
 		brloop:
@@ -229,7 +234,9 @@ func ProcBleveScorch(fileN string, file string) {
 		ch <- line
 	})
 	if err != nil {
-		log.Fatalf("ReadLines: %s", err)
+		fmt.Println("ReadLines: ", err)
+		close(ch)
+		return
 	}
 	close(ch)
 	wg.Wait()
