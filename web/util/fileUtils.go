@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"math/big"
-	"math/rand"
 	"net"
 	"net/http"
 	"net/url"
@@ -41,7 +40,7 @@ var (
 	countSearch int
 	currentfile string
 	page        int = 0
-	//hashSumFile string
+	hashSumFile string
 )
 
 type FileStruct struct {
@@ -85,49 +84,29 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
 	currentfile = fileN
 	page = 0
-	//first button on pagination
-	CountPage := "<countpage>" + strconv.Itoa(1) + "</countpage>"
-	conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
-
 	if lookFor == "" || lookFor == " " || lookFor == "Search" {
-
-		hashSumFilePag := logenc.FileMD5(fileName)
-
-		go func() {
-			TransmitUlidPagination(conn, fileName)
-			for {
-				if hashSumFilePag != logenc.FileMD5(fileName) {
-					TransmitUlidPagination(conn, fileName)
-					hashSumFilePag = logenc.FileMD5(fileName)
-				}
-
-			}
-		}()
-		//TransmitUlidPagination(conn, fileName)
-		//check message from client
+		/* 	var (
+			//commoncsv logenc.LogList
+			countline int = 0
+		) */
+		TransmitUlidPagination(conn, fileName)
 		go followCodeStatus(conn)
-
-		//var currentpage int = 0
+		hashSumFile = logenc.FileMD5(fileName)
+		//fmt.Println("Origin hashsum", logenc.FileMD5(fileName))
+		var currentpage int = 0
 		var countline int = 0
-		go tailingLogsInFileAll(fileN, fileName, conn, 0, page)
-		hashSumFile := logenc.FileMD5(fileName)
 		for {
-			if hashSumFile != logenc.FileMD5(fileName) {
-				fmt.Println("if*1")
+			if countline <= 500 && currentfile == fileN {
 				countline = tailingLogsInFileAll(fileN, fileName, conn, 0, page)
-				fmt.Println(countline)
-			}
-			//currentpage = page
-			if currentfile != fileN {
-				fmt.Println("if*2")
+				//currentpage = page
+			} else if currentfile != fileN {
 				countline = 0
 				break
-			} /*  else if currentpage != page {
-				fmt.Println("if*3")
+			} else if currentpage != page {
 				countline = 0
 				currentpage = page
 
-			} */
+			}
 
 		}
 
@@ -202,34 +181,9 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 }
 
-var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
-
-func RandStringRunes(n int) string {
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
-}
-
 func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, current int64, page int) int {
-
 	var statusPagination bool = false
 	var countline int = 0
-	hashSumFile := logenc.FileMD5(fileName)
-
-	/* go func() {
-		original, err := os.Open(fileName)
-		if err != nil {
-			fmt.Println("Replication OpenFile ", err)
-		}
-
-		logenc.CopyFile("/home/nik/projects/Course/logi2/web/testsave/"+fileN, "copy"+RandStringRunes(3), original)
-	}() */
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
 			Follow: true,
@@ -248,17 +202,17 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 
 		if currentfile != fileN {
 			taillog.Stop()
-			return 0
+			return countline
 		}
 
 		if hashSumFile != logenc.FileMD5(fileName) {
 			inf, _ := taillog.Tell()
 			log.Println("File change ", "OLD:", hashSumFile, "NEW:", logenc.FileMD5(fileName), "current tail:", inf)
-			//hashSumFile = logenc.FileMD5(fileName)
+			hashSumFile = logenc.FileMD5(fileName)
 			conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 			countline = 0
 			taillog.Stop()
-			break
+			return countline
 		} else if page != 0 {
 			//current, _ = taillog.Tell()
 			//fmt.Println("---------", current)
@@ -274,7 +228,7 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 			}
 			if countline == 510 {
 				taillog.Stop()
-				break
+				return countline
 			}
 		} else {
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
@@ -283,7 +237,7 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 
 			if countline == 510 {
 				taillog.Stop()
-				break
+				return countline
 			}
 		}
 
@@ -314,13 +268,14 @@ func followCodeStatus(conn *websocket.Conn) {
 }
 
 func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
-	fileN := filepath.Base(fileName)
-
 	var CountPage string
 	paginationUlids = make(map[int]string)
 	var (
-		countline int = 0
-		pageP     int = 1
+		strSlice []string
+
+		countline int
+		page      int    = 0
+		firstUlid string = " "
 	)
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
@@ -334,45 +289,45 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 		return
 	}
-
-	hashSumFile := logenc.FileMD5(fileName)
 	for line := range taillog.Lines {
 
-		if countline == 100 {
-			pageP++
-			fmt.Println(countline)
-			countline = 0
-			paginationUlids[pageP] = logenc.ProcLineDecodeXMLUlid(line.Text)
-			CountPage = "<countpage>" + strconv.Itoa(pageP) + "</countpage>"
-			err := conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
-			if err != nil {
-				log.Println("Err Pagination")
-			}
-			for key, value := range paginationUlids {
-				fmt.Println("Key:", key, "Value:", value)
-			}
-		} else if countline == 0 {
-			paginationUlids[1] = logenc.ProcLineDecodeXMLUlid(line.Text)
-			//CountPage = "<countpage>" + strconv.Itoa(pageP) + "</countpage>"
-			//err := conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
-			//if err != nil {
-			//log.Println("Err Pagination")
-			//}
-			for key, value := range paginationUlids {
-				fmt.Println("Key:", key, "Value:", value)
-			}
-		}
-		if currentfile != fileN {
-			taillog.Stop()
+		//current, _ = taillog.Tell()
 
-		}
+		strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
 		countline++
-		if hashSumFile != logenc.FileMD5(fileName) {
-			taillog.Stop()
-		}
-	}
-}
+		if countline == 500 {
+			page++
+			countline = 0
+			firstUlid = strSlice[1]
+			//strconv.Itoa(page)
+			//	paginationUlids[strconv.Itoa(page)] = ir_table{ulid: firstUlid, point: current}
+			paginationUlids[page] = firstUlid
+			strSlice = nil
 
+		}
+		go taillog.StopAtEOF() //end tail and stop service
+	}
+	page++
+	CountPage = "<countpage>" + strconv.Itoa(page) + "</countpage>"
+	conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
+	firstUlid = strSlice[1]
+	//paginationUlids[logenc.Convert1to1000(page)] = firstUlid
+	paginationUlids[page] = firstUlid
+
+	//x, _ := xml.MarshalIndent(Map(paginationUlids), " ", "  ")
+	//fmt.Println(string(x))
+	//conn.WriteMessage(websocket.TextMessage, []byte(string(x)))
+	for key, value := range paginationUlids {
+		fmt.Println("Key:", key, "Value:", value)
+	}
+
+	fmt.Println("map", (paginationUlids))
+	//fmt.Println("func", createKeyValuePairs(paginationUlids))
+	countline = 0
+	strSlice = nil
+	//taillog.Stop()
+
+}
 func (m Map) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if len(m) == 0 {
 		return nil
