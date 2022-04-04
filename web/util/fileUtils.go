@@ -93,7 +93,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		go followCodeStatus(conn)
 		hashSumFile = logenc.FileMD5(fileName)
 		//fmt.Println("Origin hashsum", logenc.FileMD5(fileName))
-		var currentpage int = 0
+		//var currentpage int = 0
 		var countline int = 0
 		for {
 			if countline <= 500 && currentfile == fileN {
@@ -102,11 +102,11 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			} else if currentfile != fileN {
 				countline = 0
 				break
-			} else if currentpage != page {
+			} /* else if currentpage != page {
 				countline = 0
 				currentpage = page
 
-			}
+			} */
 
 		}
 
@@ -118,14 +118,6 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	} else {
 		var commoncsv logenc.LogList
 		var countCheck int
-		/* for i := 0; i < len(UlidC); i++ {
-			v, found := SearchMap[UlidC[i]]
-			if found {
-				if logenc.ProcLineDecodeXMLUlid(line.Text) == firstUlid {
-					break
-				}
-			}
-		} */
 		var count int = 0
 		for i := 0; i < len(UlidC); i++ {
 			//var count int = 0
@@ -182,7 +174,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 }
 
 func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, current int64, page int) int {
-	var statusPagination bool = false
+	//var statusPagination bool = false
 	var countline int = 0
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
@@ -213,7 +205,8 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 			countline = 0
 			taillog.Stop()
 			return countline
-		} else if page != 0 {
+
+			/*}  else if page != 0 {
 			//current, _ = taillog.Tell()
 			//fmt.Println("---------", current)
 			pagUlid := paginationUlids[page]
@@ -229,7 +222,7 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 			if countline == 510 {
 				taillog.Stop()
 				return countline
-			}
+			} */
 		} else {
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			countline++
