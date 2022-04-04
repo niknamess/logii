@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -34,9 +35,9 @@ var (
 
 	// Global Map that stores all the files, used to skip duplicates while
 	// subsequent indexing attempts in cron trigger
-	indexMap         = make(map[string]bool)
-	signature   bool = false
-	Fname       string
+	indexMap           = make(map[string]bool)
+	signature   bool   = false
+	Fname       string = ""
 	countSearch int
 	currentfile string
 	page        int = 0
@@ -70,6 +71,9 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 	fileN := filepath.Base(fileName)
 
 	if Fname != fileName {
+		if Fname != "" {
+			logenc.DeleteOldsFiles("./web/util/replace/"+filepath.Base(Fname), "")
+		}
 		Fname = fileName
 		lookFor = ""
 		//current = 638
@@ -98,6 +102,7 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		for {
 			if countline <= 500 && currentfile == fileN {
 				countline = tailingLogsInFileAll(fileN, fileName, conn, 0, page)
+				hashSumFile = logenc.FileMD5(fileName)
 				//currentpage = page
 			} else if currentfile != fileN {
 				countline = 0
@@ -175,9 +180,28 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, current int64, page int) int {
 	//var statusPagination bool = false
+	original, err := os.Open(fileName)
+	if err != nil {
+		//log.Fatal(err)
+		log.Println(err)
+	}
+	exec.Command("/bin/bash", "-c", "echo > "+"./web/util/replace/"+fileN).Run()
+	//fi, err := os.Stat("./web/util/replace/" + fileN)
+	//if err != nil {
+	//	return 0
+	//}
+	// get the size
+	//size := fi.Size()
+	//if size > 10 {
+	logenc.CopyFile("./web/util/replace/", fileN, original)
+	//}
+	//fInfo, err := os.Stat("./web/util/replace/" + fileN)
+	//fsize := fInfo.Size()
+	//fmt.Printf("The file size is %d bytes\n", fsize)
 	var countline int = 0
 	taillog, err := tail.TailFile(fileName,
 		tail.Config{
+			ReOpen: true,
 			Follow: true,
 			Location: &tail.SeekInfo{
 				Offset: current,
@@ -191,19 +215,25 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 	}
 
 	for line := range taillog.Lines {
-
+		_, err := taillog.Tell()
+		if err != nil {
+			taillog.Stop()
+		}
 		if currentfile != fileN {
 			taillog.Stop()
 			return countline
 		}
 
 		if hashSumFile != logenc.FileMD5(fileName) {
+
 			inf, _ := taillog.Tell()
 			log.Println("File change ", "OLD:", hashSumFile, "NEW:", logenc.FileMD5(fileName), "current tail:", inf)
 			hashSumFile = logenc.FileMD5(fileName)
 			conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 			countline = 0
 			taillog.Stop()
+			logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+			taillog.Cleanup()
 			return countline
 
 			/*}  else if page != 0 {
@@ -230,9 +260,12 @@ func tailingLogsInFileAll(fileN string, fileName string, conn *websocket.Conn, c
 
 			if countline == 510 {
 				taillog.Stop()
+				logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 				return countline
+
 			}
 		}
+		//taillog.StopAtEOF()
 
 	}
 	return countline
