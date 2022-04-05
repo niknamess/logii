@@ -208,50 +208,6 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 	conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 
 	for line := range taillog.Lines {
-		//taillog.StopAtEOF()
-		/* testinfo, err := taillog.Tell()
-		fmt.Println("Taill............", testinfo)
-
-		if err != nil {
-			taillog.Stop()
-		}
-		if currentfile != fileN {
-			taillog.Stop()
-			return countline
-		}
-
-		log.Println("File change ", logenc.FileMD5(fileName))
-		if logenc.FileMD5(fileName) != hashSumFile {
-
-			inf, _ := taillog.Tell()
-			log.Println("File change ", "OLD:", hashSumFile, "NEW:", logenc.FileMD5(fileName), "current tail:", inf)
-			//hashSumFile = logenc.FileMD5(fileName)
-			conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
-			countline = 0
-			taillog.Stop()
-			logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
-			taillog.Cleanup()
-			return countline */
-
-		/*}  else if page != 0 {
-		//current, _ = taillog.Tell()
-		//fmt.Println("---------", current)
-		pagUlid := paginationUlids[page]
-		csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-		currentUlid := csvsimpl.XML_RECORD_ROOT[0].XML_ULID
-		if pagUlid == currentUlid {
-			statusPagination = true
-		}
-		if statusPagination {
-			countline++
-			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-		}
-		if countline == 510 {
-			taillog.Stop()
-			return countline
-		} */
-		//	}
-		//	conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 		csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 		countline++
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
@@ -263,9 +219,6 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 
 			return countline
 		}
-		/*  */
-
-		//taillog.StopAtEOF()
 
 	}
 	logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
@@ -291,7 +244,6 @@ func followCodeStatus(conn *websocket.Conn) {
 		}
 		fmt.Println("Page", page)
 	}
-	//code, _ = strconv.Atoi(string(msg[:]))
 
 }
 
@@ -318,17 +270,12 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 		return
 	}
 	for line := range taillog.Lines {
-
-		//current, _ = taillog.Tell()
-
 		strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
 		countline++
 		if countline == 50 {
 			page++
 			countline = 0
 			firstUlid = strSlice[1]
-			//strconv.Itoa(page)
-			//	paginationUlids[strconv.Itoa(page)] = ir_table{ulid: firstUlid, point: current}
 			paginationUlids[page] = firstUlid
 			strSlice = nil
 
@@ -339,21 +286,15 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 	CountPage = "<countpage>" + strconv.Itoa(page) + "</countpage>"
 	conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
 	firstUlid = strSlice[1]
-	//paginationUlids[logenc.Convert1to1000(page)] = firstUlid
 	paginationUlids[page] = firstUlid
 
-	//x, _ := xml.MarshalIndent(Map(paginationUlids), " ", "  ")
-	//fmt.Println(string(x))
-	//conn.WriteMessage(websocket.TextMessage, []byte(string(x)))
 	for key, value := range paginationUlids {
 		fmt.Println("Key:", key, "Value:", value)
 	}
 
 	fmt.Println("map", (paginationUlids))
-	//fmt.Println("func", createKeyValuePairs(paginationUlids))
 	countline = 0
 	strSlice = nil
-	//taillog.Stop()
 
 }
 func (m Map) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
@@ -372,14 +313,6 @@ func (m Map) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 
 	return e.EncodeToken(start.End())
 }
-
-/* func createKeyValuePairs(m map[string]string) string {
-	b := new(bytes.Buffer)
-	for key, value := range m {
-		fmt.Fprintf(b, "%v=\"%v\"\n", key, value)
-	}
-	return b.String()
-} */
 
 // IndexFiles - takes argument as a list of files and directories and returns
 // a list of absolute file strings to be tailed
@@ -545,31 +478,6 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 		//:TODO transmit to websoket
 
 	}
-	//return from Ulid timestamp
-	//if in period return
-	/* startUnixTime
-	endUnixTime
-	*/
-	/* fileN := filepath.Base(fileName)
-	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
-
-	if len(UlidC) == 0 {
-		println("Break")
-		return false
-	} else {
-
-		for i := 0; i < len(UlidC); i++ {
-
-			_, found := SearchMap[UlidC[i]]
-			if found {
-				conn.WriteMessage(websocket.TextMessage, []byte("LOL"))
-				return true
-
-			}
-		}
-
-	}
-	return false */
 
 }
 
@@ -771,30 +679,6 @@ func DeleteFile90(dir string) {
 
 }
 
-//Check 30 seconds file chancge
-//:TODO
-/* func FindNewChangeFile(dir string) bool {
-
-	var cutoff = 30 * time.Second
-	fileInfo, err := ioutil.ReadDir(dir)
-	if err != nil {
-		log.Fatal("FindNewChangeFile", err.Error())
-	}
-	now := time.Now()
-	//fmt.Println(now)
-	for _, info := range fileInfo {
-		//fmt.Println(info.Name())
-		if diff := now.Sub(info.ModTime()); diff > cutoff {
-			fmt.Printf("Deleting %s which is %s old\n", info.Name(), diff)
-			//logenc.DeleteOldsFiles(dir+info.Name(), "")
-			return true
-		}
-	}
-
-	return false
-
-} */
-
 func CheckIPAddress(ip string) bool {
 	/* if ip == "localhost" {
 		fmt.Printf("IP Address: %s - Valid\n", ip)
@@ -808,30 +692,3 @@ func CheckIPAddress(ip string) bool {
 	}
 
 }
-
-/*
-func lineCounter(path string) (int, error) {
-
-	r, err := os.Open(path)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed to open file: %v", err)
-		os.Exit(1)
-	}
-	buf := make([]byte, 32*1024)
-	count := 0
-	lineSep := []byte{'\n'}
-
-	for {
-		c, err := r.Read(buf)
-		count += bytes.Count(buf[:c], lineSep)
-
-		switch {
-		case err == io.EOF:
-			return count, nil
-
-		case err != nil:
-			return count, err
-		}
-	}
-}
-*/
