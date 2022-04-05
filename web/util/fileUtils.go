@@ -104,17 +104,24 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		go followCodeStatus(conn)
 		TransmitUlidPagination(conn, fileName)
 		tailingLogsInFileAll(fileName, conn, 0, page)
-		//var countline int = 0
+		var countline int = 0
+		var currentpage int = 0
 		for {
 			if (logenc.FileMD5(fileName) != hashSumFile) && currentfile == fileN {
-				TransmitUlidPagination(conn, fileName)
-				tailingLogsInFileAll(fileName, conn, 0, page)
 				//TransmitUlidPagination(conn, fileName)
+				countline = tailingLogsInFileAll(fileName, conn, 0, page)
 				hashSumFile = logenc.FileMD5(fileName)
 				//currentpage = page
 			} else if currentfile != fileN {
 				//countline = 0
+				//log.Fatal("currentfile != fileN")
 				break
+			} else if countline >= 498 {
+				TransmitUlidPagination(conn, fileName)
+			} else if currentpage != page && currentfile == fileN {
+				countline = tailingLogsInFileAll(fileName, conn, 0, page)
+				currentpage = page
+
 			}
 
 		}
@@ -181,6 +188,8 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 
 func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, page int) int {
 
+	var statusPagination bool = false
+
 	fileN := filepath.Base(fileName)
 	logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 	original, err := os.Open(fileName)
@@ -208,10 +217,33 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 	conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 
 	for line := range taillog.Lines {
-		csvsimpl := logenc.ProcLineDecodeXML(line.Text)
+		/* csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 		countline++
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-		logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+		logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "") */
+
+		if page != 0 && line.Text != "" && line.Text != " " {
+			//current, _ = taillog.Tell()
+			//fmt.Println("---------", current)
+
+			pagUlid := paginationUlids[page]
+			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
+			//fmt.Println("line.Text", line.Text)
+			//fmt.Println("csvsimpl", csvsimpl)
+			currentUlid := csvsimpl.XML_RECORD_ROOT[0].XML_ULID
+			if pagUlid == currentUlid {
+				statusPagination = true
+			}
+			if statusPagination {
+				countline++
+				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
+			}
+		} else {
+			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
+			countline++
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
+			logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+		}
 
 		if countline == 510 {
 			taillog.Stop()
