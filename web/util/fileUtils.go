@@ -102,17 +102,18 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			}
 		}()
 		go followCodeStatus(conn)
-
-		var countline int = 0
+		TransmitUlidPagination(conn, fileName)
+		tailingLogsInFileAll(fileName, conn, 0, page)
+		//var countline int = 0
 		for {
-			if (countline <= 500 || logenc.FileMD5(fileName) != hashSumFile) && currentfile == fileN {
+			if (logenc.FileMD5(fileName) != hashSumFile) && currentfile == fileN {
 				TransmitUlidPagination(conn, fileName)
-				countline = tailingLogsInFileAll(fileName, conn, 0, page)
+				tailingLogsInFileAll(fileName, conn, 0, page)
 				//TransmitUlidPagination(conn, fileName)
 				hashSumFile = logenc.FileMD5(fileName)
 				//currentpage = page
 			} else if currentfile != fileN {
-				countline = 0
+				//countline = 0
 				break
 			}
 
@@ -254,12 +255,21 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 		csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 		countline++
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
+		logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 
+		if countline == 510 {
+			taillog.Stop()
+			logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+
+			return countline
+		}
 		/*  */
 
 		//taillog.StopAtEOF()
 
 	}
+	logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+
 	return countline
 
 }
