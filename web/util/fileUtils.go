@@ -23,7 +23,6 @@ import (
 	"github.com/oklog/ulid/v2"
 	"gitlab.topaz-atcs.com/tmcs/logi2/bleveSI"
 	"gitlab.topaz-atcs.com/tmcs/logi2/logenc"
-	//"gitlab.topaz-atcs.com/tmcs/logi2/web/controllers"
 )
 
 var paginationUlids map[int]string
@@ -62,7 +61,6 @@ type Map map[string]string
 // a thread as this is blocking in nature
 
 func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) {
-	//paginationUlids = make(map[string]int64)
 	fmt.Println("Fname", Fname)
 	var (
 		strSlice  []string
@@ -108,13 +106,10 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		var currentpage int = 0
 		for {
 			if (logenc.FileMD5(fileName) != hashSumFile) && currentfile == fileN {
-				//TransmitUlidPagination(conn, fileName)
 				countline = tailingLogsInFileAll(fileName, conn, 0, page)
 				hashSumFile = logenc.FileMD5(fileName)
-				//currentpage = page
 			} else if currentfile != fileN {
-				//countline = 0
-				//log.Fatal("currentfile != fileN")
+
 				break
 			} else if countline >= 498 {
 				TransmitUlidPagination(conn, fileName)
@@ -217,19 +212,10 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 	conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 
 	for line := range taillog.Lines {
-		/* csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-		countline++
-		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-		logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "") */
-
 		if page != 0 && line.Text != "" && line.Text != " " {
-			//current, _ = taillog.Tell()
-			//fmt.Println("---------", current)
 
 			pagUlid := paginationUlids[page]
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			//fmt.Println("line.Text", line.Text)
-			//fmt.Println("csvsimpl", csvsimpl)
 			currentUlid := csvsimpl.XML_RECORD_ROOT[0].XML_ULID
 			if pagUlid == currentUlid {
 				statusPagination = true
@@ -268,8 +254,6 @@ func followCodeStatus(conn *websocket.Conn) {
 			return
 		}
 		fmt.Println("msgType", msgType)
-		//fmt.Println("msg", string(msg[:]))
-		//fmt.Println(msg)
 		page, err = strconv.Atoi(string(msg[:]))
 		if err != nil {
 			currentfile = string(msg)
