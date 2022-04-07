@@ -346,7 +346,7 @@ function initWS(file, type) {
 
 
         if (k5 == false) {
-            console.log("Почалось");
+            //console.log("Почалось");
             clearBox("container")
             countWar = 0;
             countErr = 0;
@@ -358,7 +358,6 @@ function initWS(file, type) {
             //clearBox("cntwrng")
             //clearBox("ctndbg")
             //clearBox("cntall")
-
 
         }
 

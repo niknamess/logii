@@ -111,8 +111,9 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			} else if currentfile != fileN {
 
 				break
-			} else if countline >= 498 {
+			} else if countline >= 99 {
 				TransmitUlidPagination(conn, fileName)
+				countline = 0
 			} else if currentpage != page && currentfile == fileN {
 				countline = tailingLogsInFileAll(fileName, conn, 0, page)
 				currentpage = page
@@ -231,9 +232,9 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 			logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 		}
 
-		if countline == 510 {
-			taillog.Stop()
-			logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+		if countline == 100 {
+			//taillog.StopAtEOF()
+			//logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 
 			return countline
 		}
@@ -288,7 +289,7 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 	for line := range taillog.Lines {
 		strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
 		countline++
-		if countline == 50 {
+		if countline == 100 {
 			page++
 			countline = 0
 			firstUlid = strSlice[1]
