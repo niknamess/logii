@@ -62,10 +62,6 @@ type Map map[string]string
 
 func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList) {
 	fmt.Println("Fname", Fname)
-	var (
-		strSlice  []string
-		firstUlid string = " "
-	)
 	fileN := filepath.Base(fileName)
 
 	if Fname != fileName {
@@ -74,9 +70,9 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		}
 		Fname = fileName
 		lookFor = ""
-		//current = 638
+
 		countSearch = 0
-		firstUlid = " "
+
 		for k := range paginationUlids {
 			delete(paginationUlids, k)
 		}
@@ -128,56 +124,51 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		println("Break")
 		return
 	} else {
-		var commoncsv logenc.LogList
+
 		var countCheck int
-		var count int = 0
+
+		fmt.Println("countSearch", 0)
 		for i := 0; i < len(UlidC); i++ {
-
 			_, found := SearchMap[UlidC[i]]
-
 			if found {
-				count++
-			}
-
-		}
-		fmt.Println(count)
-		fmt.Println("countSearch", countSearch)
-		for i := countSearch; i < len(UlidC); i++ {
-			v, found := SearchMap[UlidC[i]]
-			if found {
-
-				commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, v.XML_RECORD_ROOT...)
 				countCheck++
+			}
+		}
+		fmt.Println("...............countCheck", countCheck)
+		CountPage := "<countpage>" + strconv.Itoa(countCheck) + "</countpage>"
+		conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
+		countCheck = 0
+		currentpage := 0
+		tailLogsInFind(SearchMap, UlidC, page, conn)
 
-				strSlice = append(strSlice, v.XML_RECORD_ROOT[0].XML_ULID)
-				if countCheck == 1000 {
-					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-					countCheck = 0
-					commoncsv = logenc.LogList{}
-					countSearch = i
-					firstUlid = strSlice[0]
-					fmt.Println("firstUlid", firstUlid)
-					strSlice = nil
-					return
-				} else if len(UlidC) == i-1 && countCheck < 1000 {
-					conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-					countCheck = 0
-					commoncsv = logenc.LogList{}
-					countSearch = 0
-					firstUlid = strSlice[0]
-					fmt.Println("firstUlid", firstUlid)
-					strSlice = nil
-					return
-				}
+		for {
+
+			if Fname != fileName {
+				break
+			} else if currentpage != page && currentfile == fileN {
+				tailLogsInFind(SearchMap, UlidC, page, conn)
+				currentpage = page
 
 			}
-
 		}
-		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-		commoncsv = logenc.LogList{}
 
 		return
 
+	}
+
+}
+func tailLogsInFind(SearchMap map[string]logenc.LogList, UlidC []string, page int, conn *websocket.Conn) {
+	//fmt.Println("//////////////////////////////page", page)
+	if page == 0 {
+		page = 1
+	}
+
+	for i := page*100 - 100; i < page*100; i++ {
+		v, found := SearchMap[UlidC[i]]
+		if found {
+			fmt.Println(logenc.EncodeXML(v))
+			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(v)))
+		}
 	}
 
 }
