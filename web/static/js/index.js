@@ -76,6 +76,9 @@ $(document).ready(function() {
     });
 });
 
+
+
+
 function isEmpty(str) {
     return (!str || 0 === str.length);
 }
@@ -270,7 +273,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             container.append("Your browser does not support WebSockets");
             return;
         } else {
-            //
+            // highlight("tbl92")
             ws = initWS(file, "empty");
             Null();
             //ws.close();
@@ -283,25 +286,46 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     vm.init();
 }
 
+function highlight(tableIndex) {
+    // Just a simple check. If .highlight has reached the last, start again
+    if ((tableIndex + 1) > $('#data tbody tr').length)
+        tableIndex = 0;
+
+    // Element exists?
+    if ($('#data tbody tr:eq(' + tableIndex + ')').length > 0) {
+        // Remove other highlights
+        $('#data tbody tr').removeClass('highlight');
+
+        // Highlight your target
+        $('#data tbody tr:eq(' + tableIndex + ')').addClass('highlight');
+    }
+}
+
 function initWS(file, type) {
 
-    var observer = new MutationObserver(function(_mutations, me) {
-        // `mutations` is an array of mutations that occurred
-        // `me` is the MutationObserver instance
-        start = document.getElementById('Foxtrot');
-        if (start) {
-            handleCanvas(start);
-            me.disconnect(); // stop observing
-            return;
-        }
-    });
+    /*  var observer = new MutationObserver(function(_mutations, me) {
+         // `mutations` is an array of mutations that occurred
+         // `me` is the MutationObserver instance
+         start = document.getElementById('Foxtrot');
+         if (start) {
+             handleCanvas(start);
+             me.disconnect(); // stop observing
+             return;
+         }
+     });
 
-    // start observing
-    observer.observe(document, {
-        childList: true,
-        subtree: true
-    });
+     // start observing
+     observer.observe(document, {
+         childList: true,
+         subtree: true
+     }); */
 
+    /*   var tableRow = $('tr');
+    $(tableRow).css('background-color', '#dff0d8');
+    $(tableRow).children('[contenteditable]').attr("contenteditable", "true");
+    var tableData = $(tableRow).children('[contenteditable]')[0];
+    $(tableData).focus();
+ */
 
     var ws_proto = "ws:"
     if (window.location.protocol === "https:") {
@@ -353,6 +377,22 @@ function initWS(file, type) {
             countInf = 0;
             countDbg = 0;
             countAll = 0;
+            var observer = new MutationObserver(function(_mutations, me) {
+                // `mutations` is an array of mutations that occurred
+                // `me` is the MutationObserver instance
+                start = document.getElementById('Foxtrot');
+                if (start) {
+                    handleCanvas(start);
+                    me.disconnect(); // stop observing
+                    return;
+                }
+            });
+
+            // start observing
+            observer.observe(document, {
+                childList: true,
+                subtree: true
+            });
             //clearBox("cntinfo")
             //clearBox("cnterror")
             //clearBox("cntwrng")
