@@ -102,13 +102,14 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		var currentpage int = 0
 		for {
 			if (logenc.FileMD5(fileName) != hashSumFile) && currentfile == fileN {
+				TransmitUlidPagination(conn, fileName)
 				countline = tailingLogsInFileAll(fileName, conn, 0, page)
 				hashSumFile = logenc.FileMD5(fileName)
 			} else if currentfile != fileN {
 
 				break
 			} else if countline >= 99 {
-				TransmitUlidPagination(conn, fileName)
+				//TransmitUlidPagination(conn, fileName)
 				countline = 0
 			} else if currentpage != page && currentfile == fileN {
 				countline = tailingLogsInFileAll(fileName, conn, 0, page)

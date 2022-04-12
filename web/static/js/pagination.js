@@ -19,7 +19,7 @@ function getPagination(table) {
             var trnum = 0; // reset tr counter
             var maxRows = parseInt($(this).val()); // get Max Rows from select option
 
-            if (maxRows == 1000) {
+            if (maxRows == 100) {
                 $('.pagination').hide();
             } else {
                 $('.pagination').show();
