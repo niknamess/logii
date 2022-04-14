@@ -48,6 +48,35 @@
           </tbody>
         </table>
          </div>
+         <script>
+         var rows = document.getElementById("tbl92").children[1].children;
+    var selectedRow = 0;
+    document.body.onkeydown = function(e){
+        //Prevent page scrolling on keypress
+        e.preventDefault();
+        //Clear out old row's color
+        rows[selectedRow].style.backgroundColor = "";
+        //Calculate new row
+        if(e.keyCode == 38){
+            selectedRow--;
+        } else if(e.keyCode == 40){
+            selectedRow++;
+        }
+        if(selectedRow >= rows.length){
+            selectedRow = 0;
+        } else if(selectedRow < 0){
+            selectedRow = rows.length-1;
+        }
+        //Set new row's color
+        rows[selectedRow].style.backgroundColor = "#8888FF";
+
+        document.getElementById("message").innerHTML = rows[selectedRow].cells.item(7).textContent
+        document.getElementById("details").innerHTML = rows[selectedRow].cells.item(8).textContent
+    };
+    //Set the first row to selected color
+    rows[0].style.backgroundColor = "#8888FF";
+
+         </script>
 	    <div class='pagination-container' >
 				<nav>
 				  <ul class="pagination">

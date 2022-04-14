@@ -93,39 +93,6 @@ buttonR.addEventListener('click', event => {
 });
 
 
-
-/* buttonNext.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            //ws.close();
-            Null();
-            //currentPage = currentPage + 1
-
-            initWS(lastItem, statusS)
-            typePage = 1;
-            console.log("Page", currentPage, "next")
-        },
-        1 * 200
-    );
-});
-
-buttonPrev.addEventListener('click', event => {
-    setTimeout(
-        () => {
-            //if (currentPage > 1) {
-
-            Null();
-            initWS(lastItem, statusS)
-            typePage = -1;
-            //}
-            console.log("Page", currentPage, "prev")
-
-        },
-        1 * 200
-    );
-}); */
-
-
 inputform.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
         // code for enter
@@ -144,11 +111,7 @@ document.getElementById('pagination11').addEventListener('click', event => {
     setTimeout(
         () => {
             console.log("Work")
-                // console.log("text", buttonPagination.textContent)
-                /* Null()
-                initWS(lastItem, statusS)
-                Null() */
-                // window.location.reload();
+
         },
         1 * 200
     );
@@ -184,9 +147,6 @@ function editAll() {
     statusS = "empty"
 }
 
-/* function myFunction() {
-    document.getElementById("trInf").innerHTML = "YOU CLICKED ME!";
-} */
 
 function Null() {
     countWar = 0
@@ -286,46 +246,8 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
     vm.init();
 }
 
-function highlight(tableIndex) {
-    // Just a simple check. If .highlight has reached the last, start again
-    if ((tableIndex + 1) > $('#data tbody tr').length)
-        tableIndex = 0;
-
-    // Element exists?
-    if ($('#data tbody tr:eq(' + tableIndex + ')').length > 0) {
-        // Remove other highlights
-        $('#data tbody tr').removeClass('highlight');
-
-        // Highlight your target
-        $('#data tbody tr:eq(' + tableIndex + ')').addClass('highlight');
-    }
-}
 
 function initWS(file, type) {
-
-    /*  var observer = new MutationObserver(function(_mutations, me) {
-         // `mutations` is an array of mutations that occurred
-         // `me` is the MutationObserver instance
-         start = document.getElementById('Foxtrot');
-         if (start) {
-             handleCanvas(start);
-             me.disconnect(); // stop observing
-             return;
-         }
-     });
-
-     // start observing
-     observer.observe(document, {
-         childList: true,
-         subtree: true
-     }); */
-
-    /*   var tableRow = $('tr');
-    $(tableRow).css('background-color', '#dff0d8');
-    $(tableRow).children('[contenteditable]').attr("contenteditable", "true");
-    var tableData = $(tableRow).children('[contenteditable]')[0];
-    $(tableData).focus();
- */
 
     var ws_proto = "ws:"
     if (window.location.protocol === "https:") {
@@ -335,7 +257,7 @@ function initWS(file, type) {
     var socket = new WebSocket(ws_proto + "//" + window.location.hostname + ":" + window.location.port + "/ws/" + btoa(file));
     var container = angular.element(document.querySelector("#container"));
     var sysMsgAll = angular.element(document.querySelector("#sysMsgAll"));
-    var count = 0
+    //var count = 0
 
 
     container.html("")
@@ -393,11 +315,7 @@ function initWS(file, type) {
                 childList: true,
                 subtree: true
             });
-            //clearBox("cntinfo")
-            //clearBox("cnterror")
-            //clearBox("cntwrng")
-            //clearBox("ctndbg")
-            //clearBox("cntall")
+
 
         }
 
@@ -441,6 +359,8 @@ function initWS(file, type) {
             quotation("cntwrng", "Warning:" + countWar);
             quotation("ctndbg", "Debug:" + countDbg);
             quotation("cntall", "All:" + countAll);
+
+
         } else {
             //:TODO
             //Loading 
@@ -475,7 +395,6 @@ function initWS(file, type) {
     socket.onclose = function() {
         quotation("sysMsgAll", "<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
 
-        // sysMsgAll.append("<p style='background-color: maroon; color:orange'>Connection Closed to WebSocket, tail stopped</p>");
     }
     socket.onerror = function(e) {
         sysMsgAll.append("<b style='color:red'>Some error occurred " + e.data.trim() + "<b>");
@@ -486,6 +405,7 @@ function initWS(file, type) {
 
 
 
+
 function ParseXml(str, type) {
     var parser, xmlDoc, table, heyho;
 
@@ -493,17 +413,11 @@ function ParseXml(str, type) {
     xmlDoc = parser.parseFromString(str, "application/xml");
     log = xmlDoc.getElementsByTagName("log");
     for (i = 0; i < log.length; i++) {
-        if (i == 0 && countAll == 0) {
-            heyho = "id='Foxtrot'"
-                /*  } else if (i == 0 && countAll == 1) {
-                     heyho = "id='follow'" */
-        } else {
-            heyho = ""
-        }
+
         if (type == typeMsg(log[i].getAttribute('type')) || type == "empty") {
             countRows++
             table +=
-                "<tr " + heyho + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
+                "<tr " + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
                 typeMsg(log[i].getAttribute('type')) +
                 "</span></td><td class=\"\"><span>" +
                 log[i].getAttribute('module_name') +
@@ -535,9 +449,7 @@ function ParseXmlMap(str) {
     map = xmlDoc.getElementsByTagName("Map")[0].childNodes;
 
     for (i = 0; i < map.length; i++) {
-        //console.log(x[i].getAttribute("1"))
-        //console.log(x[i].getAttribute("2"))
-        // if (map[i].tagName != "undefined") {
+
         if (i % 2 != 0) {
 
             tablemap +=
@@ -546,8 +458,6 @@ function ParseXmlMap(str) {
 
     }
     var tablemap = tablemap.replace('undefined', '');
-    //console.log("EndVSr", tablemap)
-    //console.log("Replace", ret)
 
     return tablemap
 }
@@ -566,7 +476,7 @@ function ParseCount(str) {
 
 
 //23072021005653.991
-//(year, monthIndex, day, hours, minutes, seconds, milliseconds)
+//(year, monthIndex, day, hours, minutes, seconds, milliseconds) 
 //23 07 2021 00 25 53.492
 function timestamp(str) {
     date = str.substring(0, 2);
@@ -577,8 +487,6 @@ function timestamp(str) {
     seconds = str.substring(12, 14);
     milliseconds = str.substring(14, 17);
     datum = new Date(Date.UTC(year, month - 1, date, hours, minutes, seconds, milliseconds));
-    //console.log(datum);
-    //console.log(datum.getTime());
     return datum.getTime()
 }
 
