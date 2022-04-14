@@ -107,7 +107,7 @@ inputform.addEventListener('keypress', function(e) {
     }
 });
 
-document.getElementById('pagination11').addEventListener('click', event => {
+/* document.getElementById('pagination11').addEventListener('click', event => {
     setTimeout(
         () => {
             console.log("Work")
@@ -115,7 +115,7 @@ document.getElementById('pagination11').addEventListener('click', event => {
         },
         1 * 200
     );
-});
+}); */
 
 function editInf() {
     Null()
@@ -417,7 +417,7 @@ function ParseXml(str, type) {
         if (type == typeMsg(log[i].getAttribute('type')) || type == "empty") {
             countRows++
             table +=
-                "<tr " + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
+                "<tr " + "onclick=\"FuncClick(this)\"" + "  bgcolor =" + Color(log[i].getAttribute('type')) + ">" + "<td class=\"\"><span>" +
                 typeMsg(log[i].getAttribute('type')) +
                 "</span></td><td class=\"\"><span>" +
                 log[i].getAttribute('module_name') +

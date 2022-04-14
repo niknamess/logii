@@ -48,9 +48,20 @@
           </tbody>
         </table>
          </div>
+   
+
          <script>
+           var selectedRow = 0;
+          function FuncClick(x) {
+      rows[selectedRow].style.backgroundColor = "";
+    selectedRow =   x.rowIndex - 1
+       rows[selectedRow].style.backgroundColor = "#8888FF";
+        document.getElementById("message").innerHTML = rows[selectedRow].cells.item(7).textContent
+        document.getElementById("details").innerHTML = rows[selectedRow].cells.item(8).textContent
+  }
          var rows = document.getElementById("tbl92").children[1].children;
     var selectedRow = 0;
+    //rows[0].style.backgroundColor = "#8888FF";
     document.body.onkeydown = function(e){
         //Prevent page scrolling on keypress
         e.preventDefault();
@@ -69,7 +80,8 @@
         }
         //Set new row's color
         rows[selectedRow].style.backgroundColor = "#8888FF";
-
+        
+         rows[selectedRow].scrollIntoView(false);
         document.getElementById("message").innerHTML = rows[selectedRow].cells.item(7).textContent
         document.getElementById("details").innerHTML = rows[selectedRow].cells.item(8).textContent
     };
