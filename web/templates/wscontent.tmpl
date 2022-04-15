@@ -78,8 +78,6 @@
             selectedRow = 0;
         } else if(selectedRow < 0){
             selectedRow = rows.length-1;
-        }else{
-        console.log( ` ${e.code}`)
         }
         //Set new row's color
         rows[selectedRow].style.backgroundColor = "#8888FF";
@@ -89,7 +87,7 @@
         document.getElementById("details").innerHTML = rows[selectedRow].cells.item(8).textContent
     };
     //Set the first row to selected color
-    rows[0].style.backgroundColor = "#8888FF";
+   
 
          </script>
 	    <div class='pagination-container' >

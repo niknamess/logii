@@ -50,7 +50,7 @@ var ws;
 var pageMap;
 var Page;
 
-
+/* 
 $(document).ready(function() {
     $('#MyTable').DataTable({
         initComplete: function() {
@@ -75,7 +75,7 @@ $(document).ready(function() {
         }
     });
 });
-
+ */
 
 
 
@@ -222,7 +222,7 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
         lastItem = file;
 
 
-        console.log(filename)
+        /*   console.log(filename) */
         $scope.showCard = false;
         angular.element(document.querySelector("#filename")).html("File: " + filename)
 
@@ -268,7 +268,7 @@ function initWS(file, type) {
             // container.append("Start table");
 
         }
-        console.log(file);
+        /*  console.log(file); */
         socket.send(file.replace(/^.*[\\\/]/, ''));
 
     }
