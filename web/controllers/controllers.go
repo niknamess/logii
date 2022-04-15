@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"time"
 
 	//"encoding/json"
 
@@ -158,66 +157,39 @@ func WSHandler(w http.ResponseWriter, r *http.Request) {
 	context.Clear(r)
 }
 
-//TODO: For pagination
-/* func followThePage(conn *websocket.Conn) {
-for{
-	msgType, msg, _ := conn.ReadMessage()
-	fmt.Println("msgType", msgType)
-	fmt.Println("msg", string(msg[:]))
-	fmt.Println(msg)
-	page, _ = strconv.Atoi(string(msg[:]))
-
-} */
-
-/* func checkChangeFile(conn *websocket.Conn, fileaddr string) {
-	// Определяем тикер
-	ticker := time.NewTicker(time.Millisecond * 500)
-	// Триггер тикера
-	go func() {
-		for t := range ticker.C {
-			fmt.Println(t)
-			if logenc.CheckFileSum(fileaddr, "", "") == true {
-				Indexing(conn, fileaddr)
-			}
-		}
-	}()
-
-	time.Sleep(time.Second * 20)
-	// Остановить тикер
-	ticker.Stop()
-} */
-
 func SearchHandler(_ http.ResponseWriter, r *http.Request) {
 	search = r.URL.Query().Get("search_string")
 	fmt.Println("SEARCHHANDLER:", search)
 	context.Clear(r)
 }
-func DataHandler(_ http.ResponseWriter, r *http.Request) {
+
+/* func DataHandler(_ http.ResponseWriter, r *http.Request) {
 	datestartend = r.URL.Query().Get("daterange")
 	fmt.Println("DATAHANDLER:", datestartend)
 	//SEARCHHANDLER: 01/01/2021 - 01/15/2021
 	datastart := string(datestartend[0:10])
-	/* daystart := string(datestartend[0:2])
-	monthstart := string(datestartend[3:5])
-	yearstart := string(datestartend[6:10])
+	// daystart := string(datestartend[0:2])
+	//monthstart := string(datestartend[3:5])
+	//yearstart := string(datestartend[6:10])
 
-	dayend := string(datestartend[13:15])
-	monthend := string(datestartend[16:18])
-	yearend := string(datestartend[19:23]) */
-	dataend := string(datestartend[13:23])
+	//dayend := string(datestartend[13:15])
+	//monthend := string(datestartend[16:18])
+	//yearend := string(datestartend[19:23])
+	//dataend := string(datestartend[13:23])
 
 	timeendUnix, _ := time.Parse(date_layout, "01/15/2021")
 	timestartUnix, _ := time.Parse(date_layout, datastart)
 
-	fmt.Println("Common", dataend, "Unix", timeendUnix.Unix())
-	fmt.Println("Common", datastart, "Unix", timestartUnix.Unix())
+	//fmt.Println("Common", dataend, "Unix", timeendUnix.Unix())
+	//fmt.Println("Common", datastart, "Unix", timestartUnix.Unix())
 
 	//fmt.Println("Parse d:m:y", daystart, ":", monthstart, ":", yearstart)
 	//fmt.Println("Parse d:m:y", dayend, ":", monthend, ":", yearend)
 	startUnixTime = timestartUnix.Unix()
 	endUnixTime = timeendUnix.Unix()
 	context.Clear(r)
-}
+} */
+
 func PointHandler(_ http.ResponseWriter, r *http.Request) {
 	pointH = r.URL.Query().Get("pointer")
 	fmt.Println("POINTHANDLER:", pointH)

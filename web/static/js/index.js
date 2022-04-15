@@ -200,17 +200,17 @@ function mainController($rootScope, $scope, $mdSidenav, $http) {
             })
     }
 
-    vm.init = function init() {
-        console.log("In the main controller")
-        $scope.showCard = true;
-        $http.get('datestartend')
-            .then(function(result) {
-                $rootScope.daterange = result.data["daterange"]
-                console.log("Search :", result.data)
-            }, function(result) {
-                console.log("Failed to get search")
-            })
-    }
+    /*   vm.init = function init() {
+          console.log("In the main controller")
+          $scope.showCard = true;
+          $http.get('datestartend')
+              .then(function(result) {
+                  $rootScope.daterange = result.data["daterange"]
+                  console.log("Search :", result.data)
+              }, function(result) {
+                  console.log("Failed to get search")
+              })
+      } */
 
     // vm.fontSize = ["10px", "11px", "12px", "14px", "16px", "18px", "20px", "22px", "24px"]
     // $scope.currSize = vm.fontSize[2];

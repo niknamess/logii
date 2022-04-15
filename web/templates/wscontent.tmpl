@@ -61,10 +61,11 @@
   }
          var rows = document.getElementById("tbl92").children[1].children;
     var selectedRow = 0;
-    //rows[0].style.backgroundColor = "#8888FF";
-    document.body.onkeydown = function(e){
+   
+  document.body.onkeydown = logKey;
+   function logKey(e) {
         //Prevent page scrolling on keypress
-        e.preventDefault();
+        //e.preventDefault();
         //Clear out old row's color
         rows[selectedRow].style.backgroundColor = "";
         //Calculate new row
@@ -77,6 +78,8 @@
             selectedRow = 0;
         } else if(selectedRow < 0){
             selectedRow = rows.length-1;
+        }else{
+        console.log( ` ${e.code}`)
         }
         //Set new row's color
         rows[selectedRow].style.backgroundColor = "#8888FF";

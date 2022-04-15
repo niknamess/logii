@@ -9,18 +9,31 @@
               <md-card-title>
                 <md-card-title-text>
                  <iframe name="hiddenFrame" class="hide"></iframe>
-                  <form class="form-inline center-form" role="form" action="datestartend" method="GET" target="hiddenFrame">
-                 <input type="text" class="form-control wide" id= "daterange"  name="daterange" value="01/01/2021 - 01/15/2021" />
-                      <script>
-                      $(function() {
-                        $('input[name="daterange"]').daterangepicker({
-                          opens: 'left'
-                        }, function(start, end, label) {
-                          console.log("A new date selection was made Unix timestamp: " + start + ' to ' + end );
-                        });
-                      });
-                      </script>  
-                    </form>
+                <!--  <form class="form-inline center-form" role="form" action="datestartend" method="GET" target="hiddenFrame"> -->
+                <input type="text" name="datefilter" value="" />
+
+<script type="text/javascript">
+$(function() {
+
+  $('input[name="datefilter"]').daterangepicker({
+      autoUpdateInput: false,
+      locale: {
+          cancelLabel: 'Clear'
+      }
+  });
+
+  $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
+      $(this).val(picker.startDate.format('MM/DD/YYYY') + ' - ' + picker.endDate.format('MM/DD/YYYY'));
+      console.log($(this).val());
+  });
+
+  $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
+      $(this).val('');
+  });
+
+});
+</script>
+                   <!-- </form> -->
                   <span class="md-headline">Logi 2 service to view log</span>
                 </md-card-title-text>
               </md-card-title>
