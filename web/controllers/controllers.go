@@ -217,7 +217,7 @@ func Indexing(fileaddr string) {
 //View List of Dir
 //NOT fileUtils !!!
 func ViewDir(conn *websocket.Conn, search string) {
-
+	//Delete file with all
 	//:TODO
 	//Пагинация из первых ulid см как для отдельных файлов
 	var fileList = make(map[string][]string)
@@ -228,14 +228,21 @@ func ViewDir(conn *websocket.Conn, search string) {
 	conn.WriteMessage(websocket.TextMessage, []byte("Indexing file, please wait"))
 
 	fileList["FileList"] = util.Conf.Dir
+	//MAPA:=fileList["FileList"]
 	//String[] values = fileList.get("FileList");
 	fmt.Println("start")
-
+	util.UlidPaginationDir(conn, countFiles, fileList)
 	for i := 0; i < countFiles; i++ {
+		//Очистка поля
+		conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
+
 		fileaddr := fileList["FileList"][i]
 		fileN := filepath.Base(fileaddr)
 		//go logenc.Replication(fileaddr)
 		bleveSI.ProcBleve(fileN, fileaddr)
+
+		//Общая пагинация на строки в  файлах
+		//Чтенние и вывод из файлов построчно
 		util.TailDir(conn, fileaddr, search, SearchMap, startUnixTime, endUnixTime)
 		//conn.WriteMessage(websocket.TextMessage, []byte(filepath.Base(fileList["FileList"][i])))
 		fmt.Println("View file", fileaddr)

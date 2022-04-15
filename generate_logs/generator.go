@@ -58,7 +58,9 @@ func StructFile() string {
 	XML_MESSAGE := "Состояние '" + randomdata.IpV4Address() + "Cервер КС_UDP/Пинг'"
 	XML_TYPE := strconv.Itoa(rand.Intn(4-1) + 1)
 	address := randomdata.ProvinceForCountry("GB")
-	time1 := "29052021000147040"
+	//rand.Intn(max - min) + min
+	//"29 05 2021 00 01 47 040"
+	time1 := strconv.Itoa(rand.Intn(28-1)+1) + strconv.Itoa(rand.Intn(12-1)+1) + strconv.Itoa(rand.Intn(2022-2018)+2018) + "000147040"
 	time_ulid := ulid.MustNew(timestamp, entropy)
 	ulid1 := time_ulid.String()
 	LINE := "<loglist><log module_name=" + elem + XML_APPNAME + elem +

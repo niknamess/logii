@@ -37,7 +37,6 @@ var (
 	indexMap           = make(map[string]bool)
 	signature   bool   = false
 	Fname       string = ""
-	countSearch int
 	currentfile string
 	page        int = 0
 	hashSumFile string
@@ -71,8 +70,6 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		Fname = fileName
 		lookFor = ""
 
-		countSearch = 0
-
 		for k := range paginationUlids {
 			delete(paginationUlids, k)
 		}
@@ -96,13 +93,13 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 			}
 		}()
 		go followCodeStatus(conn)
-		TransmitUlidPagination(conn, fileName)
+		UlidPaginationFile(conn, fileName)
 		tailingLogsInFileAll(fileName, conn, 0, page)
 		var countline int = 0
 		var currentpage int = 0
 		for {
 			if (logenc.FileMD5(fileName) != hashSumFile) && currentfile == fileN {
-				TransmitUlidPagination(conn, fileName)
+				UlidPaginationFile(conn, fileName)
 				countline = tailingLogsInFileAll(fileName, conn, 0, page)
 				hashSumFile = logenc.FileMD5(fileName)
 			} else if currentfile != fileN {
@@ -256,7 +253,7 @@ func followCodeStatus(conn *websocket.Conn) {
 
 }
 
-func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
+func UlidPaginationFile(conn *websocket.Conn, fileName string) {
 	var CountPage string
 	paginationUlids = make(map[int]string)
 	var (
@@ -284,7 +281,7 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 		if countline == 100 {
 			page++
 			countline = 0
-			firstUlid = strSlice[1]
+			firstUlid = strSlice[0]
 			paginationUlids[page] = firstUlid
 			strSlice = nil
 
@@ -305,6 +302,67 @@ func TransmitUlidPagination(conn *websocket.Conn, fileName string) {
 	countline = 0
 	strSlice = nil
 
+}
+
+func UlidPaginationDir(conn *websocket.Conn, countFiles int, fileList map[string][]string) {
+	//var CountPage string
+	var CountPage string
+	paginationUlids = make(map[int]string)
+	var (
+		strSlice []string
+
+		countline int
+		page      int    = 1
+		firstUlid string = " "
+	)
+
+	//fileList["FileList"] = util.Conf.Dir
+
+	for i := 0; i < countFiles; i++ {
+		fileName := fileList["FileList"][i]
+		taillog, err := tail.TailFile(fileName,
+			tail.Config{
+				Follow: true,
+				Location: &tail.SeekInfo{
+					Whence: io.SeekStart, //!!!
+
+				},
+			})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
+			return
+		}
+		for line := range taillog.Lines {
+			strSlice = append(strSlice, logenc.ProcLineDecodeXMLUlid(line.Text))
+			countline++
+			if countline == 100 {
+				page++
+				countline = 0
+				firstUlid = strSlice[1]
+				paginationUlids[page] = firstUlid
+				strSlice = nil
+
+			}
+			go taillog.StopAtEOF() //end tail and stop service
+
+		}
+		if countline != 0 && countline < 100 && page == 0 {
+			page++
+			firstUlid = strSlice[1]
+			paginationUlids[page] = firstUlid
+		}
+	}
+	CountPage = "<countpage>" + strconv.Itoa(page) + "</countpage>"
+	conn.WriteMessage(websocket.TextMessage, []byte(CountPage))
+	firstUlid = strSlice[1]
+	paginationUlids[page] = firstUlid
+	for key, value := range paginationUlids {
+		fmt.Println("Key:", key, "Value:", value)
+	}
+
+	fmt.Println("map", (paginationUlids))
+	countline = 0
+	strSlice = nil
 }
 func (m Map) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	if len(m) == 0 {
@@ -424,11 +482,12 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
 		return
 	}
-	println("Find", lookFor)
-	println(startUnixTime)
-	println(endUnixTime)
-	println(fileName)
+	//println("Find", lookFor)
+	//println(startUnixTime)
+	//println(endUnixTime)
+	//println(fileName)
 	if (lookFor == "" || lookFor == " " || lookFor == "Search") && (startUnixTime == 0 || endUnixTime == 0) {
+
 		var (
 			countline int = 0
 			commoncsv logenc.LogList
@@ -450,6 +509,7 @@ func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap ma
 		}
 		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
 		commoncsv = logenc.LogList{}
+
 	} else if len(UlidC) == 0 {
 		println("Break")
 		return

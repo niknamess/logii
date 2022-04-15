@@ -450,9 +450,10 @@ func checke(e error) {
 func FileMD5(path string) string {
 	h := md5.New()
 	f, err := os.Open(path)
+	//defer f.Close()
 	if err != nil {
-		fmt.Println("FileMD5", err)
-		//f.Close()
+		//fmt.Println("FileMD5", err)
+		f.Close()
 		return "null"
 
 	}
