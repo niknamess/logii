@@ -94,13 +94,21 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 		}()
 		go followCodeStatus(conn)
 		UlidPaginationFile(conn, fileName)
+
+		logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+		conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 		tailingLogsInFileAll(fileName, conn, 0, page)
+		logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+
 		var countline int = 0
 		var currentpage int = 0
 		for {
 			if (logenc.FileMD5(fileName) != hashSumFile) && currentfile == fileN {
 				UlidPaginationFile(conn, fileName)
+				logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+				conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 				countline = tailingLogsInFileAll(fileName, conn, 0, page)
+				logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 				hashSumFile = logenc.FileMD5(fileName)
 			} else if currentfile != fileN {
 
@@ -109,7 +117,10 @@ func TailFile(conn *websocket.Conn, fileName string, lookFor string, SearchMap m
 				//TransmitUlidPagination(conn, fileName)
 				countline = 0
 			} else if currentpage != page && currentfile == fileN {
+				logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+				conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 				countline = tailingLogsInFileAll(fileName, conn, 0, page)
+				logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 				currentpage = page
 
 			}
@@ -176,7 +187,7 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 	var statusPagination bool = false
 
 	fileN := filepath.Base(fileName)
-	logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+	//logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 	original, err := os.Open(fileName)
 	if err != nil {
 		log.Println(err)
@@ -199,7 +210,7 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 		return countline
 	}
 	go taillog.StopAtEOF()
-	conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
+	//conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
 
 	for line := range taillog.Lines {
 		if page != 0 && line.Text != "" && line.Text != " " {
@@ -218,7 +229,7 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
 			countline++
 			conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(csvsimpl)))
-			logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+			//logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 		}
 
 		if countline == 100 {
@@ -229,7 +240,7 @@ func tailingLogsInFileAll(fileName string, conn *websocket.Conn, current int64, 
 		}
 
 	}
-	logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+	//logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
 
 	return countline
 
@@ -467,48 +478,49 @@ func dfs(file string) {
 }
 
 func TailDir(conn *websocket.Conn, fileName string, lookFor string, SearchMap map[string]logenc.LogList, startUnixTime int64, endUnixTime int64) {
-
 	fileN := filepath.Base(fileName)
 	UlidC := bleveSI.ProcBleveSearchv2(fileN, lookFor)
-	taillog, err := tail.TailFile(fileName,
-		tail.Config{
-			Follow: true,
-			Location: &tail.SeekInfo{
-				Whence: os.SEEK_CUR, //!!!
-
-			},
-		})
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error occurred in opening the file: ", err)
-		return
-	}
 	//println("Find", lookFor)
 	//println(startUnixTime)
 	//println(endUnixTime)
 	//println(fileName)
 	if (lookFor == "" || lookFor == " " || lookFor == "Search") && (startUnixTime == 0 || endUnixTime == 0) {
 
-		var (
-			countline int = 0
-			commoncsv logenc.LogList
-		)
-		for line := range taillog.Lines {
-			countline++
-			//Найти lastUlid и только потом продолжать
+		go followCodeStatus(conn)
+		var countline int = 0
+		var currentpage int = 0
 
-			csvsimpl := logenc.ProcLineDecodeXML(line.Text)
-			commoncsv.XML_RECORD_ROOT = append(commoncsv.XML_RECORD_ROOT, csvsimpl.XML_RECORD_ROOT...)
-			if countline == 1000 {
-				conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+		logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+		conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
+		countline = tailingLogsInFileAll(fileName, conn, 0, page)
+		logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+		for {
+
+			/* if currentfile != fileN {
+
+				break
+			} else  */
+
+			if countline >= 99 {
+				//TransmitUlidPagination(conn, fileName)
 				countline = 0
-				commoncsv = logenc.LogList{}
+			} else if currentpage != page {
+				logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+				conn.WriteMessage(websocket.TextMessage, []byte("<start></start>"))
+				countline = tailingLogsInFileAll(fileName, conn, 0, page)
+				fmt.Println("countline", countline)
+				logenc.DeleteOldsFiles("./web/util/replace/"+fileN, "")
+				currentpage = page
+				if countline < 95 {
+					break
+				}
+
 			}
 
-			go taillog.StopAtEOF() //end tail and stop service
-
 		}
-		conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
-		commoncsv = logenc.LogList{}
+
+		//conn.WriteMessage(websocket.TextMessage, []byte(logenc.EncodeXML(commoncsv)))
+		//commoncsv = logenc.LogList{}
 
 	} else if len(UlidC) == 0 {
 		println("Break")
